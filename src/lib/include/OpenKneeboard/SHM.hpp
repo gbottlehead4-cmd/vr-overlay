@@ -71,6 +71,12 @@ struct Config final {
   VRRenderSettings mVR {};
   PixelSize mTextureSize {};
   std::array<float, 4> mTint {1, 1, 1, 1};
+  // Point-and-grab edit mode (mouse). Written by the app, read by the OpenXR
+  // layer to render a cursor, hit-test panels, and move the grabbed one.
+  bool mEditActive {false};// setup/edit mode on (mouse may move panels)
+  bool mEditGrab {false};// grab (mouse button) held
+  float mEditCursorX {0.0f};// mouse cursor across the view, normalized -1..1
+  float mEditCursorY {0.0f};
 };
 static_assert(std::is_standard_layout_v<Config>);
 struct LayerConfig final {

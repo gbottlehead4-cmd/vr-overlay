@@ -238,6 +238,23 @@ XrResult OpenXRKneeboard::xrEndFrame(
     return mOpenXR->xrEndFrame(session, frameEndInfo);
   }
 
+  // P1 (mouse point-and-grab): confirm the app->layer edit channel works.
+  {
+    static bool sLastEditActive = false;
+    static bool sLastGrab = false;
+    const auto& c = frame->mConfig;
+    if (c.mEditActive != sLastEditActive || c.mEditGrab != sLastGrab) {
+      sLastEditActive = c.mEditActive;
+      sLastGrab = c.mEditGrab;
+      M2ALog(std::format(
+        "P1: edit={} grab={} cursor=({:.2f},{:.2f})",
+        c.mEditActive,
+        c.mEditGrab,
+        c.mEditCursorX,
+        c.mEditCursorY));
+    }
+  }
+
   if (frame->mLayers.empty()) {
     TraceLoggingWriteTagged(activity, "No SHM layers");
     return mOpenXR->xrEndFrame(session, frameEndInfo);
@@ -626,6 +643,30 @@ XRAPI_ATTR XrResult XRAPI_CALL xrAttachSessionActionSets(
   dprint("M2a: game called xrAttachSessionActionSets with {} action set(s)", n);
   M2ALog(std::format("xrAttachSessionActionSets: {} action set(s)", n));
   return Next()->xrAttachSessionActionSets(session, attachInfo);
+}
+
+XRAPI_ATTR XrResult XRAPI_CALL xrSuggestInteractionProfileBindings(
+  XrInstance instance,
+  const XrInteractionProfileSuggestedBinding* suggestedBindings) noexcept {
+  // M2a: observe which controller interaction profile(s) the game binds, so we
+  // know how to bind our own grab action. Forward unchanged (zero risk).
+  if (suggestedBindings) {
+    char buf[XR_MAX_PATH_LENGTH] {};
+    uint32_t len = 0;
+    if (Next()->xrPathToString(
+          instance,
+          suggestedBindings->interactionProfile,
+          sizeof(buf),
+          &len,
+          buf)
+        == XR_SUCCESS) {
+      M2ALog(std::format(
+        "xrSuggestInteractionProfileBindings: profile='{}' bindings={}",
+        buf,
+        suggestedBindings->countSuggestedBindings));
+    }
+  }
+  return Next()->xrSuggestInteractionProfileBindings(instance, suggestedBindings);
 }
 
 // Provided by XR_KHR_vulkan_enable2

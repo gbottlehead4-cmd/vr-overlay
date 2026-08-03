@@ -86,7 +86,21 @@ void InterprocessRenderer::SubmitFrame(
       mKneeboard->GetActiveInGameView()->GetRuntimeID().GetTemporaryValue(),
     .mVR = static_cast<const VRRenderSettings&>(mKneeboard->GetVRSettings()),
     .mTextureSize = destResources->mTextureSize,
+    .mEditActive = mKneeboard->IsVREditMode(),
   };
+  // P1b: when setup mode is on, feed the desktop mouse into the edit channel
+  // (position normalized to -1..1 across the primary screen; left button = grab).
+  // The OpenXR layer turns this into a VR cursor + panel grab.
+  if (config.mEditActive) {
+    POINT pt {};
+    const auto w = GetSystemMetrics(SM_CXSCREEN);
+    const auto h = GetSystemMetrics(SM_CYSCREEN);
+    if (GetCursorPos(&pt) && w > 0 && h > 0) {
+      config.mEditCursorX = (static_cast<float>(pt.x) / w) * 2.0f - 1.0f;
+      config.mEditCursorY = (static_cast<float>(pt.y) / h) * 2.0f - 1.0f;
+    }
+    config.mEditGrab = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+  }
   const auto tint = mKneeboard->GetUISettings().mTint;
   if (tint.mEnabled) {
     config.mTint = {
