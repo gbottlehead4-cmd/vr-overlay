@@ -102,19 +102,25 @@ static bool IsOpenXRAPILayerEnabled(
 }
 
 bool VRSettingsPage::OpenXR64Enabled() noexcept {
+  std::error_code ec;
   const auto jsonPath = std::filesystem::canonical(
-                          RuntimeFiles::GetInstallationDirectory()
-                          / RuntimeFiles::OPENXR_64BIT_JSON)
-                          .wstring();
-  return IsOpenXRAPILayerEnabled(jsonPath, RRF_SUBKEY_WOW6464KEY);
+    RuntimeFiles::GetInstallationDirectory() / RuntimeFiles::OPENXR_64BIT_JSON,
+    ec);
+  if (ec) {
+    return false;
+  }
+  return IsOpenXRAPILayerEnabled(jsonPath.wstring(), RRF_SUBKEY_WOW6464KEY);
 }
 
 bool VRSettingsPage::OpenXR32Enabled() noexcept {
+  std::error_code ec;
   const auto jsonPath = std::filesystem::canonical(
-                          RuntimeFiles::GetInstallationDirectory()
-                          / RuntimeFiles::OPENXR_32BIT_JSON)
-                          .wstring();
-  return IsOpenXRAPILayerEnabled(jsonPath, RRF_SUBKEY_WOW6432KEY);
+    RuntimeFiles::GetInstallationDirectory() / RuntimeFiles::OPENXR_32BIT_JSON,
+    ec);
+  if (ec) {
+    return false;
+  }
+  return IsOpenXRAPILayerEnabled(jsonPath.wstring(), RRF_SUBKEY_WOW6432KEY);
 }
 
 OpenKneeboard::fire_and_forget VRSettingsPage::AddView(

@@ -228,6 +228,7 @@ else ()
   set(BUILD_IS_64BIT ON CACHE INTERNAL "")
 endif ()
 
+option(OKB_SKIP_32BIT "Dev: skip the 32-bit companion build (iRacing is 64-bit)" OFF)
 option(ENABLE_APP "Build the main app, not just the injectables" ON)
 option(ENABLE_APP_COMMON "Build the main app excluding the GUI, not just the injectables" "${ENABLE_APP}")
 
