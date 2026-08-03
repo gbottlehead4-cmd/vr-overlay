@@ -602,6 +602,19 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSession(
   return ret;
 }
 
+XRAPI_ATTR XrResult XRAPI_CALL xrAttachSessionActionSets(
+  XrSession session,
+  const XrSessionActionSetsAttachInfo* attachInfo) noexcept {
+  // M2a (in-VR edit mode input): OpenXR allows action sets to be attached to a
+  // session only ONCE, and the game owns that call. To read controllers in this
+  // layer we must merge our own action set into the game's attach. First step:
+  // observe whether/how the game attaches action sets, then forward unchanged.
+  dprint(
+    "M2a: game called xrAttachSessionActionSets with {} action set(s)",
+    attachInfo ? attachInfo->countActionSets : 0u);
+  return Next()->xrAttachSessionActionSets(session, attachInfo);
+}
+
 // Provided by XR_KHR_vulkan_enable2
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateVulkanInstanceKHR(
   XrInstance instance,

@@ -30,6 +30,7 @@
   CORE_FN(xrDestroySession) \
   CORE_FN(xrDestroyInstance) \
   CORE_FN(xrEndFrame) \
+  CORE_FN(xrAttachSessionActionSets) \
   EXT_FN(XR_KHR_vulkan_enable2, xrCreateVulkanDeviceKHR) \
   EXT_FN(XR_KHR_vulkan_enable2, xrCreateVulkanInstanceKHR)
 
