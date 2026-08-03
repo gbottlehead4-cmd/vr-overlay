@@ -23,6 +23,8 @@
 
 #include <shims/vulkan/vulkan.h>
 
+#include <cstdlib>
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -41,6 +43,16 @@
 namespace OpenKneeboard {
 
 namespace {
+
+// M2a debug: append a line to %LOCALAPPDATA%\okb-m2a.log so we can observe what
+// the game does with OpenXR input, without needing a live debug-stream capturer.
+void M2ALog(const std::string& msg) {
+  const char* dir = std::getenv("LOCALAPPDATA");
+  const std::string path
+    = std::string(dir ? dir : "C:\\Temp") + "\\okb-m2a.log";
+  std::ofstream {path, std::ios::app} << msg << "\n";
+}
+
 // TODO: these should all be part of the instance, and reset when a new instance
 // is created
 
@@ -499,6 +511,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSession(
     return ret;
   }
   dprint("Next xrCreateSession succeeded");
+  M2ALog("xrCreateSession succeeded (M2a layer active)");
 
   if (gKneeboard) {
     dprint.Warning("Already have a kneeboard, refusing to initialize twice");
@@ -609,9 +622,9 @@ XRAPI_ATTR XrResult XRAPI_CALL xrAttachSessionActionSets(
   // session only ONCE, and the game owns that call. To read controllers in this
   // layer we must merge our own action set into the game's attach. First step:
   // observe whether/how the game attaches action sets, then forward unchanged.
-  dprint(
-    "M2a: game called xrAttachSessionActionSets with {} action set(s)",
-    attachInfo ? attachInfo->countActionSets : 0u);
+  const auto n = attachInfo ? attachInfo->countActionSets : 0u;
+  dprint("M2a: game called xrAttachSessionActionSets with {} action set(s)", n);
+  M2ALog(std::format("xrAttachSessionActionSets: {} action set(s)", n));
   return Next()->xrAttachSessionActionSets(session, attachInfo);
 }
 
