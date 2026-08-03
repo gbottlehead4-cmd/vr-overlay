@@ -67,5 +67,6 @@ using subcommands = make<
   TOGGLE_BOOKMARK,
   TOGGLE_FORCE_ZOOM,
   TOGGLE_TINT,
-  TOGGLE_VISIBILITY>;
+  TOGGLE_VISIBILITY,
+  TOGGLE_VR_EDIT_MODE>;
 };// namespace OpenKneeboard::SimpleRemotes

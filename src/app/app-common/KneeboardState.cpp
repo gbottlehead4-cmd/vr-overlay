@@ -294,6 +294,11 @@ task<void> KneeboardState::PostUserAction(UserAction action) {
       this->mSettings.mVR.mRecenterCount++;
       this->SetRepaintNeeded();
       co_return;
+    case UserAction::TOGGLE_VR_EDIT_MODE:
+      mVREditMode = !mVREditMode;
+      dprint("VR edit mode: {}", mVREditMode ? "ON" : "OFF");
+      this->SetRepaintNeeded();
+      co_return;
     case UserAction::SWAP_FIRST_TWO_VIEWS:
       if (mViews.size() >= 2) {
         mViews.at(0)->SwapState(*mViews.at(1));

@@ -34,7 +34,8 @@ namespace OpenKneeboard {
   IT(TOGGLE_BOOKMARK) \
   IT(TOGGLE_FORCE_ZOOM) \
   IT(TOGGLE_TINT) \
-  IT(TOGGLE_VISIBILITY)
+  IT(TOGGLE_VISIBILITY) \
+  IT(TOGGLE_VR_EDIT_MODE)
 
 enum class UserAction {
 #define IT(x) x,
