@@ -135,6 +135,10 @@ class KneeboardState final
   void SetRepaintNeeded();
   void Repainted();
 
+  // In-VR edit mode: when on, panels show a coloured frame and (later) can be
+  // grabbed/moved/resized. Toggled via UserAction::TOGGLE_VR_EDIT_MODE.
+  bool IsVREditMode() const noexcept { return mVREditMode; }
+
   /** Implement `Lockable`; use `std::unique_lock`.
    *
    * This:
@@ -172,6 +176,7 @@ class KneeboardState final
   std::size_t mUniqueLockDepth = 0;
 
   bool mNeedsRepaint;
+  bool mVREditMode {false};
   winrt::apartment_context mUIThread;
   HWND mHwnd;
   audited_ptr<DXResources> mDXResources;

@@ -303,6 +303,25 @@ task<SHM::LayerConfig> InterprocessRenderer::RenderLayer(
     PixelRect {bounds.mOffset, layer.mFullSize},
     layer.mIsActiveForInput);
 
+  // In-VR edit mode (M1): draw a bright frame around each panel so it's clear
+  // the panel is editable. Grab/move/resize comes in later milestones.
+  if (mKneeboard->IsVREditMode()) {
+    auto d2d = mCanvas->d2d();
+    winrt::com_ptr<ID2D1SolidColorBrush> brush;
+    d2d->CreateSolidColorBrush(
+      D2D1::ColorF(0.0f, 0.8f, 1.0f, 0.95f), brush.put());
+    constexpr float strokeWidth = 12.0f;
+    const auto o = bounds.mOffset;
+    const auto s = layer.mFullSize;
+    const D2D1_RECT_F frame {
+      static_cast<float>(o.mX) + strokeWidth / 2,
+      static_cast<float>(o.mY) + strokeWidth / 2,
+      static_cast<float>(o.mX + s.mWidth) - strokeWidth / 2,
+      static_cast<float>(o.mY + s.mHeight) - strokeWidth / 2,
+    };
+    d2d->DrawRectangle(frame, brush.get(), strokeWidth);
+  }
+
   co_return ret;
 }
 

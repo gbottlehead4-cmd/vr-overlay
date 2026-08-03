@@ -41,6 +41,7 @@ void InputBindingsControl::PopulateUI() {
   AppendUIRow(UserAction::NEXT_PAGE, _(L"Next page"));
 
   AppendUIRow(UserAction::RECENTER_VR, _(L"Recenter VR"));
+  AppendUIRow(UserAction::TOGGLE_VR_EDIT_MODE, _(L"Toggle VR edit mode"));
   AppendUIRow(UserAction::SWAP_FIRST_TWO_VIEWS, _(L"Swap first two views"));
 
   AppendUIRow(UserAction::TOGGLE_VISIBILITY, _(L"Show/hide"));
