@@ -23,10 +23,12 @@
 
 #include <shims/vulkan/vulkan.h>
 
+#include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <loader_interfaces.h>
 
@@ -260,8 +262,17 @@ XrResult OpenXRKneeboard::xrEndFrame(
     return mOpenXR->xrEndFrame(session, frameEndInfo);
   }
 
-  const auto swapchainDimensions =
-    Spriting::GetBufferSize(frame->mLayers.size());
+  // P2 (in-VR mouse cursor): reserve a small tile below the panel atlas. The
+  // panel sprites never touch this strip; we fill it with a dot after the
+  // panels render and submit it as one extra quad at the pointer position.
+  constexpr uint32_t kCursorTilePx = 64;
+  const auto panelAtlasSize = Spriting::GetBufferSize(frame->mLayers.size());
+  const PixelRect cursorTileRect {
+    {0, panelAtlasSize.mHeight},
+    {kCursorTilePx, kCursorTilePx},
+  };
+  auto swapchainDimensions = panelAtlasSize;
+  swapchainDimensions.mHeight += kCursorTilePx;
 
   if (mSwapchain && mSwapchainDimensions != swapchainDimensions) {
     OPENKNEEBOARD_TraceLoggingScope("DestroySwapchain");
@@ -302,56 +313,132 @@ XrResult OpenXRKneeboard::xrEndFrame(
   // the panel the mouse-cursor ray points most directly at and move it along
   // that ray, keeping its distance (Oculus-style follow). Poses are in
   // mLocalSpace, same as the HMD pose.
+  // Which panel the cursor ray currently points at (-1 = none). Used below to
+  // dim the other panels so the grab target is obvious.
+  int hoverIndex = -1;
+  // P2: the VR cursor quad, placed along the pointer ray while editing.
+  bool showCursor = false;
+  XrPosef cursorPose {};
   {
     using DXVector3 = DirectX::SimpleMath::Vector3;
     const auto& cfg = frame->mConfig;
+    // Session-persistent moved poses, keyed by stable panel (layer) ID. The
+    // app re-sends each panel's canonical pose every frame, so without this a
+    // moved panel snapped back to its original spot on button release. We keep
+    // the drop position and re-apply it every frame until P5 persists it to
+    // Views.json.
+    static std::unordered_map<uint64_t, DXVector3> sPoseOverrides;
     static int sGrabbedIndex = -1;
     static float sGrabbedDistance = 0.0f;
     static bool sPrevActiveGrab = false;
+    // Aim direction is decoupled from gaze: we snapshot the head orientation
+    // when edit mode is entered and only the MOUSE moves the pointer after
+    // that. Otherwise turning your head swept the ray across panels, so it
+    // behaved like gaze-to-select (which the user explicitly does not want).
+    static bool sPrevEditActive = false;
+    static DirectX::SimpleMath::Quaternion sBaseOrientation;
+    static float sBaseYaw = 0.0f;
+    static float sBasePitch = 0.0f;
     const bool activeGrab = cfg.mEditActive && cfg.mEditGrab;
 
-    if (!activeGrab) {
-      sGrabbedIndex = -1;
-    } else {
-      const DXVector3 hmdPos = hmdPose.mPosition;
-      constexpr float kSpread = 0.7f;
-      DXVector3 viewDir(
-        cfg.mEditCursorX * kSpread, -cfg.mEditCursorY * kSpread, -1.0f);
-      viewDir.Normalize();
-      const DXVector3 rayDir
-        = DXVector3::Transform(viewDir, hmdPose.mOrientation);
-
-      if (!sPrevActiveGrab) {
-        float best = 0.9f;// require pointing within ~25 degrees of a panel
-        sGrabbedIndex = -1;
-        for (size_t i = 0; i < vrLayers.size(); ++i) {
-          DXVector3 toPanel
-            = vrLayers[i].mRenderParameters.mKneeboardPose.mPosition - hmdPos;
-          const float dist = toPanel.Length();
-          if (dist < 0.01f) {
-            continue;
-          }
-          toPanel /= dist;
-          const float score = toPanel.Dot(rayDir);
-          if (score > best) {
-            best = score;
-            sGrabbedIndex = static_cast<int>(i);
-            sGrabbedDistance = dist;
-          }
-        }
-        M2ALog(std::format(
-          "P4: grab -> panel {} (dist {:.2f})",
-          sGrabbedIndex,
-          sGrabbedDistance));
+    // Re-apply any previously-moved poses so dropped panels stay put.
+    for (auto& l : vrLayers) {
+      if (!l.mLayerConfig) {
+        continue;
       }
-      if (
-        sGrabbedIndex >= 0
-        && sGrabbedIndex < static_cast<int>(vrLayers.size())) {
-        vrLayers[sGrabbedIndex].mRenderParameters.mKneeboardPose.mPosition
-          = hmdPos + (rayDir * sGrabbedDistance);
+      const auto it = sPoseOverrides.find(l.mLayerConfig->mLayerID);
+      if (it != sPoseOverrides.end()) {
+        l.mRenderParameters.mKneeboardPose.mPosition = it->second;
       }
     }
+
+    if (cfg.mEditActive) {
+      const DXVector3 hmdPos = hmdPose.mPosition;
+      // Snapshot the facing yaw/pitch on entry; the MOUSE moves the pointer
+      // from there. The cursor value (cfg.mEditCursorX/Y) is an unbounded angle
+      // offset in radians, so you can point anywhere around you by moving the
+      // mouse - symmetric on both sides - and turning your head does not move
+      // the pointer (so it is not gaze-driven).
+      if (!sPrevEditActive) {
+        sBaseOrientation = hmdPose.mOrientation;
+        const DXVector3 fwd
+          = DXVector3::Transform(DXVector3(0, 0, -1), hmdPose.mOrientation);
+        sBaseYaw = std::atan2(fwd.x, -fwd.z);
+        sBasePitch = std::asin(std::clamp(fwd.y, -1.0f, 1.0f));
+      }
+      const float rayYaw = sBaseYaw + cfg.mEditCursorX;
+      const float rayPitch
+        = std::clamp(sBasePitch - cfg.mEditCursorY, -1.45f, 1.45f);
+      const float cosPitch = std::cos(rayPitch);
+      const DXVector3 rayDir(
+        std::sin(rayYaw) * cosPitch,
+        std::sin(rayPitch),
+        -std::cos(rayYaw) * cosPitch);
+
+      // Every frame: find the panel the ray points most directly at (hover).
+      float best = 0.9f;// require pointing within ~25 degrees of a panel
+      float hoverDistance = 0.0f;
+      for (size_t i = 0; i < vrLayers.size(); ++i) {
+        DXVector3 toPanel
+          = vrLayers[i].mRenderParameters.mKneeboardPose.mPosition - hmdPos;
+        const float dist = toPanel.Length();
+        if (dist < 0.01f) {
+          continue;
+        }
+        toPanel /= dist;
+        const float score = toPanel.Dot(rayDir);
+        if (score > best) {
+          best = score;
+          hoverIndex = static_cast<int>(i);
+          hoverDistance = dist;
+        }
+      }
+
+      if (!activeGrab) {
+        sGrabbedIndex = -1;
+      } else {
+        // On the frame the button goes down, lock onto whatever is hovered.
+        if (!sPrevActiveGrab) {
+          sGrabbedIndex = hoverIndex;
+          sGrabbedDistance = hoverDistance;
+          M2ALog(std::format(
+            "P4: grab -> panel {} (dist {:.2f})",
+            sGrabbedIndex,
+            sGrabbedDistance));
+        }
+        if (
+          sGrabbedIndex >= 0
+          && sGrabbedIndex < static_cast<int>(vrLayers.size())) {
+          // Keep the grabbed panel highlighted while dragging.
+          hoverIndex = sGrabbedIndex;
+          const DXVector3 newPos = hmdPos + (rayDir * sGrabbedDistance);
+          vrLayers[sGrabbedIndex].mRenderParameters.mKneeboardPose.mPosition
+            = newPos;
+          if (vrLayers[sGrabbedIndex].mLayerConfig) {
+            sPoseOverrides[vrLayers[sGrabbedIndex].mLayerConfig->mLayerID]
+              = newPos;
+          }
+        }
+      }
+
+      // Place the VR cursor along the pointer ray: on the grabbed/hovered
+      // panel's plane if there is one, otherwise at a default distance.
+      float cursorDist = 1.5f;
+      if (activeGrab && sGrabbedIndex >= 0) {
+        cursorDist = sGrabbedDistance;
+      } else if (hoverIndex >= 0) {
+        cursorDist = hoverDistance;
+      }
+      Pose p {};
+      p.mPosition = hmdPos + (rayDir * cursorDist);
+      p.mOrientation = sBaseOrientation;
+      cursorPose = this->GetXrPosef(p);
+      showCursor = true;
+    } else {
+      sGrabbedIndex = -1;
+    }
     sPrevActiveGrab = activeGrab;
+    sPrevEditActive = cfg.mEditActive;
   }
 
   std::vector<const XrCompositionLayerBaseHeader*> nextLayers;
@@ -366,7 +453,9 @@ XrResult OpenXRKneeboard::xrEndFrame(
   std::vector<SHM::LayerSprite> layerSprites;
   std::vector<XrCompositionLayerQuad> addedXRLayers;
   layerSprites.reserve(layerCount);
-  addedXRLayers.reserve(layerCount);
+  // +1 for the P2 cursor quad; reserving avoids a realloc that would
+  // invalidate the pointers already stored in nextLayers.
+  addedXRLayers.reserve(layerCount + 1);
 
   for (size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex) {
     const auto [layer, params] = vrLayers.at(layerIndex);
@@ -405,11 +494,20 @@ XrResult OpenXRKneeboard::xrEndFrame(
         break;
     }
 
+    // In edit mode with the cursor over a panel, dim every OTHER panel so the
+    // grab target is obvious even though there's no VR cursor rendered yet.
+    float opacity = params.mKneeboardOpacity;
+    if (
+      frame->mConfig.mEditActive && hoverIndex >= 0
+      && static_cast<int>(layerIndex) != hoverIndex) {
+      opacity *= 0.35f;
+    }
+
     layerSprites.push_back(
       SHM::LayerSprite {
         .mSourceRect = layer->mVR.mLocationOnTexture,
         .mDestRect = destRect,
-        .mOpacity = params.mKneeboardOpacity,
+        .mOpacity = opacity,
       });
 
     TraceLoggingWriteTagged(
@@ -452,6 +550,27 @@ XrResult OpenXRKneeboard::xrEndFrame(
     std::swap(addedXRLayers.back(), addedXRLayers.at(topMost));
   }
 
+  // P2: the cursor quad, added last so it composites on top of every panel.
+  if (showCursor) {
+    addedXRLayers.push_back({
+      .type = XR_TYPE_COMPOSITION_LAYER_QUAD,
+      .next = nullptr,
+      .layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT,
+      .space = mLocalSpace,
+      .eyeVisibility = XR_EYE_VISIBILITY_BOTH,
+      .subImage =
+        XrSwapchainSubImage {
+          .swapchain = mSwapchain,
+          .imageRect = cursorTileRect.StaticCast<int, XrRect2Di>(),
+          .imageArrayIndex = 0,
+        },
+      .pose = cursorPose,
+      .size = {0.04f, 0.04f},
+    });
+    nextLayers.push_back(
+      reinterpret_cast<XrCompositionLayerBaseHeader*>(&addedXRLayers.back()));
+  }
+
   uint32_t swapchainTextureIndex {~(0ui32)};
   {
     OPENKNEEBOARD_TraceLoggingScope("AcquireSwapchainImage");
@@ -472,6 +591,13 @@ XrResult OpenXRKneeboard::xrEndFrame(
     OPENKNEEBOARD_TraceLoggingScope("RenderLayers()");
     this->RenderLayers(
       mSwapchain, swapchainTextureIndex, *std::move(frame), layerSprites);
+  }
+
+  // P2: draw the cursor dot into its reserved tile AFTER the panels (which
+  // clear the whole image), so it survives to be composited by the quad above.
+  if (showCursor) {
+    OPENKNEEBOARD_TraceLoggingScope("FillCursorTile()");
+    this->FillCursorTile(mSwapchain, swapchainTextureIndex, cursorTileRect);
   }
 
   {

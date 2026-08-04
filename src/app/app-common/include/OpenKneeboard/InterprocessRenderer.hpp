@@ -36,6 +36,12 @@ class ToolbarAction;
 struct GameInstance;
 struct DXResources;
 
+// P1b: raw-input relative mouse capture used by the in-VR edit mode
+// (defined in InterprocessRenderer.cpp). Replaces the old
+// GetCursorPos/SetCursorPos re-centring, which jittered and left the
+// physical cursor confined after edit mode was turned off.
+class RawMouseCapture;
+
 class InterprocessRenderer final
   : private EventReceiver,
     public std::enable_shared_from_this<InterprocessRenderer> {
@@ -108,6 +114,12 @@ class InterprocessRenderer final
 
   bool mVisible {true};
   bool mPreviousFrameWasVisible {false};
+
+  // In-VR edit mode: raw-input mouse capture + accumulated -1..1 cursor.
+  // Created on entering edit mode, destroyed on leaving it.
+  std::unique_ptr<RawMouseCapture> mMouseCapture;
+  float mEditCursorX {0.0f};
+  float mEditCursorY {0.0f};
 };
 
 }// namespace OpenKneeboard

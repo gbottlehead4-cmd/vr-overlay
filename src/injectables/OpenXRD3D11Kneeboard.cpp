@@ -205,6 +205,34 @@ void OpenXRD3D11Kneeboard::RenderLayers(
     RenderMode::ClearAndRender);
 }
 
+void OpenXRD3D11Kneeboard::FillCursorTile(
+  XrSwapchain swapchain,
+  uint32_t swapchainTextureIndex,
+  const PixelRect& tile) {
+  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D11Kneeboard::FillCursorTile()");
+  if (!mSwapchainResources.contains(swapchain)) {
+    return;
+  }
+  auto& sr = mSwapchainResources.at(swapchain);
+  if (swapchainTextureIndex >= sr.mBufferResources.size()) {
+    return;
+  }
+  auto rtv = sr.mBufferResources.at(swapchainTextureIndex).mRenderTargetView.get();
+  if (!rtv) {
+    return;
+  }
+  // Opaque green, premultiplied alpha (the shared/composited textures use
+  // premultiplied alpha and the quad blends with SOURCE_ALPHA).
+  const float colour[4] {0.0f, 0.9f, 0.2f, 1.0f};
+  const D3D11_RECT rect {
+    static_cast<LONG>(tile.mOffset.mX),
+    static_cast<LONG>(tile.mOffset.mY),
+    static_cast<LONG>(tile.mOffset.mX + tile.mSize.mWidth),
+    static_cast<LONG>(tile.mOffset.mY + tile.mSize.mHeight),
+  };
+  mImmediateContext->ClearView(rtv, colour, &rect, 1);
+}
+
 SHM::Reader& OpenXRD3D11Kneeboard::GetSHM() { return *mSHM; }
 
 }// namespace OpenKneeboard

@@ -46,6 +46,11 @@ class OpenXRD3D11Kneeboard final : public OpenXRKneeboard {
     SHM::Frame,
     const std::span<SHM::LayerSprite>& layers) override;
 
+  void FillCursorTile(
+    XrSwapchain swapchain,
+    uint32_t swapchainTextureIndex,
+    const PixelRect& tile) override;
+
  private:
   std::unique_ptr<SHM::D3D11::Reader> mSHM;
 

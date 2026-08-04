@@ -23,16 +23,151 @@
 #include <OpenKneeboard/scope_exit.hpp>
 #include <OpenKneeboard/tracing.hpp>
 
+#include <atomic>
 #include <mutex>
 #include <ranges>
+#include <stop_token>
+#include <thread>
 
 #include <DirectXColors.h>
 #include <d3d11_4.h>
 #include <dwrite.h>
 #include <dxgi1_2.h>
+#include <hidusage.h>
 #include <wincodec.h>
 
 namespace OpenKneeboard {
+
+// P1b: relative mouse capture for the in-VR edit mode.
+//
+// The previous approach read GetCursorPos and SetCursorPos(centre) every
+// frame on the render thread. That fought itself (jitter around centre) and
+// left the physical cursor stuck after edit mode ended. Instead we register
+// a raw-input (WM_INPUT) sink on a hidden message-only window running on its
+// own thread. Raw input reports true relative device deltas regardless of
+// foreground focus (the game owns focus while racing) and regardless of the
+// cursor hitting a screen edge, and never moves the physical cursor.
+class RawMouseCapture final {
+ public:
+  RawMouseCapture() {
+    mThread = std::jthread([this](std::stop_token st) { this->ThreadMain(st); });
+  }
+
+  ~RawMouseCapture() {
+    mThread.request_stop();
+    // std::jthread joins on destruction; the ThreadMain loop wakes at least
+    // every 100ms to observe the stop request and tears down the raw-input
+    // registration + window itself.
+  }
+
+  RawMouseCapture(const RawMouseCapture&) = delete;
+  RawMouseCapture& operator=(const RawMouseCapture&) = delete;
+
+  // Called from the render thread. Returns the relative device counts
+  // accumulated since the last call and resets the accumulators.
+  void Fetch(float& dx, float& dy) noexcept {
+    dx = static_cast<float>(mAccumX.exchange(0));
+    dy = static_cast<float>(mAccumY.exchange(0));
+  }
+
+ private:
+  static constexpr wchar_t kClassName[] = L"OpenKneeboard_RawMouseCapture";
+
+  std::atomic<int64_t> mAccumX {0};
+  std::atomic<int64_t> mAccumY {0};
+  std::jthread mThread;
+
+  void OnRawInput(HRAWINPUT handle) noexcept {
+    RAWINPUT ri {};
+    UINT size = sizeof(ri);
+    if (
+      GetRawInputData(
+        handle, RID_INPUT, &ri, &size, sizeof(RAWINPUTHEADER))
+      == static_cast<UINT>(-1)) {
+      return;
+    }
+    if (ri.header.dwType != RIM_TYPEMOUSE) {
+      return;
+    }
+    // Ignore absolute-coordinate devices (e.g. some tablets / RDP); we only
+    // integrate relative motion.
+    if ((ri.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE) != 0) {
+      return;
+    }
+    mAccumX.fetch_add(ri.data.mouse.lLastX, std::memory_order_relaxed);
+    mAccumY.fetch_add(ri.data.mouse.lLastY, std::memory_order_relaxed);
+  }
+
+  static LRESULT CALLBACK
+  WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    if (msg == WM_NCCREATE) {
+      auto cs = reinterpret_cast<CREATESTRUCTW*>(lParam);
+      SetWindowLongPtrW(
+        hwnd,
+        GWLP_USERDATA,
+        reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
+    } else if (msg == WM_INPUT) {
+      auto self = reinterpret_cast<RawMouseCapture*>(
+        GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+      if (self) {
+        self->OnRawInput(reinterpret_cast<HRAWINPUT>(lParam));
+      }
+    }
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+  }
+
+  void ThreadMain(std::stop_token stop) noexcept {
+    const auto hInstance = GetModuleHandleW(nullptr);
+
+    WNDCLASSEXW wc {};
+    wc.cbSize = sizeof(wc);
+    wc.lpfnWndProc = &RawMouseCapture::WndProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = kClassName;
+    // Ignore "already registered" if a previous capture registered it.
+    RegisterClassExW(&wc);
+
+    HWND hwnd = CreateWindowExW(
+      0,
+      kClassName,
+      L"",
+      0,
+      0,
+      0,
+      0,
+      0,
+      HWND_MESSAGE,
+      nullptr,
+      hInstance,
+      this);
+    if (!hwnd) {
+      return;
+    }
+
+    RAWINPUTDEVICE rid {};
+    rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+    rid.usUsage = HID_USAGE_GENERIC_MOUSE;
+    // INPUTSINK: receive input even though the game, not us, has focus.
+    rid.dwFlags = RIDEV_INPUTSINK;
+    rid.hwndTarget = hwnd;
+    RegisterRawInputDevices(&rid, 1, sizeof(rid));
+
+    MSG msg {};
+    while (!stop.stop_requested()) {
+      // Wake for messages or every 100ms to re-check the stop token.
+      MsgWaitForMultipleObjectsEx(
+        0, nullptr, 100, QS_ALLINPUT, MWMO_INPUTAVAILABLE);
+      while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+        DispatchMessageW(&msg);
+      }
+    }
+
+    rid.dwFlags = RIDEV_REMOVE;
+    rid.hwndTarget = nullptr;
+    RegisterRawInputDevices(&rid, 1, sizeof(rid));
+    DestroyWindow(hwnd);
+  }
+};
 
 void InterprocessRenderer::SubmitFrame(
   const std::vector<SHM::LayerConfig>& shmLayers,
@@ -88,34 +223,35 @@ void InterprocessRenderer::SubmitFrame(
     .mTextureSize = destResources->mTextureSize,
     .mEditActive = mKneeboard->IsVREditMode(),
   };
-  // P1b: when setup mode is on, feed the mouse into the edit channel. We track
-  // RELATIVE movement and re-centre the real cursor each frame, so the physical
-  // mouse never runs off the game screen and every edge stays reachable. The
-  // OpenXR layer turns the accumulated -1..1 cursor into a VR cursor + panel grab.
-  static float sCursorX = 0.0f;
-  static float sCursorY = 0.0f;
-  static bool sWasEditActive = false;
+  // P1b: when setup mode is on, feed the mouse into the edit channel using
+  // raw-input relative deltas (RawMouseCapture). The physical cursor is never
+  // moved, so there is no jitter and nothing to release when edit mode ends.
+  // The OpenXR layer turns the accumulated -1..1 cursor into a VR cursor +
+  // panel grab.
   if (config.mEditActive) {
-    const auto w = GetSystemMetrics(SM_CXSCREEN);
-    const auto h = GetSystemMetrics(SM_CYSCREEN);
-    const POINT centre {w / 2, h / 2};
-    POINT pt {};
-    if (GetCursorPos(&pt) && w > 0 && h > 0) {
-      if (sWasEditActive) {
-        constexpr float sensitivity = 2.5f;
-        sCursorX += (static_cast<float>(pt.x - centre.x) / w) * sensitivity;
-        sCursorY += (static_cast<float>(pt.y - centre.y) / h) * sensitivity;
-        sCursorX = std::clamp(sCursorX, -1.0f, 1.0f);
-        sCursorY = std::clamp(sCursorY, -1.0f, 1.0f);
-      }
-      SetCursorPos(centre.x, centre.y);
+    if (!mMouseCapture) {
+      mMouseCapture = std::make_unique<RawMouseCapture>();
+      // Start centred each time edit mode is entered.
+      mEditCursorX = 0.0f;
+      mEditCursorY = 0.0f;
     }
-    config.mEditCursorX = sCursorX;
-    config.mEditCursorY = sCursorY;
+    float dx = 0.0f;
+    float dy = 0.0f;
+    mMouseCapture->Fetch(dx, dy);
+    // The cursor is an angle offset in RADIANS that the OpenXR layer adds to
+    // the facing direction captured when edit mode was entered. ~400 device
+    // counts per radian (~57 deg). X (yaw) can sweep almost all the way around;
+    // Y (pitch) is limited so you cannot point straight up/down.
+    constexpr float sensitivity = 1.0f / 400.0f;
+    constexpr float pi = 3.14159265f;
+    mEditCursorX = std::clamp(mEditCursorX + dx * sensitivity, -pi, pi);
+    mEditCursorY = std::clamp(mEditCursorY + dy * sensitivity, -1.45f, 1.45f);
+    config.mEditCursorX = mEditCursorX;
+    config.mEditCursorY = mEditCursorY;
     config.mEditGrab = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
-    sWasEditActive = true;
-  } else {
-    sWasEditActive = false;
+  } else if (mMouseCapture) {
+    // Leaving edit mode: stop the capture thread + unregister raw input.
+    mMouseCapture.reset();
   }
   const auto tint = mKneeboard->GetUISettings().mTint;
   if (tint.mEnabled) {

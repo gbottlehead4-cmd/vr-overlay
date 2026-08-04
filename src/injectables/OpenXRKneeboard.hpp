@@ -57,6 +57,14 @@ class OpenXRKneeboard : public VRKneeboard {
     const std::span<SHM::LayerSprite>& layers) = 0;
   virtual SHM::Reader& GetSHM() = 0;
 
+  // P2 (in-VR mouse cursor): fill a small rectangle of the swapchain image
+  // with a solid dot, used as the cursor. Default no-op so backends without an
+  // implementation simply show no cursor (iRacing is D3D11).
+  virtual void FillCursorTile(
+    XrSwapchain /*swapchain*/,
+    uint32_t /*swapchainTextureIndex*/,
+    const PixelRect& /*tile*/) {}
+
   OpenXRNext* GetOpenXR();
 
  private:

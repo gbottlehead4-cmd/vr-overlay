@@ -361,6 +361,12 @@ task<void> MainWindow::FrameTick(
   OPENKNEEBOARD_TraceLoggingScope("evFrameTimerPreEvent.emit()");
   mKneeboard->evFrameTimerPreEvent.Emit();
   TraceLoggingWriteTagged(activity, "Prepared to render");
+  // In-VR edit mode: the mouse cursor is fed to the OpenXR layer via the SHM
+  // config, which is only refreshed when we render. Force a repaint every
+  // frame while editing so cursor movement is smooth (not stale/jumpy).
+  if (mKneeboard->IsVREditMode()) {
+    mKneeboard->SetRepaintNeeded();
+  }
   bool repainted = false;
   if (mKneeboard->IsRepaintNeeded()) {
     const std::unique_lock dxLock(*mDXR);
