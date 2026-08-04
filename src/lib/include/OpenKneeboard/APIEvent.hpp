@@ -165,6 +165,10 @@ struct SetViewVRPoseEvent {
   float mRX {};
   float mRY {};
   float mRZ {};
+  // Absolute new physical size in metres (0 = leave the size unchanged).
+  // Absolute, not a multiplier, so re-sending is idempotent.
+  float mWidth {0.0f};
+  float mHeight {0.0f};
 };
 OPENKNEEBOARD_DECLARE_JSON(SetViewVRPoseEvent);
 

@@ -75,8 +75,9 @@ struct Config final {
   // layer to render a cursor, hit-test panels, and move the grabbed one.
   bool mEditActive {false};// setup/edit mode on (mouse may move panels)
   bool mEditGrab {false};// grab (mouse button) held
-  float mEditCursorX {0.0f};// mouse cursor across the view, normalized -1..1
-  float mEditCursorY {0.0f};
+  float mEditCursorX {0.0f};// pointer yaw offset (radians) from entry facing
+  float mEditCursorY {0.0f};// pointer pitch offset (radians)
+  float mEditScroll {0.0f};// accumulated scroll-wheel notches for resize
 };
 static_assert(std::is_standard_layout_v<Config>);
 struct LayerConfig final {

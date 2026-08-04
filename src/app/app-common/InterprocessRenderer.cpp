@@ -63,11 +63,12 @@ class RawMouseCapture final {
   RawMouseCapture(const RawMouseCapture&) = delete;
   RawMouseCapture& operator=(const RawMouseCapture&) = delete;
 
-  // Called from the render thread. Returns the relative device counts
-  // accumulated since the last call and resets the accumulators.
-  void Fetch(float& dx, float& dy) noexcept {
+  // Called from the render thread. Returns the relative device counts and
+  // wheel delta accumulated since the last call, and resets the accumulators.
+  void Fetch(float& dx, float& dy, float& wheel) noexcept {
     dx = static_cast<float>(mAccumX.exchange(0));
     dy = static_cast<float>(mAccumY.exchange(0));
+    wheel = static_cast<float>(mAccumWheel.exchange(0)) / WHEEL_DELTA;
   }
 
  private:
@@ -75,6 +76,7 @@ class RawMouseCapture final {
 
   std::atomic<int64_t> mAccumX {0};
   std::atomic<int64_t> mAccumY {0};
+  std::atomic<int64_t> mAccumWheel {0};
   std::jthread mThread;
 
   void OnRawInput(HRAWINPUT handle) noexcept {
@@ -96,6 +98,12 @@ class RawMouseCapture final {
     }
     mAccumX.fetch_add(ri.data.mouse.lLastX, std::memory_order_relaxed);
     mAccumY.fetch_add(ri.data.mouse.lLastY, std::memory_order_relaxed);
+    if ((ri.data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0) {
+      // usButtonData is a signed wheel delta (multiples of WHEEL_DELTA=120).
+      mAccumWheel.fetch_add(
+        static_cast<SHORT>(ri.data.mouse.usButtonData),
+        std::memory_order_relaxed);
+    }
   }
 
   static LRESULT CALLBACK
@@ -237,7 +245,11 @@ void InterprocessRenderer::SubmitFrame(
     }
     float dx = 0.0f;
     float dy = 0.0f;
-    mMouseCapture->Fetch(dx, dy);
+    float wheel = 0.0f;
+    mMouseCapture->Fetch(dx, dy, wheel);
+    // Accumulated wheel notches (monotonic while editing); the OpenXR layer
+    // diffs this per frame to resize the grabbed panel.
+    mEditScroll += wheel;
     // The cursor is an angle offset in RADIANS that the OpenXR layer adds to
     // the facing direction captured when edit mode was entered. ~400 device
     // counts per radian (~57 deg). X (yaw) can sweep almost all the way around;
@@ -248,6 +260,7 @@ void InterprocessRenderer::SubmitFrame(
     mEditCursorY = std::clamp(mEditCursorY + dy * sensitivity, -1.45f, 1.45f);
     config.mEditCursorX = mEditCursorX;
     config.mEditCursorY = mEditCursorY;
+    config.mEditScroll = mEditScroll;
     config.mEditGrab = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
   } else if (mMouseCapture) {
     // Leaving edit mode: stop the capture thread + unregister raw input.

@@ -120,6 +120,7 @@ class InterprocessRenderer final
   std::unique_ptr<RawMouseCapture> mMouseCapture;
   float mEditCursorX {0.0f};
   float mEditCursorY {0.0f};
+  float mEditScroll {0.0f};
 };
 
 }// namespace OpenKneeboard

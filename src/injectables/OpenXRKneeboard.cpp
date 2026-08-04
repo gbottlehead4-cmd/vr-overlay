@@ -328,14 +328,37 @@ XrResult OpenXRKneeboard::xrEndFrame(
     // moved panel snapped back to its original spot on button release. We keep
     // the drop position and re-apply it every frame until P5 persists it to
     // Views.json.
+    using DXVector2 = DirectX::SimpleMath::Vector2;
     static std::unordered_map<uint64_t, DXVector3> sPoseOverrides;
+    // Resize (scroll wheel): absolute quad size override per panel.
+    static std::unordered_map<uint64_t, DXVector2> sSizeOverrides;
     static int sGrabbedIndex = -1;
     static float sGrabbedDistance = 0.0f;
     static bool sPrevActiveGrab = false;
     // P5: remember which panel is being dragged so we can persist its new pose
-    // to the app (Views.json) when the button is released.
+    // (and size) to the app (Views.json) when the button is released.
     static uint64_t sGrabbedLayerID = 0;
     static VRPose sGrabbedBasePose {};
+    // Offset between the panel centre and the cursor ray at grab time, so the
+    // panel keeps its position under the cursor instead of snapping its centre
+    // onto the dot.
+    static DXVector3 sGrabOffset {};
+    // Resize is committed (persisted) when the cursor leaves the panel or edit
+    // mode ends; track which panel has an uncommitted resize.
+    static uint64_t sResizeDirtyID = 0;
+    // Scroll is sent as a monotonic accumulator; diff it per frame.
+    static float sLastScroll = 0.0f;
+    static bool sHaveLastScroll = false;
+    float scrollDelta = 0.0f;
+    if (cfg.mEditActive) {
+      if (sHaveLastScroll) {
+        scrollDelta = cfg.mEditScroll - sLastScroll;
+      }
+      sLastScroll = cfg.mEditScroll;
+      sHaveLastScroll = true;
+    } else {
+      sHaveLastScroll = false;
+    }
     // Aim direction is decoupled from gaze: we snapshot the head orientation
     // when edit mode is entered and only the MOUSE moves the pointer after
     // that. Otherwise turning your head swept the ray across panels, so it
@@ -346,7 +369,7 @@ XrResult OpenXRKneeboard::xrEndFrame(
     static float sBasePitch = 0.0f;
     const bool activeGrab = cfg.mEditActive && cfg.mEditGrab;
 
-    // Re-apply any previously-moved poses so dropped panels stay put.
+    // Re-apply any previously-moved poses / sizes so edits stay put.
     for (auto& l : vrLayers) {
       if (!l.mLayerConfig) {
         continue;
@@ -355,7 +378,62 @@ XrResult OpenXRKneeboard::xrEndFrame(
       if (it != sPoseOverrides.end()) {
         l.mRenderParameters.mKneeboardPose.mPosition = it->second;
       }
+      const auto sizeIt = sSizeOverrides.find(l.mLayerConfig->mLayerID);
+      if (sizeIt != sSizeOverrides.end()) {
+        l.mRenderParameters.mKneeboardSize = sizeIt->second;
+      }
     }
+
+    // Send a panel's current pose + size to the app so it persists to
+    // Views.json (P5). baseSize is the size when the resize started, so the
+    // scale is relative to what the app currently has stored.
+    auto persistPanel = [this](
+                          uint64_t id,
+                          const DXVector3& worldPos,
+                          const VRPose& basePose,
+                          const DXVector2* overrideSize) {
+      const VRPose np = this->WorldPositionToVRPose(worldPos, basePose);
+      // Absolute size (idempotent). 0 = leave size unchanged.
+      const float w = overrideSize ? overrideSize->x : 0.0f;
+      const float h = overrideSize ? overrideSize->y : 0.0f;
+      SetViewVRPoseEvent ev {
+        .mLayerID = id,
+        .mX = np.mX,
+        .mEyeY = np.mEyeY,
+        .mZ = np.mZ,
+        .mRX = np.mRX,
+        .mRY = np.mRY,
+        .mRZ = np.mRZ,
+        .mWidth = w,
+        .mHeight = h,
+      };
+      APIEvent::FromStruct(ev).Send();
+      M2ALog(std::format(
+        "P5: persisted layer {} pos({:.2f},{:.2f},{:.2f}) size({:.2f}x{:.2f})",
+        id,
+        np.mX,
+        np.mEyeY,
+        np.mZ,
+        w,
+        h));
+    };
+
+    // Persist a resized panel (found by id in the current layers).
+    auto commitResize = [&](uint64_t id) {
+      for (auto& l : vrLayers) {
+        if (l.mLayerConfig && l.mLayerConfig->mLayerID == id) {
+          const auto sizeIt = sSizeOverrides.find(id);
+          const DXVector2* overrideSize
+            = (sizeIt != sSizeOverrides.end()) ? &sizeIt->second : nullptr;
+          persistPanel(
+            id,
+            l.mRenderParameters.mKneeboardPose.mPosition,
+            l.mLayerConfig->mVR.mPose,
+            overrideSize);
+          break;
+        }
+      }
+    };
 
     if (cfg.mEditActive) {
       const DXVector3 hmdPos = hmdPose.mPosition;
@@ -399,19 +477,27 @@ XrResult OpenXRKneeboard::xrEndFrame(
         }
       }
 
+      // --- Move: grab + drag. The panel keeps the offset it had from the
+      //     cursor when grabbed, so it does not snap its centre onto the dot. ---
       if (!activeGrab) {
         sGrabbedIndex = -1;
       } else {
-        // On the frame the button goes down, lock onto whatever is hovered.
         if (!sPrevActiveGrab) {
           sGrabbedIndex = hoverIndex;
           sGrabbedDistance = hoverDistance;
           sGrabbedLayerID = 0;
-          if (
-            sGrabbedIndex >= 0
-            && vrLayers[sGrabbedIndex].mLayerConfig) {
+          sGrabOffset = DXVector3::Zero;
+          if (sGrabbedIndex >= 0 && vrLayers[sGrabbedIndex].mLayerConfig) {
             sGrabbedLayerID = vrLayers[sGrabbedIndex].mLayerConfig->mLayerID;
             sGrabbedBasePose = vrLayers[sGrabbedIndex].mLayerConfig->mVR.mPose;
+            const DXVector3 panelPos
+              = vrLayers[sGrabbedIndex].mRenderParameters.mKneeboardPose
+                  .mPosition;
+            sGrabOffset = panelPos - (hmdPos + rayDir * sGrabbedDistance);
+            // A grab takes over persistence from any pending resize.
+            if (sResizeDirtyID == sGrabbedLayerID) {
+              sResizeDirtyID = 0;
+            }
           }
           M2ALog(std::format(
             "P4: grab -> panel {} (dist {:.2f})",
@@ -421,9 +507,9 @@ XrResult OpenXRKneeboard::xrEndFrame(
         if (
           sGrabbedIndex >= 0
           && sGrabbedIndex < static_cast<int>(vrLayers.size())) {
-          // Keep the grabbed panel highlighted while dragging.
-          hoverIndex = sGrabbedIndex;
-          const DXVector3 newPos = hmdPos + (rayDir * sGrabbedDistance);
+          hoverIndex = sGrabbedIndex;// keep it highlighted while dragging
+          const DXVector3 newPos
+            = hmdPos + (rayDir * sGrabbedDistance) + sGrabOffset;
           vrLayers[sGrabbedIndex].mRenderParameters.mKneeboardPose.mPosition
             = newPos;
           if (vrLayers[sGrabbedIndex].mLayerConfig) {
@@ -431,6 +517,33 @@ XrResult OpenXRKneeboard::xrEndFrame(
               = newPos;
           }
         }
+      }
+
+      // --- Resize: hover a panel and scroll the wheel (no button needed). ---
+      if (
+        scrollDelta != 0.0f && hoverIndex >= 0
+        && vrLayers[hoverIndex].mLayerConfig) {
+        const auto id = vrLayers[hoverIndex].mLayerConfig->mLayerID;
+        const auto currentSize
+          = vrLayers[hoverIndex].mRenderParameters.mKneeboardSize;
+        if (sResizeDirtyID != id) {
+          // Commit the previously-resized panel before starting a new one, so
+          // resizing several panels in a row saves each of them.
+          if (sResizeDirtyID != 0) {
+            commitResize(sResizeDirtyID);
+          }
+          sResizeDirtyID = id;// start of a resize on this panel
+        }
+        if (!sSizeOverrides.contains(id)) {
+          sSizeOverrides[id] = currentSize;
+        }
+        const float scale = std::clamp(1.0f + scrollDelta * 0.1f, 0.5f, 1.5f);
+        const auto s = sSizeOverrides[id] * scale;
+        if (s.x >= 0.03f && s.x <= 5.0f && s.y >= 0.03f && s.y <= 5.0f) {
+          sSizeOverrides[id] = s;
+        }
+        vrLayers[hoverIndex].mRenderParameters.mKneeboardSize
+          = sSizeOverrides[id];
       }
 
       // Place the VR cursor along the pointer ray: on the grabbed/hovered
@@ -450,30 +563,31 @@ XrResult OpenXRKneeboard::xrEndFrame(
       sGrabbedIndex = -1;
     }
 
-    // P5: on release, persist the dragged panel's final pose to the app.
+    // P5: on release of a MOVE, persist the dragged panel's final pose + size.
     if (sPrevActiveGrab && !activeGrab && sGrabbedLayerID != 0) {
       const auto it = sPoseOverrides.find(sGrabbedLayerID);
       if (it != sPoseOverrides.end()) {
-        const VRPose newPose
-          = this->WorldPositionToVRPose(it->second, sGrabbedBasePose);
-        SetViewVRPoseEvent ev {
-          .mLayerID = sGrabbedLayerID,
-          .mX = newPose.mX,
-          .mEyeY = newPose.mEyeY,
-          .mZ = newPose.mZ,
-          .mRX = newPose.mRX,
-          .mRY = newPose.mRY,
-          .mRZ = newPose.mRZ,
-        };
-        APIEvent::FromStruct(ev).Send();
-        M2ALog(std::format(
-          "P5: persisted pose for layer {} -> ({:.2f},{:.2f},{:.2f})",
+        const auto sizeIt = sSizeOverrides.find(sGrabbedLayerID);
+        const DXVector2* overrideSize
+          = (sizeIt != sSizeOverrides.end()) ? &sizeIt->second : nullptr;
+        persistPanel(
           sGrabbedLayerID,
-          newPose.mX,
-          newPose.mEyeY,
-          newPose.mZ));
+          it->second,
+          sGrabbedBasePose,
+          overrideSize);
       }
       sGrabbedLayerID = 0;
+    }
+
+    // Persist a RESIZE when the cursor leaves the panel or edit mode ends.
+    if (sResizeDirtyID != 0) {
+      const bool stillResizing = cfg.mEditActive && sGrabbedIndex < 0
+        && hoverIndex >= 0 && vrLayers[hoverIndex].mLayerConfig
+        && vrLayers[hoverIndex].mLayerConfig->mLayerID == sResizeDirtyID;
+      if (!stillResizing) {
+        commitResize(sResizeDirtyID);
+        sResizeDirtyID = 0;
+      }
     }
 
     sPrevActiveGrab = activeGrab;

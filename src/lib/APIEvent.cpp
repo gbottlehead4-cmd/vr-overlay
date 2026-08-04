@@ -186,6 +186,8 @@ OPENKNEEBOARD_DEFINE_JSON(
   mZ,
   mRX,
   mRY,
-  mRZ);
+  mRZ,
+  mWidth,
+  mHeight);
 
 }// namespace OpenKneeboard

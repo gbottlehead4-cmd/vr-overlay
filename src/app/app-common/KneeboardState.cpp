@@ -29,9 +29,20 @@
 #include <OpenKneeboard/scope_exit.hpp>
 
 #include <algorithm>
+#include <fstream>
 #include <string>
 
 namespace OpenKneeboard {
+
+// Temporary debug logging for the in-VR edit-mode persistence (remove later).
+static void AppLog(const std::string& line) {
+  const char* local = std::getenv("LOCALAPPDATA");
+  if (!local) {
+    return;
+  }
+  std::ofstream f(std::string(local) + "\\okb-app.log", std::ios::app);
+  f << line << "\n";
+}
 
 task<audited_ptr<KneeboardState>> KneeboardState::Create(
   HWND hwnd,
@@ -580,11 +591,25 @@ task<void> KneeboardState::ProcessAPIEvent(APIEvent ev) noexcept {
     const auto parsed = ev.ParsedValue<SetViewVRPoseEvent>();
     const auto count =
       std::min<std::size_t>(mViews.size(), mSettings.mViews.mViews.size());
+    bool matched = false;
     for (size_t i = 0; i < count; ++i) {
       if (mViews.at(i)->GetRuntimeID().GetTemporaryValue() != parsed.mLayerID) {
         continue;
       }
+      matched = true;
       auto& viewVR = mSettings.mViews.mViews.at(i).mVR;
+      AppLog(std::format(
+        "SAVE recv layer={} -> view[{}] '{}' type={} X={:.3f} EyeY={:.3f} "
+        "Z={:.3f} size={:.3f}x{:.3f}",
+        parsed.mLayerID,
+        i,
+        mSettings.mViews.mViews.at(i).mName,
+        static_cast<int>(viewVR.GetType()),
+        parsed.mX,
+        parsed.mEyeY,
+        parsed.mZ,
+        parsed.mWidth,
+        parsed.mHeight));
       if (viewVR.GetType() != ViewVRSettings::Type::Independent) {
         break;
       }
@@ -597,9 +622,28 @@ task<void> KneeboardState::ProcessAPIEvent(APIEvent ev) noexcept {
         parsed.mRY,
         parsed.mRZ,
       };
+      if (parsed.mWidth > 0.01f && parsed.mHeight > 0.01f) {
+        // Absolute size, so re-sending the same value is a no-op (idempotent).
+        independent.mMaximumPhysicalSize.mWidth = parsed.mWidth;
+        independent.mMaximumPhysicalSize.mHeight = parsed.mHeight;
+      }
       viewVR.SetIndependentSettings(independent);
       this->SaveSettings();
+      this->SetRepaintNeeded();
+      AppLog(std::format(
+        "SAVE done view[{}] newMaxSize={:.3f}x{:.3f}",
+        i,
+        independent.mMaximumPhysicalSize.mWidth,
+        independent.mMaximumPhysicalSize.mHeight));
       break;
+    }
+    if (!matched) {
+      std::string ids;
+      for (size_t i = 0; i < count; ++i) {
+        ids += std::format("{} ", mViews.at(i)->GetRuntimeID().GetTemporaryValue());
+      }
+      AppLog(std::format(
+        "SAVE NO MATCH for layer={} (views: {})", parsed.mLayerID, ids));
     }
     co_return;
   }
@@ -998,9 +1042,25 @@ void KneeboardState::InitializeViews() {
   const auto count = mSettings.mViews.mViews.size();
   auto tabs = mTabsList->GetTabs();
 
+  AppLog(std::format("--- InitializeViews: {} views ---", count));
   mViews.clear();
   for (size_t i = 0; i < count; ++i) {
     const auto& config = mSettings.mViews.mViews.at(i);
+    if (config.mVR.GetType() == ViewVRSettings::Type::Independent) {
+      const auto pose = config.mVR.GetIndependentSettings().mPose;
+      const auto sz = config.mVR.GetIndependentSettings().mMaximumPhysicalSize;
+      AppLog(std::format(
+        "  load view[{}] '{}' enabled={} X={:.3f} EyeY={:.3f} Z={:.3f} "
+        "size={:.3f}x{:.3f}",
+        i,
+        config.mName,
+        config.mVR.mEnabled,
+        pose.mX,
+        pose.mEyeY,
+        pose.mZ,
+        sz.mWidth,
+        sz.mHeight));
+    }
     const auto it = std::ranges::find(
       oldViews, config.mGuid, &KneeboardView::GetPersistentGUID);
 
