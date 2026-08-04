@@ -31,6 +31,7 @@
   CORE_FN(xrDestroyInstance) \
   CORE_FN(xrEndFrame) \
   CORE_FN(xrAttachSessionActionSets) \
+  CORE_FN(xrSuggestInteractionProfileBindings) \
   EXT_FN(XR_KHR_vulkan_enable2, xrCreateVulkanDeviceKHR) \
   EXT_FN(XR_KHR_vulkan_enable2, xrCreateVulkanInstanceKHR)
 
@@ -47,6 +48,7 @@
   CORE_FN(xrGetInstanceProperties) \
   CORE_FN(xrGetSystemProperties) \
   CORE_FN(xrLocateSpace) \
+  CORE_FN(xrPathToString) \
   CORE_FN(xrReleaseSwapchainImage) \
   CORE_FN(xrWaitSwapchainImage)
 
