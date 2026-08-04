@@ -178,4 +178,14 @@ OPENKNEEBOARD_DEFINE_JSON(SetBrightnessEvent, mBrightness, mMode);
 
 OPENKNEEBOARD_DEFINE_JSON(PluginTabCustomActionEvent, mActionID, mExtraData);
 
+OPENKNEEBOARD_DEFINE_JSON(
+  SetViewVRPoseEvent,
+  mLayerID,
+  mX,
+  mEyeY,
+  mZ,
+  mRX,
+  mRY,
+  mRZ);
+
 }// namespace OpenKneeboard

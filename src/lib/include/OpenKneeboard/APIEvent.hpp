@@ -79,6 +79,10 @@ struct APIEvent final {
   static constexpr char EVT_PLUGIN_TAB_CUSTOM_ACTION[] =
     "Plugin/Tab/CustomAction";
 
+  // struct SetViewVRPoseEvent - sent by the OpenXR layer after the user moves
+  // a panel in VR edit mode, so the app persists the new pose to Views.json.
+  static constexpr char EVT_SET_VIEW_VR_POSE[] = "SetViewVRPose";
+
   /// JSON: "[ [name, value], [name, value], ... ]"
   static constexpr char EVT_MULTI_EVENT[] = "MultiEvent";
 
@@ -147,5 +151,21 @@ struct PluginTabCustomActionEvent {
   nlohmann::json mExtraData;
 };
 OPENKNEEBOARD_DECLARE_JSON(PluginTabCustomActionEvent);
+
+// Persist a view's VR pose after in-VR edit-mode dragging. mLayerID is the
+// runtime layer id (SHM::LayerConfig::mLayerID); the app maps it to a view.
+// The 6 floats mirror OpenKneeboard::VRPose (metres / radians).
+struct SetViewVRPoseEvent {
+  static constexpr auto ID {APIEvent::EVT_SET_VIEW_VR_POSE};
+
+  uint64_t mLayerID {};
+  float mX {};
+  float mEyeY {};
+  float mZ {};
+  float mRX {};
+  float mRY {};
+  float mRZ {};
+};
+OPENKNEEBOARD_DECLARE_JSON(SetViewVRPoseEvent);
 
 }// namespace OpenKneeboard

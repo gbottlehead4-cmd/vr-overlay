@@ -12,6 +12,7 @@
 #include "OpenXRNext.hpp"
 #include "OpenXRVulkanKneeboard.hpp"
 
+#include <OpenKneeboard/APIEvent.hpp>
 #include <OpenKneeboard/Elevation.hpp>
 #include <OpenKneeboard/Spriting.hpp>
 #include <OpenKneeboard/StateMachine.hpp>
@@ -331,6 +332,10 @@ XrResult OpenXRKneeboard::xrEndFrame(
     static int sGrabbedIndex = -1;
     static float sGrabbedDistance = 0.0f;
     static bool sPrevActiveGrab = false;
+    // P5: remember which panel is being dragged so we can persist its new pose
+    // to the app (Views.json) when the button is released.
+    static uint64_t sGrabbedLayerID = 0;
+    static VRPose sGrabbedBasePose {};
     // Aim direction is decoupled from gaze: we snapshot the head orientation
     // when edit mode is entered and only the MOUSE moves the pointer after
     // that. Otherwise turning your head swept the ray across panels, so it
@@ -401,6 +406,13 @@ XrResult OpenXRKneeboard::xrEndFrame(
         if (!sPrevActiveGrab) {
           sGrabbedIndex = hoverIndex;
           sGrabbedDistance = hoverDistance;
+          sGrabbedLayerID = 0;
+          if (
+            sGrabbedIndex >= 0
+            && vrLayers[sGrabbedIndex].mLayerConfig) {
+            sGrabbedLayerID = vrLayers[sGrabbedIndex].mLayerConfig->mLayerID;
+            sGrabbedBasePose = vrLayers[sGrabbedIndex].mLayerConfig->mVR.mPose;
+          }
           M2ALog(std::format(
             "P4: grab -> panel {} (dist {:.2f})",
             sGrabbedIndex,
@@ -437,6 +449,33 @@ XrResult OpenXRKneeboard::xrEndFrame(
     } else {
       sGrabbedIndex = -1;
     }
+
+    // P5: on release, persist the dragged panel's final pose to the app.
+    if (sPrevActiveGrab && !activeGrab && sGrabbedLayerID != 0) {
+      const auto it = sPoseOverrides.find(sGrabbedLayerID);
+      if (it != sPoseOverrides.end()) {
+        const VRPose newPose
+          = this->WorldPositionToVRPose(it->second, sGrabbedBasePose);
+        SetViewVRPoseEvent ev {
+          .mLayerID = sGrabbedLayerID,
+          .mX = newPose.mX,
+          .mEyeY = newPose.mEyeY,
+          .mZ = newPose.mZ,
+          .mRX = newPose.mRX,
+          .mRY = newPose.mRY,
+          .mRZ = newPose.mRZ,
+        };
+        APIEvent::FromStruct(ev).Send();
+        M2ALog(std::format(
+          "P5: persisted pose for layer {} -> ({:.2f},{:.2f},{:.2f})",
+          sGrabbedLayerID,
+          newPose.mX,
+          newPose.mEyeY,
+          newPose.mZ));
+      }
+      sGrabbedLayerID = 0;
+    }
+
     sPrevActiveGrab = activeGrab;
     sPrevEditActive = cfg.mEditActive;
   }

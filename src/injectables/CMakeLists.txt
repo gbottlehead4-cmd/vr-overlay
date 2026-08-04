@@ -28,6 +28,7 @@ target_link_libraries(
   OpenKneeboard-D3D11
   OpenKneeboard-D3D12
   OpenKneeboard-Vulkan
+  OpenKneeboard-APIEvent
   OpenKneeboard-Elevation
   OpenKneeboard-RayIntersectsRect
   OpenKneeboard-SHM

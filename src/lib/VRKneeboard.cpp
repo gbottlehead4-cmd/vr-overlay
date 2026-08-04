@@ -38,6 +38,20 @@ VRKneeboard::Pose VRKneeboard::GetKneeboardPose(
   };
 }
 
+VRPose VRKneeboard::WorldPositionToVRPose(
+  const Vector3& worldPosition,
+  const VRPose& base) const {
+  // GetKneeboardPose builds: worldPos = Transform((mX, mEyeY + eyeHeight, mZ),
+  // mRecenter). Invert that to recover the stored, recenter-relative pose.
+  const float eyeHeight = mEyeHeight.value_or(0.0f);
+  const auto local = Vector3::Transform(worldPosition, mRecenter.Invert());
+  VRPose ret = base;
+  ret.mX = local.x;
+  ret.mEyeY = local.y - eyeHeight;
+  ret.mZ = local.z;
+  return ret;
+}
+
 Vector2 VRKneeboard::GetKneeboardSize(
   const SHM::Config& config,
   const SHM::LayerConfig& layer,

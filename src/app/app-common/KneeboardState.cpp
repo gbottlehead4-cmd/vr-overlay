@@ -575,6 +575,35 @@ task<void> KneeboardState::ProcessAPIEvent(APIEvent ev) noexcept {
     co_return;
   }
 
+  if (ev.name == APIEvent::EVT_SET_VIEW_VR_POSE) {
+    // Sent by the OpenXR layer after a panel is dragged in VR edit mode.
+    const auto parsed = ev.ParsedValue<SetViewVRPoseEvent>();
+    const auto count =
+      std::min<std::size_t>(mViews.size(), mSettings.mViews.mViews.size());
+    for (size_t i = 0; i < count; ++i) {
+      if (mViews.at(i)->GetRuntimeID().GetTemporaryValue() != parsed.mLayerID) {
+        continue;
+      }
+      auto& viewVR = mSettings.mViews.mViews.at(i).mVR;
+      if (viewVR.GetType() != ViewVRSettings::Type::Independent) {
+        break;
+      }
+      auto independent = viewVR.GetIndependentSettings();
+      independent.mPose = VRPose {
+        parsed.mX,
+        parsed.mEyeY,
+        parsed.mZ,
+        parsed.mRX,
+        parsed.mRY,
+        parsed.mRZ,
+      };
+      viewVR.SetIndependentSettings(independent);
+      this->SaveSettings();
+      break;
+    }
+    co_return;
+  }
+
   this->evAPIEvent.Emit(ev);
 }
 

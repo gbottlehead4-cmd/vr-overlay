@@ -43,6 +43,13 @@ class VRKneeboard {
     const std::span<const SHM::LayerConfig>&,
     const Pose& hmdPose);
 
+  // Inverse of GetKneeboardPose's translation: given a world-space position
+  // (same space GetKneeboardPose returns), produce a VRPose whose stored
+  // X/EyeY/Z reproduce it. Rotations are copied from `base` unchanged. Used to
+  // persist an in-VR-dragged panel back to the config file.
+  VRPose WorldPositionToVRPose(const Vector3& worldPosition, const VRPose& base)
+    const;
+
  private:
   RenderParameters GetRenderParameters(
     const SHM::Config&,
