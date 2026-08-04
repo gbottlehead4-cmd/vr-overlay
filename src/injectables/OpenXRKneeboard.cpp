@@ -298,6 +298,62 @@ XrResult OpenXRKneeboard::xrEndFrame(
   }
   vrLayers.resize(layerCount);
 
+  // P4: mouse point-and-grab. When setup mode + grab (left button) are on, pick
+  // the panel the mouse-cursor ray points most directly at and move it along
+  // that ray, keeping its distance (Oculus-style follow). Poses are in
+  // mLocalSpace, same as the HMD pose.
+  {
+    using DXVector3 = DirectX::SimpleMath::Vector3;
+    const auto& cfg = frame->mConfig;
+    static int sGrabbedIndex = -1;
+    static float sGrabbedDistance = 0.0f;
+    static bool sPrevActiveGrab = false;
+    const bool activeGrab = cfg.mEditActive && cfg.mEditGrab;
+
+    if (!activeGrab) {
+      sGrabbedIndex = -1;
+    } else {
+      const DXVector3 hmdPos = hmdPose.mPosition;
+      constexpr float kSpread = 0.7f;
+      DXVector3 viewDir(
+        cfg.mEditCursorX * kSpread, -cfg.mEditCursorY * kSpread, -1.0f);
+      viewDir.Normalize();
+      const DXVector3 rayDir
+        = DXVector3::Transform(viewDir, hmdPose.mOrientation);
+
+      if (!sPrevActiveGrab) {
+        float best = 0.9f;// require pointing within ~25 degrees of a panel
+        sGrabbedIndex = -1;
+        for (size_t i = 0; i < vrLayers.size(); ++i) {
+          DXVector3 toPanel
+            = vrLayers[i].mRenderParameters.mKneeboardPose.mPosition - hmdPos;
+          const float dist = toPanel.Length();
+          if (dist < 0.01f) {
+            continue;
+          }
+          toPanel /= dist;
+          const float score = toPanel.Dot(rayDir);
+          if (score > best) {
+            best = score;
+            sGrabbedIndex = static_cast<int>(i);
+            sGrabbedDistance = dist;
+          }
+        }
+        M2ALog(std::format(
+          "P4: grab -> panel {} (dist {:.2f})",
+          sGrabbedIndex,
+          sGrabbedDistance));
+      }
+      if (
+        sGrabbedIndex >= 0
+        && sGrabbedIndex < static_cast<int>(vrLayers.size())) {
+        vrLayers[sGrabbedIndex].mRenderParameters.mKneeboardPose.mPosition
+          = hmdPos + (rayDir * sGrabbedDistance);
+      }
+    }
+    sPrevActiveGrab = activeGrab;
+  }
+
   std::vector<const XrCompositionLayerBaseHeader*> nextLayers;
   nextLayers.reserve(frameEndInfo->layerCount + layerCount);
   std::copy(

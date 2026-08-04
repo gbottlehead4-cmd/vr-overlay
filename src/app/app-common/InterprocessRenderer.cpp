@@ -88,18 +88,34 @@ void InterprocessRenderer::SubmitFrame(
     .mTextureSize = destResources->mTextureSize,
     .mEditActive = mKneeboard->IsVREditMode(),
   };
-  // P1b: when setup mode is on, feed the desktop mouse into the edit channel
-  // (position normalized to -1..1 across the primary screen; left button = grab).
-  // The OpenXR layer turns this into a VR cursor + panel grab.
+  // P1b: when setup mode is on, feed the mouse into the edit channel. We track
+  // RELATIVE movement and re-centre the real cursor each frame, so the physical
+  // mouse never runs off the game screen and every edge stays reachable. The
+  // OpenXR layer turns the accumulated -1..1 cursor into a VR cursor + panel grab.
+  static float sCursorX = 0.0f;
+  static float sCursorY = 0.0f;
+  static bool sWasEditActive = false;
   if (config.mEditActive) {
-    POINT pt {};
     const auto w = GetSystemMetrics(SM_CXSCREEN);
     const auto h = GetSystemMetrics(SM_CYSCREEN);
+    const POINT centre {w / 2, h / 2};
+    POINT pt {};
     if (GetCursorPos(&pt) && w > 0 && h > 0) {
-      config.mEditCursorX = (static_cast<float>(pt.x) / w) * 2.0f - 1.0f;
-      config.mEditCursorY = (static_cast<float>(pt.y) / h) * 2.0f - 1.0f;
+      if (sWasEditActive) {
+        constexpr float sensitivity = 2.5f;
+        sCursorX += (static_cast<float>(pt.x - centre.x) / w) * sensitivity;
+        sCursorY += (static_cast<float>(pt.y - centre.y) / h) * sensitivity;
+        sCursorX = std::clamp(sCursorX, -1.0f, 1.0f);
+        sCursorY = std::clamp(sCursorY, -1.0f, 1.0f);
+      }
+      SetCursorPos(centre.x, centre.y);
     }
+    config.mEditCursorX = sCursorX;
+    config.mEditCursorY = sCursorY;
     config.mEditGrab = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+    sWasEditActive = true;
+  } else {
+    sWasEditActive = false;
   }
   const auto tint = mKneeboard->GetUISettings().mTint;
   if (tint.mEnabled) {
