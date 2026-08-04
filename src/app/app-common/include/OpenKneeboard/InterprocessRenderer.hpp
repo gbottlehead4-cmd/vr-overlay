@@ -27,6 +27,7 @@
 #include <d2d1.h>
 #include <d2d1_1.h>
 #include <d3d11_3.h>
+#include <dwrite.h>
 
 namespace OpenKneeboard {
 struct CursorEvent;
@@ -121,6 +122,13 @@ class InterprocessRenderer final
   float mEditCursorX {0.0f};
   float mEditCursorY {0.0f};
   float mEditScroll {0.0f};
+  float mEditRotYaw {0.0f};
+  float mEditRotPitch {0.0f};
+  bool mEditGrabToggle {false};
+  bool mPrevLButton {false};
+
+  // Cached text format for the in-VR setup-mode control hints.
+  winrt::com_ptr<IDWriteTextFormat> mEditHintFormat;
 };
 
 }// namespace OpenKneeboard

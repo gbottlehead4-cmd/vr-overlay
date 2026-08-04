@@ -8,6 +8,8 @@
 #include <OpenKneeboard/SHM/ActiveConsumers.hpp>
 #include <OpenKneeboard/VRKneeboard.hpp>
 
+#include <algorithm>
+#include <cmath>
 #include <ranges>
 
 using namespace DirectX::SimpleMath;
@@ -40,7 +42,8 @@ VRKneeboard::Pose VRKneeboard::GetKneeboardPose(
 
 VRPose VRKneeboard::WorldPositionToVRPose(
   const Vector3& worldPosition,
-  const VRPose& base) const {
+  const VRPose& base,
+  const Quaternion* worldOrientation) const {
   // GetKneeboardPose builds: worldPos = Transform((mX, mEyeY + eyeHeight, mZ),
   // mRecenter). Invert that to recover the stored, recenter-relative pose.
   const float eyeHeight = mEyeHeight.value_or(0.0f);
@@ -49,6 +52,20 @@ VRPose VRKneeboard::WorldPositionToVRPose(
   ret.mX = local.x;
   ret.mEyeY = local.y - eyeHeight;
   ret.mZ = local.z;
+
+  if (worldOrientation) {
+    // Forward rotation = RotX(RX)*RotY(RY)*RotZ(RZ) * recenterRotation. Remove
+    // the recenter, then read the X/Y/Z Euler angles back out of the matrix.
+    Matrix recenterRot = mRecenter;
+    recenterRot._41 = 0;
+    recenterRot._42 = 0;
+    recenterRot._43 = 0;
+    const Matrix m
+      = Matrix::CreateFromQuaternion(*worldOrientation) * recenterRot.Invert();
+    ret.mRY = std::asin(std::clamp(-m._13, -1.0f, 1.0f));
+    ret.mRX = std::atan2(m._23, m._33);
+    ret.mRZ = std::atan2(m._12, m._11);
+  }
   return ret;
 }
 

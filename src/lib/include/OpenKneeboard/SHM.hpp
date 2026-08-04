@@ -77,7 +77,9 @@ struct Config final {
   bool mEditGrab {false};// grab (mouse button) held
   float mEditCursorX {0.0f};// pointer yaw offset (radians) from entry facing
   float mEditCursorY {0.0f};// pointer pitch offset (radians)
-  float mEditScroll {0.0f};// accumulated scroll-wheel notches for resize
+  float mEditScroll {0.0f};// accumulated scroll-wheel notches (resize/distance)
+  float mEditRotYaw {0.0f};// accumulated panel-rotate yaw (Shift+drag)
+  float mEditRotPitch {0.0f};// accumulated panel-rotate pitch (Shift+drag)
 };
 static_assert(std::is_standard_layout_v<Config>);
 struct LayerConfig final {

@@ -329,9 +329,12 @@ XrResult OpenXRKneeboard::xrEndFrame(
     // the drop position and re-apply it every frame until P5 persists it to
     // Views.json.
     using DXVector2 = DirectX::SimpleMath::Vector2;
+    using DXQuat = DirectX::SimpleMath::Quaternion;
     static std::unordered_map<uint64_t, DXVector3> sPoseOverrides;
     // Resize (scroll wheel): absolute quad size override per panel.
     static std::unordered_map<uint64_t, DXVector2> sSizeOverrides;
+    // Move auto-faces the panel toward you; orientation override per panel.
+    static std::unordered_map<uint64_t, DXQuat> sOrientationOverrides;
     static int sGrabbedIndex = -1;
     static float sGrabbedDistance = 0.0f;
     static bool sPrevActiveGrab = false;
@@ -346,15 +349,23 @@ XrResult OpenXRKneeboard::xrEndFrame(
     // Resize is committed (persisted) when the cursor leaves the panel or edit
     // mode ends; track which panel has an uncommitted resize.
     static uint64_t sResizeDirtyID = 0;
-    // Scroll is sent as a monotonic accumulator; diff it per frame.
+    // Scroll + rotate are sent as monotonic accumulators; diff them per frame.
     static float sLastScroll = 0.0f;
+    static float sLastRotYaw = 0.0f;
+    static float sLastRotPitch = 0.0f;
     static bool sHaveLastScroll = false;
     float scrollDelta = 0.0f;
+    float rotYawDelta = 0.0f;
+    float rotPitchDelta = 0.0f;
     if (cfg.mEditActive) {
       if (sHaveLastScroll) {
         scrollDelta = cfg.mEditScroll - sLastScroll;
+        rotYawDelta = cfg.mEditRotYaw - sLastRotYaw;
+        rotPitchDelta = cfg.mEditRotPitch - sLastRotPitch;
       }
       sLastScroll = cfg.mEditScroll;
+      sLastRotYaw = cfg.mEditRotYaw;
+      sLastRotPitch = cfg.mEditRotPitch;
       sHaveLastScroll = true;
     } else {
       sHaveLastScroll = false;
@@ -382,6 +393,11 @@ XrResult OpenXRKneeboard::xrEndFrame(
       if (sizeIt != sSizeOverrides.end()) {
         l.mRenderParameters.mKneeboardSize = sizeIt->second;
       }
+      const auto orientIt
+        = sOrientationOverrides.find(l.mLayerConfig->mLayerID);
+      if (orientIt != sOrientationOverrides.end()) {
+        l.mRenderParameters.mKneeboardPose.mOrientation = orientIt->second;
+      }
     }
 
     // Send a panel's current pose + size to the app so it persists to
@@ -391,8 +407,10 @@ XrResult OpenXRKneeboard::xrEndFrame(
                           uint64_t id,
                           const DXVector3& worldPos,
                           const VRPose& basePose,
-                          const DXVector2* overrideSize) {
-      const VRPose np = this->WorldPositionToVRPose(worldPos, basePose);
+                          const DXVector2* overrideSize,
+                          const DXQuat* overrideOrient) {
+      const VRPose np
+        = this->WorldPositionToVRPose(worldPos, basePose, overrideOrient);
       // Absolute size (idempotent). 0 = leave size unchanged.
       const float w = overrideSize ? overrideSize->x : 0.0f;
       const float h = overrideSize ? overrideSize->y : 0.0f;
@@ -425,11 +443,16 @@ XrResult OpenXRKneeboard::xrEndFrame(
           const auto sizeIt = sSizeOverrides.find(id);
           const DXVector2* overrideSize
             = (sizeIt != sSizeOverrides.end()) ? &sizeIt->second : nullptr;
+          const auto orientIt = sOrientationOverrides.find(id);
+          const DXQuat* overrideOrient
+            = (orientIt != sOrientationOverrides.end()) ? &orientIt->second
+                                                        : nullptr;
           persistPanel(
             id,
             l.mRenderParameters.mKneeboardPose.mPosition,
             l.mLayerConfig->mVR.mPose,
-            overrideSize);
+            overrideSize,
+            overrideOrient);
           break;
         }
       }
@@ -508,20 +531,51 @@ XrResult OpenXRKneeboard::xrEndFrame(
           sGrabbedIndex >= 0
           && sGrabbedIndex < static_cast<int>(vrLayers.size())) {
           hoverIndex = sGrabbedIndex;// keep it highlighted while dragging
+          auto& params = vrLayers[sGrabbedIndex].mRenderParameters;
+          const auto id = vrLayers[sGrabbedIndex].mLayerConfig
+            ? vrLayers[sGrabbedIndex].mLayerConfig->mLayerID
+            : 0;
+          // Distance (near/far) via the scroll wheel while grabbing.
+          if (scrollDelta != 0.0f) {
+            const float d = std::clamp(scrollDelta, -3.0f, 3.0f) * 0.05f;
+            sGrabbedDistance = std::clamp(sGrabbedDistance + d, 0.2f, 10.0f);
+          }
           const DXVector3 newPos
             = hmdPos + (rayDir * sGrabbedDistance) + sGrabOffset;
-          vrLayers[sGrabbedIndex].mRenderParameters.mKneeboardPose.mPosition
-            = newPos;
-          if (vrLayers[sGrabbedIndex].mLayerConfig) {
-            sPoseOverrides[vrLayers[sGrabbedIndex].mLayerConfig->mLayerID]
-              = newPos;
+          params.mKneeboardPose.mPosition = newPos;
+          if (id) {
+            sPoseOverrides[id] = newPos;
+            // Rotate/tilt via Shift + drag while grabbing.
+            if (rotYawDelta != 0.0f || rotPitchDelta != 0.0f) {
+              if (!sOrientationOverrides.contains(id)) {
+                sOrientationOverrides[id] = params.mKneeboardPose.mOrientation;
+              }
+              DXQuat q = sOrientationOverrides[id];
+              if (rotYawDelta != 0.0f) {
+                q = q
+                  * DXQuat::CreateFromAxisAngle(DXVector3::Up, rotYawDelta);
+              }
+              if (rotPitchDelta != 0.0f) {
+                const DXVector3 localRight
+                  = DXVector3::Transform(DXVector3::Right, q);
+                q = q
+                  * DXQuat::CreateFromAxisAngle(localRight, rotPitchDelta);
+              }
+              q.Normalize();
+              sOrientationOverrides[id] = q;
+            }
+            const auto oit = sOrientationOverrides.find(id);
+            if (oit != sOrientationOverrides.end()) {
+              params.mKneeboardPose.mOrientation = oit->second;
+            }
           }
         }
       }
 
-      // --- Resize: hover a panel and scroll the wheel (no button needed). ---
+      // --- Resize: hover a panel and scroll the wheel (NOT while grabbing;
+      //     grab + scroll = distance instead). ---
       if (
-        scrollDelta != 0.0f && hoverIndex >= 0
+        scrollDelta != 0.0f && sGrabbedIndex < 0 && hoverIndex >= 0
         && vrLayers[hoverIndex].mLayerConfig) {
         const auto id = vrLayers[hoverIndex].mLayerConfig->mLayerID;
         const auto currentSize
@@ -537,7 +591,9 @@ XrResult OpenXRKneeboard::xrEndFrame(
         if (!sSizeOverrides.contains(id)) {
           sSizeOverrides[id] = currentSize;
         }
-        const float scale = std::clamp(1.0f + scrollDelta * 0.1f, 0.5f, 1.5f);
+        // 5% per notch; cap per-frame change so a bursty wheel can't jump.
+        const float step = std::clamp(scrollDelta, -3.0f, 3.0f) * 0.05f;
+        const float scale = std::clamp(1.0f + step, 0.7f, 1.3f);
         const auto s = sSizeOverrides[id] * scale;
         if (s.x >= 0.03f && s.x <= 5.0f && s.y >= 0.03f && s.y <= 5.0f) {
           sSizeOverrides[id] = s;
@@ -570,11 +626,16 @@ XrResult OpenXRKneeboard::xrEndFrame(
         const auto sizeIt = sSizeOverrides.find(sGrabbedLayerID);
         const DXVector2* overrideSize
           = (sizeIt != sSizeOverrides.end()) ? &sizeIt->second : nullptr;
+        const auto orientIt = sOrientationOverrides.find(sGrabbedLayerID);
+        const DXQuat* overrideOrient
+          = (orientIt != sOrientationOverrides.end()) ? &orientIt->second
+                                                      : nullptr;
         persistPanel(
           sGrabbedLayerID,
           it->second,
           sGrabbedBasePose,
-          overrideSize);
+          overrideSize,
+          overrideOrient);
       }
       sGrabbedLayerID = 0;
     }

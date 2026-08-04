@@ -498,64 +498,11 @@ task<void> MainWindow::WriteInstanceData() {
     IsElevated())
     << std::endl;
 
-  if (!uncleanShutdown) {
-    co_return;
-  }
-
-  if (IsElevated()) {
-    dprint("Ignoring unclean shutdown because running as administrator");
-    co_return;
-  }
-
-  if (IsDebuggerPresent()) {
-    dprint("Ignoring unclean shutdown because a debugger is attached");
-    co_return;
-  }
-
-  DWORD ignoreUncleanShutdowns = 0;
-  DWORD dataSize = sizeof(ignoreUncleanShutdowns);
-  RegGetValueW(
-    HKEY_CURRENT_USER,
-    RegistrySubKey,
-    L"IgnoreUncleanShutdowns",
-    RRF_RT_DWORD,
-    nullptr,
-    &ignoreUncleanShutdowns,
-    &dataSize);
-
-  if (ignoreUncleanShutdowns) {
-    co_return;
-  }
-
-  ContentDialog dialog;
-  dialog.XamlRoot(Navigation().XamlRoot());
-  dialog.Title(box_value(to_hstring(_(L"OpenKneeboard did not exit cleanly"))));
-  dialog.Content(
-    box_value(to_hstring(_(L"Would you like to report a crash or freeze?"))));
-  dialog.PrimaryButtonText(_(L"Yes"));
-  dialog.SecondaryButtonText(_(L"Never ask me again"));
-  dialog.CloseButtonText(_(L"No"));
-  dialog.DefaultButton(ContentDialogButton::Primary);
-
-  const auto result = co_await dialog.ShowAsync();
-
-  if (result == ContentDialogResult::Primary) {
-    co_await LaunchURI("https://go.openkneeboard.com/unclean-exit");
-    co_return;
-  }
-
-  if (result != ContentDialogResult::Secondary) {
-    co_return;
-  }
-
-  ignoreUncleanShutdowns = 1;
-  RegSetKeyValueW(
-    HKEY_CURRENT_USER,
-    RegistrySubKey,
-    L"IgnoreUncleanShutdowns",
-    REG_DWORD,
-    &ignoreUncleanShutdowns,
-    sizeof(ignoreUncleanShutdowns));
+  // Dev build: the "did not exit cleanly" prompt is disabled. Our build loop
+  // force-kills the app, which always looks like an unclean shutdown, so the
+  // nag would appear on every launch.
+  (void)uncleanShutdown;
+  co_return;
 }
 
 MainWindow::~MainWindow() {

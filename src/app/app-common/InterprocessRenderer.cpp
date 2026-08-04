@@ -239,29 +239,53 @@ void InterprocessRenderer::SubmitFrame(
   if (config.mEditActive) {
     if (!mMouseCapture) {
       mMouseCapture = std::make_unique<RawMouseCapture>();
-      // Start centred each time edit mode is entered.
+      // Start centred + un-grabbed each time edit mode is entered.
       mEditCursorX = 0.0f;
       mEditCursorY = 0.0f;
+      mEditGrabToggle = false;
+      mPrevLButton = false;
     }
     float dx = 0.0f;
     float dy = 0.0f;
     float wheel = 0.0f;
     mMouseCapture->Fetch(dx, dy, wheel);
     // Accumulated wheel notches (monotonic while editing); the OpenXR layer
-    // diffs this per frame to resize the grabbed panel.
+    // diffs this per frame (resize when hovering, distance when grabbing).
     mEditScroll += wheel;
-    // The cursor is an angle offset in RADIANS that the OpenXR layer adds to
-    // the facing direction captured when edit mode was entered. ~400 device
-    // counts per radian (~57 deg). X (yaw) can sweep almost all the way around;
-    // Y (pitch) is limited so you cannot point straight up/down.
-    constexpr float sensitivity = 1.0f / 400.0f;
-    constexpr float pi = 3.14159265f;
-    mEditCursorX = std::clamp(mEditCursorX + dx * sensitivity, -pi, pi);
-    mEditCursorY = std::clamp(mEditCursorY + dy * sensitivity, -1.45f, 1.45f);
+
+    // Grab is a TOGGLE: left-click grabs the hovered panel, click again drops
+    // it. Nothing needs to be held while positioning/rotating/scaling.
+    const bool lButton = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+    if (lButton && !mPrevLButton) {
+      mEditGrabToggle = !mEditGrabToggle;
+    }
+    mPrevLButton = lButton;
+    const bool grab = mEditGrabToggle;
+    const bool rotateMod = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
+
+    if (grab && rotateMod) {
+      // Shift + drag while holding a panel: rotate it. Feed the mouse into the
+      // rotation accumulators and FREEZE the pointer so the panel does not
+      // orbit while you angle it. ~200 counts per radian.
+      constexpr float rotSensitivity = 1.0f / 200.0f;
+      mEditRotYaw += dx * rotSensitivity;
+      mEditRotPitch += dy * rotSensitivity;
+    } else {
+      // The cursor is an angle offset in RADIANS that the OpenXR layer adds to
+      // the facing direction captured when edit mode was entered. ~400 device
+      // counts per radian (~57 deg). X (yaw) can sweep almost all the way
+      // around; Y (pitch) is limited so you cannot point straight up/down.
+      constexpr float sensitivity = 1.0f / 400.0f;
+      constexpr float pi = 3.14159265f;
+      mEditCursorX = std::clamp(mEditCursorX + dx * sensitivity, -pi, pi);
+      mEditCursorY = std::clamp(mEditCursorY + dy * sensitivity, -1.45f, 1.45f);
+    }
     config.mEditCursorX = mEditCursorX;
     config.mEditCursorY = mEditCursorY;
     config.mEditScroll = mEditScroll;
-    config.mEditGrab = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+    config.mEditRotYaw = mEditRotYaw;
+    config.mEditRotPitch = mEditRotPitch;
+    config.mEditGrab = grab;
   } else if (mMouseCapture) {
     // Leaving edit mode: stop the capture thread + unregister raw input.
     mMouseCapture.reset();
@@ -499,6 +523,48 @@ task<SHM::LayerConfig> InterprocessRenderer::RenderLayer(
       static_cast<float>(o.mY + s.mHeight) - strokeWidth / 2,
     };
     d2d->DrawRectangle(frame, brush.get(), strokeWidth);
+
+    // Control hints, drawn once on the input-active panel.
+    if (layer.mIsActiveForInput) {
+      if (!mEditHintFormat) {
+        mDXR->mDWriteFactory->CreateTextFormat(
+          L"Segoe UI",
+          nullptr,
+          DWRITE_FONT_WEIGHT_SEMI_BOLD,
+          DWRITE_FONT_STYLE_NORMAL,
+          DWRITE_FONT_STRETCH_NORMAL,
+          32.0f,
+          L"en-us",
+          mEditHintFormat.put());
+      }
+      static constexpr wchar_t hint[] =
+        L"SETUP MODE\n"
+        L"Click:  grab / drop panel\n"
+        L"Move mouse:  reposition\n"
+        L"Scroll:  resize  (distance when grabbed)\n"
+        L"Shift + move:  rotate / tilt\n"
+        L"Setup button:  exit + save";
+      const float pad = 24.0f;
+      const D2D1_RECT_F box {
+        static_cast<float>(o.mX) + pad,
+        static_cast<float>(o.mY) + pad,
+        static_cast<float>(o.mX) + pad + 620.0f,
+        static_cast<float>(o.mY) + pad + 320.0f,
+      };
+      winrt::com_ptr<ID2D1SolidColorBrush> bg;
+      d2d->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0, 0.55f), bg.put());
+      d2d->FillRectangle(box, bg.get());
+      if (mEditHintFormat) {
+        const D2D1_RECT_F textRect {
+          box.left + 20.0f, box.top + 14.0f, box.right - 12.0f, box.bottom};
+        d2d->DrawTextW(
+          hint,
+          static_cast<UINT32>(std::size(hint) - 1),
+          mEditHintFormat.get(),
+          textRect,
+          brush.get());
+      }
+    }
   }
 
   co_return ret;
