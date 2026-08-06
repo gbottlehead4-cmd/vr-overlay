@@ -1,4 +1,4 @@
-﻿<Page
+<Page
   x:Class="OpenKneeboardApp.TabPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,16 +8,182 @@
   mc:Ignorable="d"
   Background="{ThemeResource SystemChromeMediumLowColor}"
   Foreground="{ThemeResource TextFillColorPrimary}">
+  <Page.Resources>
+    <local:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+    <local:MetersValueConverter x:Key="MetersConverter"/>
+    <DataTemplate
+      x:Key="InlineTabSettingsTemplate"
+      x:DataType="local:TabUIData">
+      <StackPanel
+        Orientation="Vertical"
+        Spacing="16"
+        x:DefaultBindMode="TwoWay">
+        <StackPanel Spacing="6">
+          <TextBlock
+            Text="Panel name"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"/>
+          <TextBox Text="{x:Bind Title,Mode=TwoWay}"/>
+        </StackPanel>
+        <Border
+          Visibility="{x:Bind HasVRPlacement, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"
+          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          BorderThickness="1"
+          CornerRadius="12"
+          Padding="16">
+          <StackPanel Spacing="16">
+            <TextBlock
+              Text="PLACEMENT IN VR"
+              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+              Style="{StaticResource CaptionTextBlockStyle}"/>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <TextBlock Text="Show this panel in VR" VerticalAlignment="Center"/>
+              <ToggleSwitch
+                Grid.Column="1"
+                IsOn="{x:Bind IsVREnabled}"
+                MinWidth="0"
+                OnContent=""
+                OffContent=""
+                HorizontalAlignment="Right"/>
+            </Grid>
+            <StackPanel Spacing="4">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                  Text="Width"
+                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <TextBlock
+                  Grid.Column="1"
+                  Text="{Binding Value, ElementName=InlineWidthSlider, Converter={StaticResource MetersConverter}}"/>
+              </Grid>
+              <Slider
+                x:Name="InlineWidthSlider"
+                Minimum="0.05"
+                Maximum="1.5"
+                StepFrequency="0.01"
+                Value="{x:Bind VRWidth}"
+                ThumbToolTipValueConverter="{StaticResource MetersConverter}"/>
+            </StackPanel>
+            <StackPanel Spacing="4">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                  Text="Height"
+                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <TextBlock
+                  Grid.Column="1"
+                  Text="{Binding Value, ElementName=InlineHeightSlider, Converter={StaticResource MetersConverter}}"/>
+              </Grid>
+              <Slider
+                x:Name="InlineHeightSlider"
+                Minimum="0.05"
+                Maximum="1.0"
+                StepFrequency="0.01"
+                Value="{x:Bind VRHeight}"
+                ThumbToolTipValueConverter="{StaticResource MetersConverter}"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <Border
+          Visibility="{x:Bind HasVRPlacement, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"
+          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          BorderThickness="1"
+          CornerRadius="12"
+          Padding="12">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Border
+              Grid.Column="0"
+              Width="36"
+              Height="36"
+              CornerRadius="8"
+              VerticalAlignment="Center"
+              Background="{ThemeResource AccentFillColorTertiaryBrush}">
+              <FontIcon Glyph="&#xE70F;" FontSize="15" Foreground="White"/>
+            </Border>
+            <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
+              <TextBlock Text="Position &amp; tilt"/>
+              <TextBlock
+                Text="Grab and place it with your mouse, in the headset."
+                FontSize="12"
+                TextWrapping="Wrap"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+            <StackPanel
+              Grid.Column="2"
+              Orientation="Horizontal"
+              Spacing="8"
+              VerticalAlignment="Center">
+              <Button Content="Recenter" Click="RecenterVR"/>
+              <Button
+                Content="Edit in VR"
+                Click="ToggleVREditMode"
+                Style="{StaticResource AccentButtonStyle}"/>
+            </StackPanel>
+          </Grid>
+        </Border>
+        <StackPanel
+          Spacing="6"
+          Visibility="{x:Bind HasVRPlacement, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}">
+          <HyperlinkButton
+            Click="GoToInputBindings"
+            Padding="0"
+            Content="Set up controller buttons"/>
+          <TextBlock
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            TextWrapping="Wrap"
+            Text="Tip: bind Toggle VR edit mode, Recenter and Show/hide to your wheel or HOTAS for hands-free access in VR."/>
+        </StackPanel>
+        <TextBlock
+          Style="{ThemeResource CaptionTextBlockStyle}"
+          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+          TextWrapping="Wrap"
+          Text="More options for this panel type are in Settings &#x2192; Tabs."/>
+      </StackPanel>
+    </DataTemplate>
+  </Page.Resources>
   <Grid RowDefinitions="Auto,*">
     <CommandBar
       x:Name="CommandBar"
       Grid.Row="0" />
 
-    <SwapChainPanel
-      x:Name="Canvas"
-      Margin="12"
-      SizeChanged="OnCanvasSizeChanged"
-      Grid.Row="1"
-    />
+    <Grid Grid.Row="1">
+      <SwapChainPanel
+        x:Name="Canvas"
+        Margin="12"
+        SizeChanged="OnCanvasSizeChanged"
+      />
+      <ScrollViewer
+        x:Name="SettingsOverlay"
+        Visibility="Collapsed"
+        Background="{ThemeResource SystemChromeMediumLowColor}"
+        Padding="24,20,24,24"
+        HorizontalScrollMode="Disabled"
+        HorizontalScrollBarVisibility="Disabled">
+        <ContentControl
+          x:Name="SettingsContent"
+          HorizontalAlignment="Left"
+          HorizontalContentAlignment="Stretch"
+          MaxWidth="460"
+          ContentTemplate="{StaticResource InlineTabSettingsTemplate}"/>
+      </ScrollViewer>
+    </Grid>
   </Grid>
 </Page>

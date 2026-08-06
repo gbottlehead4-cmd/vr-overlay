@@ -59,6 +59,15 @@ struct TabPage : TabPageT<TabPage>, EventReceiver {
     const IInspectable&,
     const SizeChangedEventArgs&) noexcept;
   void OnPointerEvent(const IInspectable&, const PointerEventArgs&) noexcept;
+  OpenKneeboard::fire_and_forget ToggleVREditMode(
+    const IInspectable&,
+    const RoutedEventArgs&);
+  OpenKneeboard::fire_and_forget RecenterVR(
+    const IInspectable&,
+    const RoutedEventArgs&);
+  OpenKneeboard::fire_and_forget GoToInputBindings(
+    const IInspectable&,
+    const RoutedEventArgs&);
 
   task<void> PaintNow(
     std::source_location loc = std::source_location::current()) noexcept;

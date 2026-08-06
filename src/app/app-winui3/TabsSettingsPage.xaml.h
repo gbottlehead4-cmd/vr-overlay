@@ -25,6 +25,7 @@
 #include <OpenKneeboard/audited_ptr.hpp>
 #include <OpenKneeboard/task.hpp>
 
+#include <optional>
 #include <string>
 
 namespace OpenKneeboard {
@@ -64,6 +65,9 @@ struct TabsSettingsPage : TabsSettingsPageT<TabsSettingsPage>,
     RoutedEventArgs) noexcept;
   OpenKneeboard::fire_and_forget RemoveTab(IInspectable, RoutedEventArgs);
   OpenKneeboard::fire_and_forget ShowTabSettings(IInspectable, RoutedEventArgs);
+  OpenKneeboard::fire_and_forget ToggleVREditMode(IInspectable, RoutedEventArgs);
+  OpenKneeboard::fire_and_forget RecenterVR(IInspectable, RoutedEventArgs);
+  OpenKneeboard::fire_and_forget GoToInputBindings(IInspectable, RoutedEventArgs);
   OpenKneeboard::fire_and_forget ShowDebugInfo(IInspectable, RoutedEventArgs);
   void CopyDebugInfo(const IInspectable&, const RoutedEventArgs&);
 
@@ -110,8 +114,19 @@ struct TabUIData : TabUIDataT<TabUIData>,
   bool HasDebugInformation() const;
   hstring DebugInformation() const;
 
+  bool HasVRPlacement() const;
+  bool IsVREnabled() const;
+  OpenKneeboard::fire_and_forget IsVREnabled(bool);
+  float VRWidth() const;
+  OpenKneeboard::fire_and_forget VRWidth(float);
+  float VRHeight() const;
+  OpenKneeboard::fire_and_forget VRHeight(float);
+
  protected:
   std::weak_ptr<OpenKneeboard::ITab> mTab;
+
+ private:
+  std::optional<winrt::guid> GetVRViewID() const;
 };
 
 struct BrowserTabUIData : BrowserTabUIDataT<

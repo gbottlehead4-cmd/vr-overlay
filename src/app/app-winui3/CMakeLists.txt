@@ -30,6 +30,7 @@ ok_add_executable(
   InstallPlugin.cpp InstallPlugin.h
   MainWindow.idl MainWindow.xaml MainWindow.xaml.cpp MainWindow.xaml.h
   MetersNumberFormatter.cpp MetersNumberFormatter.h MetersNumberFormatter.idl
+  MetersValueConverter.cpp MetersValueConverter.h MetersValueConverter.idl
   MultiplierValueConverter.cpp MultiplierValueConverter.h MultiplierValueConverter.idl
   PercentValueConverter.cpp PercentValueConverter.h PercentValueConverter.idl
   ProfilesPage.idl ProfilesPage.xaml ProfilesPage.xaml.cpp ProfilesPage.xaml.h

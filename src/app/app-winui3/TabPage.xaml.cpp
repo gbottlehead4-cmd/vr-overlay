@@ -23,15 +23,18 @@
 #include <OpenKneeboard/IToolbarItemWithVisibility.hpp>
 #include <OpenKneeboard/KneeboardState.hpp>
 #include <OpenKneeboard/KneeboardView.hpp>
+#include <OpenKneeboard/LaunchURI.hpp>
 #include <OpenKneeboard/TabView.hpp>
 #include <OpenKneeboard/ToolbarAction.hpp>
 #include <OpenKneeboard/ToolbarSeparator.hpp>
 #include <OpenKneeboard/ToolbarToggleAction.hpp>
+#include <OpenKneeboard/UserAction.hpp>
 
 #include <OpenKneeboard/config.hpp>
 #include <OpenKneeboard/scope_exit.hpp>
 
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
+#include <winrt/OpenKneeboardApp.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <microsoft.ui.xaml.media.dxinterop.h>
@@ -384,6 +387,24 @@ void TabPage::SetTab(const std::shared_ptr<TabView>& state) {
   this->UpdateToolbar();
 }
 
+OpenKneeboard::fire_and_forget TabPage::ToggleVREditMode(
+  const IInspectable&,
+  const RoutedEventArgs&) {
+  co_await mKneeboard->PostUserAction(UserAction::TOGGLE_VR_EDIT_MODE);
+}
+
+OpenKneeboard::fire_and_forget TabPage::RecenterVR(
+  const IInspectable&,
+  const RoutedEventArgs&) {
+  co_await mKneeboard->PostUserAction(UserAction::RECENTER_VR);
+}
+
+OpenKneeboard::fire_and_forget TabPage::GoToInputBindings(
+  const IInspectable&,
+  const RoutedEventArgs&) {
+  co_await LaunchURI(SpecialURIs::SettingsInput());
+}
+
 OpenKneeboard::fire_and_forget TabPage::UpdateToolbar() {
   co_await mUIThread;
 
@@ -420,6 +441,33 @@ OpenKneeboard::fire_and_forget TabPage::UpdateToolbar() {
       secondary.Append(element);
     }
   }
+
+  // VisorVR: inline "Settings" pane for the selected panel. A toggle in the
+  // command bar flips the content area between the live preview and this
+  // panel's settings (name + Placement in VR), so the pane is useful even
+  // when there's no sim data to preview.
+  using winrt::Microsoft::UI::Xaml::Visibility;
+  if (const auto tab = mTabView->GetTab().lock()) {
+    winrt::OpenKneeboardApp::TabUIData tabData;
+    tabData.InstanceID(tab->GetRuntimeID().GetTemporaryValue());
+    SettingsContent().Content(tabData);
+  }
+  SettingsOverlay().Visibility(Visibility::Collapsed);
+
+  muxc::AppBarToggleButton settingsToggle;
+  settingsToggle.Label(L"Settings");
+  settingsToggle.Icon(muxc::SymbolIcon(muxc::Symbol::Setting));
+  settingsToggle.Checked([weak = get_weak()](auto&&, auto&&) {
+    if (auto self = weak.get()) {
+      self->SettingsOverlay().Visibility(Visibility::Visible);
+    }
+  });
+  settingsToggle.Unchecked([weak = get_weak()](auto&&, auto&&) {
+    if (auto self = weak.get()) {
+      self->SettingsOverlay().Visibility(Visibility::Collapsed);
+    }
+  });
+  primary.Append(settingsToggle);
 }
 
 void TabPage::AttachVisibility(

@@ -42,6 +42,32 @@
       PaneClosing="UpdateTitleBarMargins"
       BackRequested="OnBackRequested"
       MenuItemsSource="{x:Bind NavigationItems,Mode=OneWay}">
+      <NavigationView.PaneHeader>
+        <StackPanel
+          Orientation="Horizontal"
+          Spacing="10"
+          Margin="4,6,4,10"
+          VerticalAlignment="Center">
+          <Border
+            Width="26"
+            Height="26"
+            CornerRadius="7"
+            Background="{ThemeResource AccentFillColorDefaultBrush}">
+            <TextBlock
+              Text="V"
+              FontSize="15"
+              FontWeight="Bold"
+              Foreground="White"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"/>
+          </Border>
+          <TextBlock
+            Text="VisorVR"
+            FontSize="16"
+            FontWeight="SemiBold"
+            VerticalAlignment="Center"/>
+        </StackPanel>
+      </NavigationView.PaneHeader>
       <NavigationView.PaneCustomContent>
         <Button
           x:Name="ProfileSwitcher"

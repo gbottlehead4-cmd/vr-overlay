@@ -13,6 +13,10 @@ namespace OpenKneeboardApp {
   String Title;
   Boolean HasDebugInformation { get; };
   String DebugInformation { get; };
+  Boolean HasVRPlacement { get; };
+  Boolean IsVREnabled;
+  Single VRWidth;
+  Single VRHeight;
 }
 
 [default_interface] runtimeclass DCSRadioLogTabUIData : TabUIData {

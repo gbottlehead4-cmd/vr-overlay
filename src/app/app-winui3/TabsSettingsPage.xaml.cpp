@@ -32,6 +32,8 @@
 #include <OpenKneeboard/TabTypes.hpp>
 #include <OpenKneeboard/TabView.hpp>
 #include <OpenKneeboard/TabsList.hpp>
+#include <OpenKneeboard/UserAction.hpp>
+#include <OpenKneeboard/ViewsSettings.hpp>
 
 #include <OpenKneeboard/dprint.hpp>
 #include <OpenKneeboard/inttypes.hpp>
@@ -41,6 +43,7 @@
 
 #include <microsoft.ui.xaml.window.h>
 
+#include <cmath>
 #include <ranges>
 #include <regex>
 #include <utility>
@@ -222,8 +225,15 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::ShowDebugInfo(
 OpenKneeboard::fire_and_forget TabsSettingsPage::ShowTabSettings(
   IInspectable sender,
   RoutedEventArgs) {
-  const std::shared_lock lock(*mKneeboard);
-  const auto tab = find_tab(sender);
+  // Only hold the lock long enough to resolve the tab. It must NOT be held
+  // across `ShowAsync()` below: while the dialog is open, its controls (e.g.
+  // the "Placement in VR" section) write settings via SetViewsSettings, which
+  // needs an exclusive lock. Holding a shared lock here would deadlock that.
+  std::shared_ptr<ITab> tab;
+  {
+    const std::shared_lock lock(*mKneeboard);
+    tab = find_tab(sender);
+  }
   if (!tab) {
     co_return;
   }
@@ -265,6 +275,24 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::ShowTabSettings(
   // to re-use, but it shouldn't be re-using the old data
   TabSettingsDialogContent().Content({nullptr});
   TabSettingsDialogContent().ContentTemplateSelector({nullptr});
+}
+
+OpenKneeboard::fire_and_forget TabsSettingsPage::ToggleVREditMode(
+  IInspectable,
+  RoutedEventArgs) {
+  co_await mKneeboard->PostUserAction(UserAction::TOGGLE_VR_EDIT_MODE);
+}
+
+OpenKneeboard::fire_and_forget TabsSettingsPage::RecenterVR(
+  IInspectable,
+  RoutedEventArgs) {
+  co_await mKneeboard->PostUserAction(UserAction::RECENTER_VR);
+}
+
+OpenKneeboard::fire_and_forget TabsSettingsPage::GoToInputBindings(
+  IInspectable,
+  RoutedEventArgs) {
+  co_await LaunchURI(SpecialURIs::SettingsInput());
 }
 
 OpenKneeboard::fire_and_forget TabsSettingsPage::RemoveTab(
@@ -651,6 +679,152 @@ hstring TabUIData::DebugInformation() const {
     return {};
   }
   return winrt::to_hstring(hdi->GetDebugInformation());
+}
+
+std::optional<winrt::guid> TabUIData::GetVRViewID() const {
+  const auto tab = mTab.lock();
+  if (!tab) {
+    return {};
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    return {};
+  }
+  const auto tabID = tab->GetPersistentID();
+  const auto views = kneeboard->GetViewsSettings().mViews;
+  for (const auto& view: views) {
+    if (
+      view.mDefaultTabID == tabID
+      && view.mVR.GetType() == ViewVRSettings::Type::Independent) {
+      return view.mGuid;
+    }
+  }
+  return {};
+}
+
+bool TabUIData::HasVRPlacement() const {
+  return GetVRViewID().has_value();
+}
+
+bool TabUIData::IsVREnabled() const {
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    return false;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    return false;
+  }
+  const auto views = kneeboard->GetViewsSettings().mViews;
+  const auto it = std::ranges::find(views, *viewID, &ViewSettings::mGuid);
+  return it != views.end() && it->mVR.mEnabled;
+}
+
+OpenKneeboard::fire_and_forget TabUIData::IsVREnabled(bool value) {
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    co_return;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    co_return;
+  }
+  auto settings = kneeboard->GetViewsSettings();
+  auto it = std::ranges::find(settings.mViews, *viewID, &ViewSettings::mGuid);
+  if (it == settings.mViews.end() || it->mVR.mEnabled == value) {
+    co_return;
+  }
+  it->mVR.mEnabled = value;
+  // Do not touch `this` after the co_await: the save can outlive this object.
+  co_await kneeboard->SetViewsSettings(settings);
+}
+
+float TabUIData::VRWidth() const {
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    return 0.0f;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    return 0.0f;
+  }
+  const auto views = kneeboard->GetViewsSettings().mViews;
+  const auto it = std::ranges::find(views, *viewID, &ViewSettings::mGuid);
+  if (it == views.end()) {
+    return 0.0f;
+  }
+  return it->mVR.GetIndependentSettings().mMaximumPhysicalSize.mWidth;
+}
+
+OpenKneeboard::fire_and_forget TabUIData::VRWidth(float value) {
+  if (std::isnan(value)) {
+    co_return;
+  }
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    co_return;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    co_return;
+  }
+  auto settings = kneeboard->GetViewsSettings();
+  auto it = std::ranges::find(settings.mViews, *viewID, &ViewSettings::mGuid);
+  if (it == settings.mViews.end()) {
+    co_return;
+  }
+  auto vr = it->mVR.GetIndependentSettings();
+  if (vr.mMaximumPhysicalSize.mWidth == value) {
+    co_return;
+  }
+  vr.mMaximumPhysicalSize.mWidth = value;
+  it->mVR.SetIndependentSettings(vr);
+  // Do not touch `this` after the co_await: the save can outlive this object.
+  co_await kneeboard->SetViewsSettings(settings);
+}
+
+float TabUIData::VRHeight() const {
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    return 0.0f;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    return 0.0f;
+  }
+  const auto views = kneeboard->GetViewsSettings().mViews;
+  const auto it = std::ranges::find(views, *viewID, &ViewSettings::mGuid);
+  if (it == views.end()) {
+    return 0.0f;
+  }
+  return it->mVR.GetIndependentSettings().mMaximumPhysicalSize.mHeight;
+}
+
+OpenKneeboard::fire_and_forget TabUIData::VRHeight(float value) {
+  if (std::isnan(value)) {
+    co_return;
+  }
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    co_return;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    co_return;
+  }
+  auto settings = kneeboard->GetViewsSettings();
+  auto it = std::ranges::find(settings.mViews, *viewID, &ViewSettings::mGuid);
+  if (it == settings.mViews.end()) {
+    co_return;
+  }
+  auto vr = it->mVR.GetIndependentSettings();
+  if (vr.mMaximumPhysicalSize.mHeight == value) {
+    co_return;
+  }
+  vr.mMaximumPhysicalSize.mHeight = value;
+  it->mVR.SetIndependentSettings(vr);
+  // Do not touch `this` after the co_await: the save can outlive this object.
+  co_await kneeboard->SetViewsSettings(settings);
 }
 
 uint64_t TabUIData::InstanceID() const {

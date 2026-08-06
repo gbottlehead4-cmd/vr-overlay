@@ -82,7 +82,7 @@ MainWindow::MainWindow() : mDXR(gDXResources) {
     gMainWindow = mHwnd;
   }
 
-  Title(L"OpenKneeboard");
+  Title(L"VisorVR");
   ExtendsContentIntoTitleBar(true);
   SetTitleBar(AppTitleBar());
   Closed([this](const auto&, const auto&) { this->TriggerApplicationExit(); });
@@ -520,7 +520,7 @@ OpenKneeboard::fire_and_forget MainWindow::UpdateProfileSwitcherVisibility() {
   auto footerItems = Navigation().FooterMenuItems();
   auto first = footerItems.First().Current();
 
-  std::wstring title(L"OpenKneeboard");
+  std::wstring title(L"VisorVR");
 
   const scope_exit setTitle([&title, this]() {
     if (IsElevated()) {

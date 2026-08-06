@@ -8,8 +8,39 @@
       <ResourceDictionary.MergedDictionaries>
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
       </ResourceDictionary.MergedDictionaries>
+      <ResourceDictionary.ThemeDictionaries>
+        <!-- VisorVR brand accent: a soft indigo, used sparingly on
+             selection / toggles / sliders / primary actions. -->
+        <ResourceDictionary x:Key="Default">
+          <Color x:Key="SystemAccentColor">#FF7C83FF</Color>
+          <Color x:Key="SystemAccentColorLight1">#FF8F95FF</Color>
+          <Color x:Key="SystemAccentColorLight2">#FFA3A8FF</Color>
+          <Color x:Key="SystemAccentColorLight3">#FFB8BCFF</Color>
+          <Color x:Key="SystemAccentColorDark1">#FF6970E6</Color>
+          <Color x:Key="SystemAccentColorDark2">#FF565CBF</Color>
+          <Color x:Key="SystemAccentColorDark3">#FF434899</Color>
+          <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#FF7C83FF" />
+          <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#FF8F95FF" />
+          <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#FF6970E6" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+          <Color x:Key="SystemAccentColor">#FF5A61E6</Color>
+          <Color x:Key="SystemAccentColorLight1">#FF7C83FF</Color>
+          <Color x:Key="SystemAccentColorLight2">#FF8F95FF</Color>
+          <Color x:Key="SystemAccentColorLight3">#FFA3A8FF</Color>
+          <Color x:Key="SystemAccentColorDark1">#FF4A50BF</Color>
+          <Color x:Key="SystemAccentColorDark2">#FF3B4099</Color>
+          <Color x:Key="SystemAccentColorDark3">#FF2C3073</Color>
+          <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#FF5A61E6" />
+          <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#FF4A50BF" />
+          <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#FF3B4099" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
       <SolidColorBrush x:Key="WindowCaptionBackground" Color="Transparent" />
       <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="Transparent" />
+      <!-- Softer, rounded edges everywhere (default WinUI is 4). -->
+      <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+      <CornerRadius x:Key="OverlayCornerRadius">10</CornerRadius>
     </ResourceDictionary>
   </Application.Resources>
 </Application>
