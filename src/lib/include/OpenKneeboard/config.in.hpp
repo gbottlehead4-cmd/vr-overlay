@@ -61,8 +61,7 @@ constexpr const std::string_view OpenXRApiLayerName {
 constexpr const std::string_view OpenXRApiLayerDescription {
   "@PROJECT_OPENXR_API_LAYER_DESCRIPTION@"};
 
-constexpr const wchar_t RegistrySubKey[] {
-  L"SOFTWARE\\Fred Emmott\\OpenKneeboard"};
+constexpr const wchar_t RegistrySubKey[] {L"SOFTWARE\\VisorVR"};
 
 constexpr const wchar_t VariableWidthUIFont[] {L"Segoe UI"};
 constexpr const wchar_t GlyphFont[] {L"Segoe MDL2 Assets"};

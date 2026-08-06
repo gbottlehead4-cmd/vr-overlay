@@ -7,7 +7,7 @@
     "implementation_version": "${OPENXR_API_LAYER_IMPLEMENTATION_VERSION}",
     "description": "${PROJECT_OPENXR_API_LAYER_DESCRIPTION}",
     "functions": {
-      "xrNegotiateLoaderApiLayerInterface": "OpenKneeboard_xrNegotiateLoaderApiLayerInterface"
+      "xrNegotiateLoaderApiLayerInterface": "VisorVR_xrNegotiateLoaderApiLayerInterface"
     },
     "disable_environment": "DISABLE_${PROJECT_OPENXR_API_LAYER_NAME}"
   }

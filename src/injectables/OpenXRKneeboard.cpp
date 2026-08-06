@@ -1354,7 +1354,7 @@ BOOL WINAPI DllMain(HINSTANCE, const DWORD dwReason, LPVOID /*lpReserved*/) {
 }
 
 extern "C" XRAPI_ATTR XrResult XRAPI_CALL
-OpenKneeboard_xrNegotiateLoaderApiLayerInterface(
+VisorVR_xrNegotiateLoaderApiLayerInterface(
   const XrNegotiateLoaderInfo*,
   const char* layerName,
   XrNegotiateApiLayerRequest* apiLayerRequest) {

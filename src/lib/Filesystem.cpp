@@ -66,7 +66,7 @@ static std::filesystem::path GetTemporaryDirectoryRoot() {
     wchar_t tempDirBuf[MAX_PATH];
     auto tempDirLen = GetTempPathW(MAX_PATH, tempDirBuf);
     return std::filesystem::path {std::wstring_view {tempDirBuf, tempDirLen}}
-    / L"OpenKneeboard";
+    / L"VisorVR";
   }};
   return sPath;
 }
@@ -167,7 +167,7 @@ std::filesystem::path GetSettingsDirectory() {
     if (base.empty()) {
       return {};
     }
-    const auto ret = base / "OpenKneeboard" / "Settings";
+    const auto ret = base / "VisorVR" / "Settings";
     std::filesystem::create_directories(ret);
     return ret;
   }};
@@ -177,80 +177,55 @@ std::filesystem::path GetSettingsDirectory() {
 
 void MigrateSettingsDirectory() {
   const auto newPath = GetSettingsDirectory();
-  if (!std::filesystem::is_empty(newPath)) {
-    return;
-  }
-  const auto oldPath =
-    GetKnownFolderPath<FOLDERID_SavedGames>() / "OpenKneeboard";
-  if (!std::filesystem::exists(oldPath)) {
+  if (!std::filesystem::exists(newPath) || !std::filesystem::is_empty(newPath)) {
     return;
   }
 
-  dprint("🚚 moving settings from `{}` to `{}`", oldPath, newPath);
+  // Import settings from a previous OpenKneeboard install so users keep their
+  // layout. This is deliberately COPY-ONLY: the OpenKneeboard Public License
+  // permits reading settings from locations carrying the original branding,
+  // but does not permit modifying or extending them - so nothing here writes
+  // to, renames, or deletes anything under the old paths.
+  const auto localAppData = GetKnownFolderPath<FOLDERID_LocalAppData>();
+  const std::filesystem::path candidates[] {
+    localAppData / "OpenKneeboard" / "Settings",
+    GetKnownFolderPath<FOLDERID_SavedGames>() / "OpenKneeboard",
+  };
 
-  bool canDelete = true;
-
-  std::filesystem::remove(newPath);
-  for (auto&& it: std::filesystem::recursive_directory_iterator(oldPath)) {
-    if (it.is_directory()) {
+  for (auto&& oldPath: candidates) {
+    if (oldPath.empty() || !std::filesystem::exists(oldPath)) {
       continue;
     }
 
-    const auto src = it.path();
-    if (!src.has_extension()) {
-      continue;
-    }
+    dprint("🚚 importing settings from `{}` to `{}`", oldPath, newPath);
 
-    if (src.filename() == ".instance") {
-      continue;
-    }
-
-    const auto ext = src.extension();
-
-    if (ext == ".dmp" || ext == ".log") {
-      continue;
-    }
-
-    if (ext != ".json") {
-      // Some people put content in their OpenKneeboard folder :/
-      canDelete = false;
-      continue;
-    }
-
-    auto dest = newPath;
-    for (auto&& part: std::filesystem::relative(src.parent_path(), oldPath)
-           / src.filename()) {
-      if (part == "profiles") {
-        dest /= "Profiles";
-      } else {
-        dest /= part;
+    for (auto&& it: std::filesystem::recursive_directory_iterator(oldPath)) {
+      if (it.is_directory()) {
+        continue;
       }
+      const auto src = it.path();
+      if (src.extension() != ".json") {
+        continue;
+      }
+
+      auto dest = newPath;
+      for (auto&& part: std::filesystem::relative(src.parent_path(), oldPath)
+             / src.filename()) {
+        if (part == "profiles") {
+          dest /= "Profiles";
+        } else {
+          dest /= part;
+        }
+      }
+
+      std::filesystem::create_directories(dest.parent_path());
+      std::filesystem::copy_file(
+        src, dest, std::filesystem::copy_options::skip_existing);
     }
 
-    dprint("🚚 `{}` -> `{}`", src, dest);
-    std::filesystem::create_directories(dest.parent_path());
-    std::filesystem::rename(src, dest);
+    dprint("✅ imported settings from `{}`", oldPath);
+    return;
   }
-
-  if (canDelete) {
-    std::filesystem::remove_all(oldPath);
-  }
-
-  const auto warningFile = canDelete
-    ? (oldPath.parent_path() / "OpenKneeboard-README.txt")
-    : (oldPath / "SETTINGS_HAVE_MOVED-README.txt");
-  {
-    std::ofstream f(warningFile, std::ios::binary | std::ios::trunc);
-    f << "OpenKneeboard's settings have been moved to:\n"
-      << newPath.string() << std::endl;
-
-    if (!canDelete) {
-      f << "\nThis folder has been left here in case you want to keep any "
-           "other files you may have put in it."
-        << std::endl;
-    }
-  }
-  dprint("✅ moved, and created warning file at `{}`", warningFile);
 }
 
 std::filesystem::path GetLocalAppDataDirectory() {
@@ -259,7 +234,7 @@ std::filesystem::path GetLocalAppDataDirectory() {
     if (base.empty()) {
       return {};
     }
-    const auto ret = base / "OpenKneeboard";
+    const auto ret = base / "VisorVR";
     std::filesystem::create_directories(ret);
     return ret;
   }};
@@ -270,7 +245,7 @@ std::filesystem::path GetLogsDirectory() {
   static LazyPath sPath {[]() -> std::filesystem::path {
     const auto oldPath = GetLocalAppDataDirectory() / "Logs";
     const auto path =
-      GetKnownFolderPath<FOLDERID_LocalAppData>() / "OpenKneeboard Logs";
+      GetKnownFolderPath<FOLDERID_LocalAppData>() / "VisorVR Logs";
 
     if (std::filesystem::exists(oldPath) && !std::filesystem::exists(path)) {
       std::filesystem::rename(oldPath, path);

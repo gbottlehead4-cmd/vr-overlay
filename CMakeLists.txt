@@ -16,9 +16,9 @@ if (NOT "${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   file(WRITE "${CMAKE_BINARY_DIR}/CMakePresets.json" "${PRESETS}")
 endif ()
 
-set(PROJECT_REVERSE_DOMAIN "com.openkneeboard" CACHE STRING "Project reverse domain, e.g. com.example; used for IPC")
-set(PROJECT_OPENXR_API_LAYER_NAME "XR_APILAYER_FREDEMMOTT_OpenKneeboard" CACHE STRING "OpenXR API layer name")
-set(PROJECT_OPENXR_API_LAYER_DESCRIPTION "OpenKneeboard - https://github.com/OpenKneeboard/OpenKneeboard" CACHE STRING "Project description for API layer JSON")
+set(PROJECT_REVERSE_DOMAIN "com.visorvr" CACHE STRING "Project reverse domain, e.g. com.example; used for IPC")
+set(PROJECT_OPENXR_API_LAYER_NAME "XR_APILAYER_VISORVR_VisorVR" CACHE STRING "OpenXR API layer name")
+set(PROJECT_OPENXR_API_LAYER_DESCRIPTION "VisorVR - https://github.com/gbottlehead4-cmd/vr-overlay" CACHE STRING "Project description for API layer JSON")
 
 # Win10 19H1 runtime-required for:
 # - AF_UNIX (OTD-IPC v2)
