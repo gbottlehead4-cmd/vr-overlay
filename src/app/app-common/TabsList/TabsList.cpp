@@ -145,6 +145,10 @@ task<std::shared_ptr<ITab>> TabsList::LoadTabFromJSON(
     co_return nullptr;
   }
 
+  if (tab.contains("Icon")) {
+    result->SetIcon(tab.at("Icon").get<std::string>());
+  }
+
   if (tab.contains("Bookmarks")) {
     RestoreSavedBookmarks(*result, tab.at("Bookmarks"));
   }
@@ -224,6 +228,12 @@ nlohmann::json TabsList::GetSettings() const {
       {"Title", tab->GetTitle()},
       {"ID", winrt::to_string(winrt::to_hstring(tab->GetPersistentID()))},
     };
+
+    // Only persist an icon the user actually picked; otherwise the tab
+    // type's own glyph is used.
+    if (const auto icon = tab->GetIcon(); icon != tab->GetGlyph()) {
+      savedTab.emplace("Icon", icon);
+    }
 
     auto withSettings = std::dynamic_pointer_cast<ITabWithSettings>(tab);
     if (withSettings) {

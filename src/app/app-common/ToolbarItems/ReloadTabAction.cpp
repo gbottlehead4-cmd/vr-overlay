@@ -53,22 +53,22 @@ task<void> ReloadTabAction::Execute() {
 
 std::string_view ReloadTabAction::GetConfirmationTitle() const {
   if (mMode == Mode::ThisTab) {
-    return _("Reload this tab?");
+    return _("Reload this panel?");
   }
-  return _("Reload OpenKneeboard?");
+  return _("Reload every panel?");
 }
 
 std::string_view ReloadTabAction::GetConfirmationDescription() const {
   return _(
     "This will erase all notes and drawings, and any information that was "
-    "added since OpenKneeboard started.");
+    "added since VisorVR started.");
 }
 
 std::string_view ReloadTabAction::GetConfirmButtonLabel() const {
   if (mMode == Mode::ThisTab) {
-    return _("Reload this tab");
+    return _("Reload this panel");
   }
-  return _("Reload every tab");
+  return _("Reload every panel");
 }
 
 std::string_view ReloadTabAction::GetCancelButtonLabel() const {

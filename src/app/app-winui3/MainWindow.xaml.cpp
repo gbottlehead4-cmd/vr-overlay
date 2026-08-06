@@ -905,7 +905,7 @@ MainWindow::NavigationItems() noexcept {
     item.Content(box_value(to_hstring(tab->GetTitle())));
     item.Tag(NavigationTag {tab->GetRuntimeID()}.box());
 
-    auto glyph = tab->GetGlyph();
+    auto glyph = tab->GetIcon();
     if (!glyph.empty()) {
       muxc::FontIcon icon;
       icon.Glyph(winrt::to_hstring(glyph));
@@ -962,6 +962,19 @@ MainWindow::NavigationItems() noexcept {
     }
     item.ContextFlyout(contextFlyout);
   }
+
+  // "Add panel" sits directly under the panel list, not down in the footer.
+  {
+    muxc::NavigationViewItem addPanel;
+    addPanel.Content(box_value(to_hstring(_("Add panel"))));
+    muxc::FontIcon icon;
+    icon.Glyph(L"\ue710");
+    addPanel.Icon(icon);
+    addPanel.SelectsOnInvoked(false);
+    mAddPanelItem = addPanel;
+    navItems.Append(addPanel);
+  }
+
   mNavigationItems = navItems;
   this->OnTabChanged();
   return navItems;
@@ -1029,8 +1042,8 @@ void MainWindow::OnNavigationItemInvoked(
     return;
   }
 
-  if (item == HelpNavItem()) {
-    Frame().Navigate(xaml_typename<HelpPage>());
+  if (mAddPanelItem && item == mAddPanelItem) {
+    Frame().Navigate(xaml_typename<TabsSettingsPage>());
     return;
   }
 
@@ -1083,6 +1096,7 @@ void MainWindow::OnBackRequested(
   Frame().GoBack();
 }
 
+
 OpenKneeboard::fire_and_forget MainWindow::LaunchOpenKneeboardURI(
   std::string_view uriStr) {
   auto uri = winrt::Windows::Foundation::Uri(winrt::to_hstring(uriStr));
@@ -1104,6 +1118,7 @@ OpenKneeboard::fire_and_forget MainWindow::LaunchOpenKneeboardURI(
     Frame().Navigate(xaml_typename<TabsSettingsPage>());
     co_return;
   }
+
 
   if (path == "TeachingTips/ProfileSwitcher") {
     ProfileSwitcherTeachingTip().Target(mProfileSwitcher);

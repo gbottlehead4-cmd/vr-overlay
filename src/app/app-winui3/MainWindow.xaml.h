@@ -70,6 +70,9 @@ struct MainWindow : MainWindowT<MainWindow>,
     winrt::Windows::Foundation::IInspectable>
     mNavigationItems {nullptr};
 
+  winrt::Microsoft::UI::Xaml::Controls::NavigationViewItem mAddPanelItem {
+    nullptr};
+
   winrt::apartment_context mUIThread;
   HWND mHwnd;
   winrt::handle mHwndFile;

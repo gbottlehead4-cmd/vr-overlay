@@ -6,7 +6,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
-  Background="{ThemeResource SystemChromeMediumLowColor}">
+  Background="Transparent">
   <ScrollViewer VerticalScrollMode="Auto">
     <StackPanel Margin="16">
       <TextBlock
@@ -24,7 +24,7 @@
             <Grid
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-              CornerRadius="4"
+              CornerRadius="12"
               BorderThickness="1"
               ColumnDefinitions="Auto,*"
               Padding="12"
@@ -34,11 +34,12 @@
                 Grid.Column="0"
                 Width="72"
                 Height="72"
-                CornerRadius="8"
-                Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}">
+                CornerRadius="12"
+                Background="#FF232733">
                 <FontIcon
                   Glyph="{x:Bind Glyph}"
-                  FontSize="40"
+                  FontSize="34"
+                  Foreground="#FF9AA0FF"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Center"/>
               </Grid>
@@ -68,28 +69,28 @@
             x:Name="VRItem"
             Glyph="&#xF119;"
             Title="Virtual Reality">
-            Adjust how OpenKneeboard appears in games and applications when using a virtual reality headset.
+            Choose how your panels appear in-game, and set up SteamVR and OpenXR.
           </local:SettingsSubpageData>
-          <!-- F571 PrintAllPages -->
+          <!-- E7F4 window -->
           <local:SettingsSubpageData
             x:Name="TabsItem"
-            Glyph="&#xF571;"
-            Title="Tabs">
-            Add, remove, and re-order sections in your kneeboard.
+            Glyph="&#xE7F4;"
+            Title="Panels">
+            Add, remove, rename and re-order the panels you see in VR.
           </local:SettingsSubpageData>
           <!-- E961 Input -->
           <local:SettingsSubpageData
             x:Name="InputItem"
             Glyph="&#xE961;"
             Title="Input">
-            Control your kneeboard with your keyboard, joystick, or graphics tablet buttons.
+            Bind your wheel, HOTAS, keyboard or tablet buttons to VisorVR actions.
           </local:SettingsSubpageData>
           <!-- E9E9 Equalizer-->
           <local:SettingsSubpageData
             x:Name="AdvancedItem"
             Glyph="&#xE9E9;"
             Title="Advanced">
-            Advanced features and behavior tweaks.
+            Advanced features and behaviour tweaks.
           </local:SettingsSubpageData>
         </GridView.Items>
       </GridView>

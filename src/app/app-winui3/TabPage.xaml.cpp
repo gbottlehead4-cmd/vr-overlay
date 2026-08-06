@@ -231,6 +231,8 @@ muxc::AppBarToggleButton TabPage::CreateAppBarToggleButton(
 
   button.Label(winrt::to_hstring(action->GetLabel()));
   button.IsEnabled(action->IsEnabled());
+  button.Visibility(
+    action->IsEnabled() ? Visibility::Visible : Visibility::Collapsed);
 
   button.IsChecked(action->IsActive());
   button.Checked(
@@ -243,8 +245,10 @@ muxc::AppBarToggleButton TabPage::CreateAppBarToggleButton(
   AddEventListener(
     action->evStateChangedEvent,
     [](auto action, auto button) noexcept {
+      const bool enabled = action->IsEnabled();
       button.IsChecked(action->IsActive());
-      button.IsEnabled(action->IsEnabled());
+      button.IsEnabled(enabled);
+      button.Visibility(enabled ? Visibility::Visible : Visibility::Collapsed);
     } | bind_refs_front(action, button)
       | bind_winrt_context(mUIThread));
 
@@ -263,11 +267,17 @@ muxc::AppBarButton TabPage::CreateAppBarButtonBase(
 
   button.Label(winrt::to_hstring(action->GetLabel()));
   button.IsEnabled(action->IsEnabled());
+  // Hide actions that don't apply to this panel (e.g. page navigation on a
+  // single-page web dashboard) rather than showing dead, greyed-out icons.
+  button.Visibility(
+    action->IsEnabled() ? Visibility::Visible : Visibility::Collapsed);
 
   AddEventListener(
     action->evStateChangedEvent,
     [](auto action, auto button) noexcept {
-      button.IsEnabled(action->IsEnabled());
+      const bool enabled = action->IsEnabled();
+      button.IsEnabled(enabled);
+      button.Visibility(enabled ? Visibility::Visible : Visibility::Collapsed);
     } | bind_refs_front(action, button)
       | bind_winrt_context(mUIThread));
 
@@ -442,32 +452,53 @@ OpenKneeboard::fire_and_forget TabPage::UpdateToolbar() {
     }
   }
 
-  // VisorVR: inline "Settings" pane for the selected panel. A toggle in the
-  // command bar flips the content area between the live preview and this
-  // panel's settings (name + Placement in VR), so the pane is useful even
-  // when there's no sim data to preview.
-  using winrt::Microsoft::UI::Xaml::Visibility;
+  // VisorVR: the panel header (icon / name / live badge) and the
+  // Preview <-> Settings switch live outside the command bar.
   if (const auto tab = mTabView->GetTab().lock()) {
     winrt::OpenKneeboardApp::TabUIData tabData;
     tabData.InstanceID(tab->GetRuntimeID().GetTemporaryValue());
     SettingsContent().Content(tabData);
   }
-  SettingsOverlay().Visibility(Visibility::Collapsed);
+  this->UpdatePanelHeader();
+  this->SetSettingsVisible(false);
+}
 
-  muxc::AppBarToggleButton settingsToggle;
-  settingsToggle.Label(L"Settings");
-  settingsToggle.Icon(muxc::SymbolIcon(muxc::Symbol::Setting));
-  settingsToggle.Checked([weak = get_weak()](auto&&, auto&&) {
-    if (auto self = weak.get()) {
-      self->SettingsOverlay().Visibility(Visibility::Visible);
-    }
-  });
-  settingsToggle.Unchecked([weak = get_weak()](auto&&, auto&&) {
-    if (auto self = weak.get()) {
-      self->SettingsOverlay().Visibility(Visibility::Collapsed);
-    }
-  });
-  primary.Append(settingsToggle);
+void TabPage::UpdatePanelHeader() {
+  using winrt::Microsoft::UI::Xaml::Visibility;
+
+  const auto tab = mTabView ? mTabView->GetTab().lock() : nullptr;
+  if (tab) {
+    PanelTitle().Text(to_hstring(tab->GetTitle()));
+    PanelIcon().Glyph(to_hstring(tab->GetIcon()));
+  }
+
+  // "live" means a game is actually running and consuming our overlay.
+  const bool live = mKneeboard && mKneeboard->GetCurrentGame().has_value();
+  LivePill().Visibility(live ? Visibility::Visible : Visibility::Collapsed);
+}
+
+void TabPage::SetSettingsVisible(bool visible) {
+  using winrt::Microsoft::UI::Xaml::Style;
+  using winrt::Microsoft::UI::Xaml::Visibility;
+
+  SettingsOverlay().Visibility(
+    visible ? Visibility::Visible : Visibility::Collapsed);
+
+  const auto accent = Application::Current()
+                        .Resources()
+                        .Lookup(box_value(L"AccentButtonStyle"))
+                        .try_as<Style>();
+  PreviewButton().Style(visible ? nullptr : accent);
+  SettingsButton().Style(visible ? accent : nullptr);
+}
+
+void TabPage::ShowPreview(const IInspectable&, const RoutedEventArgs&) {
+  this->SetSettingsVisible(false);
+}
+
+void TabPage::ShowPanelSettings(const IInspectable&, const RoutedEventArgs&) {
+  this->UpdatePanelHeader();
+  this->SetSettingsVisible(true);
 }
 
 void TabPage::AttachVisibility(

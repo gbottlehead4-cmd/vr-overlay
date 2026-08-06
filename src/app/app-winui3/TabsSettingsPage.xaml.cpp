@@ -827,6 +827,101 @@ OpenKneeboard::fire_and_forget TabUIData::VRHeight(float value) {
   co_await kneeboard->SetViewsSettings(settings);
 }
 
+float TabUIData::VRDistance() const {
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    return 0.0f;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    return 0.0f;
+  }
+  const auto views = kneeboard->GetViewsSettings().mViews;
+  const auto it = std::ranges::find(views, *viewID, &ViewSettings::mGuid);
+  if (it == views.end()) {
+    return 0.0f;
+  }
+  // -Z is forwards in the world; users expect a positive "distance".
+  return -it->mVR.GetIndependentSettings().mPose.mZ;
+}
+
+OpenKneeboard::fire_and_forget TabUIData::VRDistance(float value) {
+  if (std::isnan(value)) {
+    co_return;
+  }
+  const auto viewID = GetVRViewID();
+  if (!viewID) {
+    co_return;
+  }
+  const auto kneeboard = gKneeboard.lock();
+  if (!kneeboard) {
+    co_return;
+  }
+  auto settings = kneeboard->GetViewsSettings();
+  auto it = std::ranges::find(settings.mViews, *viewID, &ViewSettings::mGuid);
+  if (it == settings.mViews.end()) {
+    co_return;
+  }
+  auto vr = it->mVR.GetIndependentSettings();
+  if (vr.mPose.mZ == -value) {
+    co_return;
+  }
+  vr.mPose.mZ = -value;
+  it->mVR.SetIndependentSettings(vr);
+  // Do not touch `this` after the co_await: the save can outlive this object.
+  co_await kneeboard->SetViewsSettings(settings);
+}
+
+// Icon choices offered by the picker. Index 0 in the UI means "use the
+// tab type's own glyph", so these are offset by one.
+static const std::vector<std::string>& IconPalette() {
+  static const std::vector<std::string> sPalette {
+    "\ueb41",// web dashboard
+    "\ue7f4",// window
+    "\ue909",// map
+    "\uf12e",// list
+    "\ue95d",// briefing
+    "\ue709",// aircraft
+    "\uf0e3",// mission
+    "\ue838",// folder
+    "\uea90",// file
+    "\ue8ed",// repeat
+    "\ue713",// settings
+  };
+  return sPalette;
+}
+
+int32_t TabUIData::IconIndex() const {
+  const auto tab = mTab.lock();
+  if (!tab) {
+    return 0;
+  }
+  const auto icon = tab->GetIcon();
+  if (icon == tab->GetGlyph()) {
+    return 0;
+  }
+  const auto& palette = IconPalette();
+  const auto it = std::ranges::find(palette, icon);
+  if (it == palette.end()) {
+    return 0;
+  }
+  return static_cast<int32_t>(it - palette.begin()) + 1;
+}
+
+void TabUIData::IconIndex(int32_t value) {
+  const auto tab = mTab.lock();
+  if (!tab) {
+    return;
+  }
+  const auto& palette = IconPalette();
+  if (value <= 0 || value > static_cast<int32_t>(palette.size())) {
+    tab->SetIcon({});
+  } else {
+    tab->SetIcon(palette.at(value - 1));
+  }
+  mPropertyChangedEvent(*this, PropertyChangedEventArgs(L"IconIndex"));
+}
+
 uint64_t TabUIData::InstanceID() const {
   const auto tab = mTab.lock();
   if (!tab) {

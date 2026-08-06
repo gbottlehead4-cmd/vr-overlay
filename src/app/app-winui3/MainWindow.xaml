@@ -8,7 +8,7 @@
   mc:Ignorable="d">
   <Grid
     ColumnDefinitions="*"
-    Background="{ThemeResource SystemChromeMediumColor}"
+    Background="#FF0F1013"
     x:Name="RootGrid">
     <Grid.Resources>
       <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
@@ -16,6 +16,7 @@
     <Grid
       x:Name="AppTitleBar"
       Grid.Column="0"
+      Background="#FF0F1013"
       Height="{Binding ElementName=Navigation, Path=CompactPaneLength}"
       VerticalAlignment="Top"
       IsHitTestVisible="1"
@@ -31,6 +32,8 @@
     <NavigationView
       Grid.Column="0"
       Canvas.ZIndex="0"
+      PaneDisplayMode="Left"
+      OpenPaneLength="240"
       IsSettingsVisible="True"
       IsTabStop="False"
       ItemInvoked="OnNavigationItemInvoked"
@@ -42,6 +45,11 @@
       PaneClosing="UpdateTitleBarMargins"
       BackRequested="OnBackRequested"
       MenuItemsSource="{x:Bind NavigationItems,Mode=OneWay}">
+      <NavigationView.Resources>
+        <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#FF1A1C23"/>
+        <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#FF1A1C23"/>
+        <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+      </NavigationView.Resources>
       <NavigationView.PaneHeader>
         <StackPanel
           Orientation="Horizontal"
@@ -49,17 +57,15 @@
           Margin="4,6,4,10"
           VerticalAlignment="Center">
           <Border
-            Width="26"
-            Height="26"
-            CornerRadius="7"
-            Background="{ThemeResource AccentFillColorDefaultBrush}">
-            <TextBlock
-              Text="V"
-              FontSize="15"
-              FontWeight="Bold"
+            Width="28"
+            Height="28"
+            CornerRadius="8"
+            Background="#FF7C83FF">
+            <PathIcon
               Foreground="White"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center"/>
+              VerticalAlignment="Center"
+              Data="M2,5 L14,5 A2,2 0 0 1 16,7 L16,10 A2,2 0 0 1 14,12 L10.5,12 L8,9.6 L5.5,12 L2,12 A2,2 0 0 1 0,10 L0,7 A2,2 0 0 1 2,5 Z"/>
           </Border>
           <TextBlock
             Text="VisorVR"
@@ -108,14 +114,11 @@
         </Button>
       </NavigationView.PaneCustomContent>
       <NavigationView.FooterMenuItems>
-        <NavigationViewItem
-          x:Name="HelpNavItem"
-          Content="Help"
-          Icon="Help"
-        />
+        <NavigationViewItemSeparator/>
       </NavigationView.FooterMenuItems>
       <Frame
         x:Name="Frame"
+        Background="#FF15161C"
       />
     </NavigationView>
     <local:AppWindowViewModeDialog x:Name="AppWindowViewModeDialog" />

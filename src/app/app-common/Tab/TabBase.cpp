@@ -47,6 +47,20 @@ void TabBase::SetTitle(const std::string& title) {
   evSettingsChangedEvent.Emit();
 }
 
+std::string TabBase::GetIcon() const {
+  // Fall back to the tab type's built-in glyph when the user hasn't
+  // picked an icon.
+  return mIcon.empty() ? this->GetGlyph() : mIcon;
+}
+
+void TabBase::SetIcon(const std::string& icon) {
+  if (icon == mIcon) {
+    return;
+  }
+  mIcon = icon;
+  evSettingsChangedEvent.Emit();
+}
+
 std::vector<Bookmark> TabBase::GetBookmarks() const { return mBookmarks; }
 
 void TabBase::SetBookmarks(const std::vector<Bookmark>& bookmarks) {

@@ -121,6 +121,10 @@ struct TabUIData : TabUIDataT<TabUIData>,
   OpenKneeboard::fire_and_forget VRWidth(float);
   float VRHeight() const;
   OpenKneeboard::fire_and_forget VRHeight(float);
+  float VRDistance() const;
+  OpenKneeboard::fire_and_forget VRDistance(float);
+  int32_t IconIndex() const;
+  void IconIndex(int32_t);
 
  protected:
   std::weak_ptr<OpenKneeboard::ITab> mTab;

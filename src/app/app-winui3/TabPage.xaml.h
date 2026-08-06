@@ -68,6 +68,8 @@ struct TabPage : TabPageT<TabPage>, EventReceiver {
   OpenKneeboard::fire_and_forget GoToInputBindings(
     const IInspectable&,
     const RoutedEventArgs&);
+  void ShowPreview(const IInspectable&, const RoutedEventArgs&);
+  void ShowPanelSettings(const IInspectable&, const RoutedEventArgs&);
 
   task<void> PaintNow(
     std::source_location loc = std::source_location::current()) noexcept;
@@ -96,6 +98,8 @@ struct TabPage : TabPageT<TabPage>, EventReceiver {
 
   void SetTab(const std::shared_ptr<TabView>&);
   OpenKneeboard::fire_and_forget UpdateToolbar();
+  void SetSettingsVisible(bool);
+  void UpdatePanelHeader();
   void InitializeSwapChain();
   void ResizeSwapChain();
 

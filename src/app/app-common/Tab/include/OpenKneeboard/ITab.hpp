@@ -29,6 +29,13 @@ class ITab : public virtual IPageSource {
   virtual winrt::guid GetPersistentID() const = 0;
   [[nodiscard]]
   virtual std::string GetGlyph() const = 0;
+
+  /** Optional user-chosen icon for this tab.
+   *
+   * Falls back to `GetGlyph()` when the user hasn't picked one.
+   */
+  virtual std::string GetIcon() const = 0;
+  virtual void SetIcon(const std::string&) = 0;
   [[nodiscard]]
   virtual std::string GetTitle() const = 0;
   virtual void SetTitle(const std::string&) = 0;

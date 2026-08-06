@@ -26,6 +26,9 @@ class TabBase : public virtual ITab, public virtual EventReceiver {
   virtual std::string GetTitle() const override final;
   virtual void SetTitle(const std::string&) override final;
 
+  virtual std::string GetIcon() const override final;
+  virtual void SetIcon(const std::string&) override final;
+
   virtual std::vector<Bookmark> GetBookmarks() const override final;
   virtual void SetBookmarks(const std::vector<Bookmark>&) override final;
 
@@ -41,6 +44,7 @@ class TabBase : public virtual ITab, public virtual EventReceiver {
   const winrt::guid mPersistentID;
   const RuntimeID mRuntimeID;
   std::string mTitle;
+  std::string mIcon;
   std::vector<Bookmark> mBookmarks;
   std::vector<PersistentBookmark> mPendingBookmarks;
 

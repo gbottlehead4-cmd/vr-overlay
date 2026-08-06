@@ -12,6 +12,33 @@
         <!-- VisorVR brand accent: a soft indigo, used sparingly on
              selection / toggles / sliders / primary actions. -->
         <ResourceDictionary x:Key="Default">
+          <!-- VisorVR dark shell: deep blue-black instead of Windows grey. -->
+          <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#FF1A1C23"/>
+          <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#FF1A1C23"/>
+          <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+          <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#FF15161C"/>
+          <SolidColorBrush x:Key="LayerFillColorAltBrush" Color="#FF15161C"/>
+          <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#FF1B1D24"/>
+          <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="#FF20222B"/>
+          <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#18FFFFFF"/>
+          <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#FF20222B"/>
+          <SolidColorBrush x:Key="ControlFillColorSecondaryBrush" Color="#FF262933"/>
+          <SolidColorBrush x:Key="ControlFillColorTertiaryBrush" Color="#FF2A2D38"/>
+          <SolidColorBrush x:Key="SolidBackgroundFillColorBaseBrush" Color="#FF0F1013"/>
+          <SolidColorBrush x:Key="SolidBackgroundFillColorSecondaryBrush" Color="#FF262933"/>
+          <SolidColorBrush x:Key="SolidBackgroundFillColorTertiaryBrush" Color="#FF20222B"/>
+          <SolidColorBrush x:Key="ContentDialogBackground" Color="#FF1B1D24"/>
+          <!-- Chunkier sliders with a white thumb, as in the design. -->
+          <x:Double x:Key="SliderTrackThemeHeight">6</x:Double>
+          <SolidColorBrush x:Key="SliderThumbBackground" Color="#FFFFFFFF"/>
+          <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="#FFFFFFFF"/>
+          <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="#FFFFFFFF"/>
+          <SolidColorBrush x:Key="SliderTrackValueFill" Color="#FF7C83FF"/>
+          <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="#FF8F95FF"/>
+          <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="#FF8F95FF"/>
+          <SolidColorBrush x:Key="SliderTrackFill" Color="#FF2A2D38"/>
+          <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="#FF32353F"/>
+          <SolidColorBrush x:Key="SliderTrackFillPressed" Color="#FF32353F"/>
           <Color x:Key="SystemAccentColor">#FF7C83FF</Color>
           <Color x:Key="SystemAccentColorLight1">#FF8F95FF</Color>
           <Color x:Key="SystemAccentColorLight2">#FFA3A8FF</Color>

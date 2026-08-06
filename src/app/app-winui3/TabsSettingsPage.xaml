@@ -6,7 +6,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
-  Background="{ThemeResource SystemChromeMediumLowColor}">
+  Background="Transparent">
   <Page.Resources>
     <local:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <local:MetersValueConverter x:Key="MetersConverter"/>
@@ -58,7 +58,7 @@
         Spacing="8">
         <TextBox
           Text="{x:Bind Title,Mode=TwoWay}"
-          Header="Tab name"/>
+          Header="Panel name"/>
         <StackPanel
           Orientation="Vertical"
           Spacing="12"
@@ -328,7 +328,7 @@
         <TextBlock
           Grid.Column="0"
           Style="{StaticResource TitleTextBlockStyle}"
-          Text="Tab Settings"
+          Text="Panels"
           Margin="0,0,0,8"/>
         <Button
           Grid.Column="1"

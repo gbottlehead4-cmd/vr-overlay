@@ -6,7 +6,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
-  Background="{ThemeResource SystemChromeMediumLowColor}">
+  Background="Transparent">
   <StackPanel
     x:Name="Container"
     x:DefaultBindMode="TwoWay"
@@ -19,7 +19,7 @@
       Visibility="{x:Bind TooManyViewsVisibility, Mode=OneWay}">
       <FontIcon Glyph="&#xE814;" FontSize="40" />
       <TextBlock
-        Text="You have more views configured than OpenKneeboard supports, so this view will never be enabled. Remove other views to make this view usable."
+        Text="You have more views configured than VisorVR supports, so this view will never be enabled. Remove other views to make this view usable."
         Style="{StaticResource BodyStrongTextBlockStyle}"
         VerticalAlignment="Center"
         HorizontalAlignment="Center"

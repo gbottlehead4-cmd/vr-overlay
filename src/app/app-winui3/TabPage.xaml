@@ -6,7 +6,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
-  Background="{ThemeResource SystemChromeMediumLowColor}"
+  Background="Transparent"
   Foreground="{ThemeResource TextFillColorPrimary}">
   <Page.Resources>
     <local:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
@@ -23,20 +23,55 @@
             Text="Panel name"
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
             Style="{StaticResource CaptionTextBlockStyle}"/>
-          <TextBox Text="{x:Bind Title,Mode=TwoWay}"/>
+          <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{x:Bind Title,Mode=TwoWay}"/>
+            <ComboBox
+              Grid.Column="1"
+              MinWidth="72"
+              ToolTipService.ToolTip="Panel icon"
+              SelectedIndex="{x:Bind IconIndex,Mode=TwoWay}">
+              <ComboBoxItem>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+                  <TextBlock Text="Auto"/>
+                </StackPanel>
+              </ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xEB41;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE7F4;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE909;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xF12E;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE95D;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE709;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xF0E3;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE838;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xEA90;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE8ED;" FontSize="16"/></ComboBoxItem>
+              <ComboBoxItem><FontIcon Glyph="&#xE713;" FontSize="16"/></ComboBoxItem>
+            </ComboBox>
+          </Grid>
         </StackPanel>
         <Border
           Visibility="{x:Bind HasVRPlacement, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"
-          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          Background="#FF1B1D24"
+          BorderBrush="#18FFFFFF"
           BorderThickness="1"
           CornerRadius="12"
           Padding="16">
           <StackPanel Spacing="16">
-            <TextBlock
-              Text="PLACEMENT IN VR"
-              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-              Style="{StaticResource CaptionTextBlockStyle}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <FontIcon
+                Glyph="&#xE809;"
+                FontSize="14"
+                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+              <TextBlock
+                Text="PLACEMENT IN VR"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"/>
+            </StackPanel>
             <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -58,14 +93,14 @@
                   <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock
-                  Text="Width"
+                  Text="Size"
                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 <TextBlock
                   Grid.Column="1"
-                  Text="{Binding Value, ElementName=InlineWidthSlider, Converter={StaticResource MetersConverter}}"/>
+                  Text="{Binding Value, ElementName=InlineSizeSlider, Converter={StaticResource MetersConverter}}"/>
               </Grid>
               <Slider
-                x:Name="InlineWidthSlider"
+                x:Name="InlineSizeSlider"
                 Minimum="0.05"
                 Maximum="1.5"
                 StepFrequency="0.01"
@@ -79,26 +114,26 @@
                   <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock
-                  Text="Height"
+                  Text="Distance"
                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 <TextBlock
                   Grid.Column="1"
-                  Text="{Binding Value, ElementName=InlineHeightSlider, Converter={StaticResource MetersConverter}}"/>
+                  Text="{Binding Value, ElementName=InlineDistanceSlider, Converter={StaticResource MetersConverter}}"/>
               </Grid>
               <Slider
-                x:Name="InlineHeightSlider"
-                Minimum="0.05"
-                Maximum="1.0"
-                StepFrequency="0.01"
-                Value="{x:Bind VRHeight}"
+                x:Name="InlineDistanceSlider"
+                Minimum="0.2"
+                Maximum="3.0"
+                StepFrequency="0.05"
+                Value="{x:Bind VRDistance}"
                 ThumbToolTipValueConverter="{StaticResource MetersConverter}"/>
             </StackPanel>
           </StackPanel>
         </Border>
         <Border
           Visibility="{x:Bind HasVRPlacement, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"
-          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          Background="#FF1B1D24"
+          BorderBrush="#18FFFFFF"
           BorderThickness="1"
           CornerRadius="12"
           Padding="12">
@@ -115,7 +150,11 @@
               CornerRadius="8"
               VerticalAlignment="Center"
               Background="{ThemeResource AccentFillColorTertiaryBrush}">
-              <FontIcon Glyph="&#xE70F;" FontSize="15" Foreground="White"/>
+              <PathIcon
+                Foreground="White"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Data="M2,5 L14,5 A2,2 0 0 1 16,7 L16,10 A2,2 0 0 1 14,12 L10.5,12 L8,9.6 L5.5,12 L2,12 A2,2 0 0 1 0,10 L0,7 A2,2 0 0 1 2,5 Z"/>
             </Border>
             <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
               <TextBlock Text="Position &amp; tilt"/>
@@ -159,12 +198,67 @@
       </StackPanel>
     </DataTemplate>
   </Page.Resources>
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,Auto,*">
     <CommandBar
       x:Name="CommandBar"
       Grid.Row="0" />
 
-    <Grid Grid.Row="1">
+    <Grid
+      Grid.Row="1"
+      Margin="20,2,20,10"
+      ColumnSpacing="10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <FontIcon
+        x:Name="PanelIcon"
+        Grid.Column="0"
+        FontSize="18"
+        VerticalAlignment="Center"
+        Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+      <StackPanel
+        Grid.Column="1"
+        Orientation="Horizontal"
+        Spacing="10"
+        VerticalAlignment="Center">
+        <TextBlock
+          x:Name="PanelTitle"
+          Style="{StaticResource SubtitleTextBlockStyle}"
+          VerticalAlignment="Center"/>
+        <Border
+          x:Name="LivePill"
+          Visibility="Collapsed"
+          VerticalAlignment="Center"
+          CornerRadius="10"
+          Padding="8,2"
+          Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
+          <TextBlock
+            Text="live"
+            FontSize="11"
+            Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+        </Border>
+      </StackPanel>
+      <Border
+        Grid.Column="2"
+        CornerRadius="9"
+        Padding="3"
+        Background="#FF1B1D24">
+        <StackPanel Orientation="Horizontal" Spacing="3">
+          <Button
+            x:Name="PreviewButton"
+            Content="Preview"
+            Click="ShowPreview"/>
+          <Button
+            x:Name="SettingsButton"
+            Content="Settings"
+            Click="ShowPanelSettings"/>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <Grid Grid.Row="2">
       <SwapChainPanel
         x:Name="Canvas"
         Margin="12"
@@ -173,15 +267,15 @@
       <ScrollViewer
         x:Name="SettingsOverlay"
         Visibility="Collapsed"
-        Background="{ThemeResource SystemChromeMediumLowColor}"
-        Padding="24,20,24,24"
+        Background="#FF15161C"
+        Padding="20,4,20,24"
         HorizontalScrollMode="Disabled"
         HorizontalScrollBarVisibility="Disabled">
         <ContentControl
           x:Name="SettingsContent"
           HorizontalAlignment="Left"
           HorizontalContentAlignment="Stretch"
-          MaxWidth="460"
+          MaxWidth="520"
           ContentTemplate="{StaticResource InlineTabSettingsTemplate}"/>
       </ScrollViewer>
     </Grid>

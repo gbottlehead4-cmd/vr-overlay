@@ -17,6 +17,8 @@ namespace OpenKneeboardApp {
   Boolean IsVREnabled;
   Single VRWidth;
   Single VRHeight;
+  Single VRDistance;
+  Int32 IconIndex;
 }
 
 [default_interface] runtimeclass DCSRadioLogTabUIData : TabUIData {
