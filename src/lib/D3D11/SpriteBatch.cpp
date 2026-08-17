@@ -4,23 +4,23 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/D3D11/SpriteBatch.hpp>
-#include <OpenKneeboard/Shaders/Sprite/DXBC.hpp>
+#include <VisorVR/D3D11/SpriteBatch.hpp>
+#include <VisorVR/Shaders/Sprite/DXBC.hpp>
 
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <d3d11_3.h>
 
-namespace OpenKneeboard::D3D11 {
+namespace VisorVR::D3D11 {
 
 SpriteBatch::SpriteBatch(ID3D11Device* device) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::SpriteBatch::SpriteBatch()");
+  VISORVR_TraceLoggingScope("D3D11::SpriteBatch::SpriteBatch()");
   mDevice.copy_from(device);
   device->GetImmediateContext(mDeviceContext.put());
 
   mCommonStates = std::make_unique<DirectX::DX11::CommonStates>(device);
 
-  namespace Sprite = OpenKneeboard::Shaders::Sprite::DXBC;
+  namespace Sprite = VisorVR::Shaders::Sprite::DXBC;
   winrt::check_hresult(device->CreatePixelShader(
     Sprite::PS.data(), Sprite::PS.size(), nullptr, mPixelShader.put()));
   winrt::check_hresult(device->CreateVertexShader(
@@ -88,7 +88,7 @@ SpriteBatch::SpriteBatch(ID3D11Device* device) {
 }
 
 SpriteBatch::~SpriteBatch() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::SpriteBatch::~SpriteBatch()");
+  VISORVR_TraceLoggingScope("D3D11::SpriteBatch::~SpriteBatch()");
   if (mTarget) [[unlikely]] {
     fatal(
       "Destroying SpriteBatch while frame in progress; did you call End()?");
@@ -96,7 +96,7 @@ SpriteBatch::~SpriteBatch() {
 }
 
 void SpriteBatch::Begin(ID3D11RenderTargetView* rtv, const PixelSize& rtvSize) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::SpriteBatch::Begin()");
+  VISORVR_TraceLoggingScope("D3D11::SpriteBatch::Begin()");
   if (mTarget) [[unlikely]] {
     fatal("frame already in progress; did you call End()?");
   }
@@ -156,7 +156,7 @@ void SpriteBatch::Begin(ID3D11RenderTargetView* rtv, const PixelSize& rtvSize) {
 }
 
 void SpriteBatch::Clear(DirectX::XMVECTORF32 color) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::SpriteBatch::Clear()");
+  VISORVR_TraceLoggingScope("D3D11::SpriteBatch::Clear()");
   if (!mTarget) [[unlikely]] {
     fatal("target not set, call BeginFrame()");
   }
@@ -168,7 +168,7 @@ void SpriteBatch::Draw(
   const PixelRect& sourceRect,
   const PixelRect& destRect,
   const DirectX::XMVECTORF32 tint) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::SpriteBatch::Draw()");
+  VISORVR_TraceLoggingScope("D3D11::SpriteBatch::Draw()");
   if (!mTarget) [[unlikely]] {
     fatal("target not set, call BeginFrame()");
   }
@@ -236,7 +236,7 @@ void SpriteBatch::Draw(
 }
 
 void SpriteBatch::End() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::SpriteBatch::End()");
+  VISORVR_TraceLoggingScope("D3D11::SpriteBatch::End()");
   if (!mTarget) [[unlikely]] {
     fatal("target not set; double-End() or Begin() not called?");
   }
@@ -249,7 +249,7 @@ void SpriteBatch::End() {
 }
 
 void SpriteBatch::DrawPendingVertices() {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "D3D11::SpriteBatch::DrawPendingVertices()",
     TraceLoggingValue(mPendingVertices.size(), "Count"));
   if (mPendingVertices.empty()) {
@@ -299,4 +299,4 @@ void SpriteBatch::DrawPendingVertices() {
 #pragma endregion// cleanup
 }
 
-}// namespace OpenKneeboard::D3D11
+}// namespace VisorVR::D3D11

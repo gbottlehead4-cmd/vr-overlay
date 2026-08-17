@@ -5,16 +5,16 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DCSMagneticModel.hpp>
+#include <VisorVR/DCSMagneticModel.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <felly/numeric_cast.hpp>
 #include <felly/unique_any.hpp>
 
 using felly::numeric_cast;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DCSMagneticModel::DCSMagneticModel(
   const std::filesystem::path& dcsInstallation) {
@@ -116,4 +116,4 @@ float DCSMagneticModel::GetMagneticVariation(
   return numeric_cast<float>(geoElements.Decl);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

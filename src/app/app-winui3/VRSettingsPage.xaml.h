@@ -12,21 +12,21 @@
 
 #include "WithPropertyChangedEvent.h"
 
-#include <OpenKneeboard/Events.hpp>
-#include <OpenKneeboard/ViewsSettings.hpp>
+#include <VisorVR/Events.hpp>
+#include <VisorVR/ViewsSettings.hpp>
 
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 
 using namespace winrt::Microsoft::UI::Xaml;
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class KneeboardState;
 }
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct VRSettingsPage
   : VRSettingsPageT<VRSettingsPage>,
     WithPropertyChangedEventOnProfileChange<VRSettingsPage> {
@@ -34,32 +34,32 @@ struct VRSettingsPage
   ~VRSettingsPage();
 
   bool SteamVREnabled();
-  OpenKneeboard::fire_and_forget SteamVREnabled(bool);
+  VisorVR::fire_and_forget SteamVREnabled(bool);
 
   bool OpenXR64Enabled() noexcept;
-  OpenKneeboard::fire_and_forget OpenXR64Enabled(bool) noexcept;
+  VisorVR::fire_and_forget OpenXR64Enabled(bool) noexcept;
 
   bool OpenXR32Enabled() noexcept;
-  OpenKneeboard::fire_and_forget OpenXR32Enabled(bool) noexcept;
+  VisorVR::fire_and_forget OpenXR32Enabled(bool) noexcept;
 
-  OpenKneeboard::fire_and_forget RestoreDefaults(
+  VisorVR::fire_and_forget RestoreDefaults(
     IInspectable,
     RoutedEventArgs) noexcept;
 
-  OpenKneeboard::fire_and_forget AddView(muxc::TabView, IInspectable) noexcept;
+  VisorVR::fire_and_forget AddView(muxc::TabView, IInspectable) noexcept;
 
-  OpenKneeboard::fire_and_forget RemoveView(
+  VisorVR::fire_and_forget RemoveView(
     muxc::TabView,
     muxc::TabViewTabCloseRequestedEventArgs) noexcept;
 
  private:
-  OpenKneeboard::audited_ptr<KneeboardState> mKneeboard;
+  VisorVR::audited_ptr<KneeboardState> mKneeboard;
   void PopulateViews() noexcept;
 
   void AppendViewTab(const ViewSettings& view) noexcept;
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct VRSettingsPage
   : VRSettingsPageT<VRSettingsPage, implementation::VRSettingsPage> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

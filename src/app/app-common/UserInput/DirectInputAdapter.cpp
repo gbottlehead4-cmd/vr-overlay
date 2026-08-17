@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/DirectInputAdapter.hpp>
-#include <OpenKneeboard/DirectInputDevice.hpp>
-#include <OpenKneeboard/DirectInputListener.hpp>
-#include <OpenKneeboard/GetDirectInputDevices.hpp>
-#include <OpenKneeboard/UserInputButtonBinding.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/DirectInputAdapter.hpp>
+#include <VisorVR/DirectInputDevice.hpp>
+#include <VisorVR/DirectInputListener.hpp>
+#include <VisorVR/GetDirectInputDevices.hpp>
+#include <VisorVR/UserInputButtonBinding.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -25,9 +25,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 UINT_PTR DirectInputAdapter::gNextID = 0;
 
@@ -90,7 +90,7 @@ task<void> DirectInputAdapter::ReleaseDevices() {
   }
 }
 
-OpenKneeboard::fire_and_forget DirectInputAdapter::Reload() {
+VisorVR::fire_and_forget DirectInputAdapter::Reload() {
   const auto keepAlive = shared_from_this();
 
   co_await this->ReleaseDevices();
@@ -98,13 +98,13 @@ OpenKneeboard::fire_and_forget DirectInputAdapter::Reload() {
   this->UpdateDevices();
 }
 
-OpenKneeboard::fire_and_forget DirectInputAdapter::UpdateDevices() {
+VisorVR::fire_and_forget DirectInputAdapter::UpdateDevices() {
   // Make sure the lock is released first
   EventDelay delay;
   std::unique_lock lock(mDevicesMutex);
 
   if (mShuttingDown) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return;
   }
 
@@ -193,7 +193,7 @@ OpenKneeboard::fire_and_forget DirectInputAdapter::UpdateDevices() {
   this->evAttachedControllersChangedEvent.Emit();
 }
 
-OpenKneeboard::fire_and_forget DirectInputAdapter::final_release(
+VisorVR::fire_and_forget DirectInputAdapter::final_release(
   std::unique_ptr<DirectInputAdapter> self) {
   self->mShuttingDown = true;
   co_await self->ReleaseDevices();
@@ -263,4 +263,4 @@ LRESULT DirectInputAdapter::SubclassProc(
   return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

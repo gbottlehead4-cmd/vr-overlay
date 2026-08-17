@@ -4,9 +4,9 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ToolbarAction.hpp>
+#include <VisorVR/ToolbarAction.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ToolbarAction::ToolbarAction(std::string glyph, std::string label)
   : mGlyph(glyph),
@@ -18,4 +18,4 @@ std::string_view ToolbarAction::GetGlyph() const { return mGlyph; }
 
 std::string_view ToolbarAction::GetLabel() const { return mLabel; }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

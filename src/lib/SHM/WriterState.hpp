@@ -6,13 +6,13 @@
 // OpenKneeboard repository.
 #pragma once
 
-#include <OpenKneeboard/StateMachine.hpp>
+#include <VisorVR/StateMachine.hpp>
 
-#include <OpenKneeboard/array.hpp>
+#include <VisorVR/array.hpp>
 
-namespace OpenKneeboard::SHM {
+namespace VisorVR::SHM {
 
-#define OPENKNEEBOARD_SHM_WRITER_STATES \
+#define VISORVR_SHM_WRITER_STATES \
   IT(Unlocked) \
   IT(TryLock) \
   IT(Locked) \
@@ -23,7 +23,7 @@ namespace OpenKneeboard::SHM {
 
 enum class WriterState {
 #define IT(x) x,
-  OPENKNEEBOARD_SHM_WRITER_STATES
+  VISORVR_SHM_WRITER_STATES
 #undef IT
 };
 
@@ -45,4 +45,4 @@ using WriterStateMachine = StateMachine<
 
 static_assert(lockable_state_machine<SHM::WriterStateMachine>);
 
-}// namespace OpenKneeboard::SHM
+}// namespace VisorVR::SHM

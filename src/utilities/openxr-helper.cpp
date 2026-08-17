@@ -11,10 +11,10 @@
  * If done from the main process, the registry write will be app-specific.
  */
 
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <Windows.h>
 #include <shellapi.h>
@@ -23,7 +23,7 @@
 #include <functional>
 #include <string>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 enum class RegistryView {
   WOW64_64,
@@ -133,17 +133,17 @@ static void EnableOpenXRLayer(
   RegCloseKey(openXRKey);
 }
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 /* PS >
- * [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.OpenXR.Helper")
+ * [System.Diagnostics.Tracing.EventSource]::new("VisorVR.OpenXR.Helper")
  * 2489967e-a7f2-5db8-ba74-27c35b944d56
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.OpenXR.Helper",
+  "VisorVR.OpenXR.Helper",
   (0x2489967e, 0xa7f2, 0x5db8, 0xba, 0x74, 0x27, 0xc3, 0x5b, 0x94, 0x4d, 0x56));
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR commandLine, int) {
   TraceLoggingRegister(gTraceProvider);

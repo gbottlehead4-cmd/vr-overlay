@@ -5,12 +5,12 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DirectInputDevice.hpp>
-#include <OpenKneeboard/DirectInputMouseListener.hpp>
+#include <VisorVR/DirectInputDevice.hpp>
+#include <VisorVR/DirectInputMouseListener.hpp>
 
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/scope_exit.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DirectInputMouseListener::DirectInputMouseListener(
   const std::stop_token& stop,
@@ -66,4 +66,4 @@ void DirectInputMouseListener::OnAcquired() noexcept {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

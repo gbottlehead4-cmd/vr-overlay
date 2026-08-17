@@ -4,20 +4,20 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/Settings.hpp>
-#include <OpenKneeboard/TroubleshootingStore.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/Settings.hpp>
+#include <VisorVR/TroubleshootingStore.hpp>
 
-#include <OpenKneeboard/bindline.hpp>
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/bindline.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/version.hpp>
 
 #include <chrono>
 #include <format>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static auto& Store() {
   static std::weak_ptr<TroubleshootingStore> value;
@@ -39,7 +39,7 @@ std::shared_ptr<TroubleshootingStore> TroubleshootingStore::Get() {
 }
 
 class TroubleshootingStore::DPrintReceiver final
-  : public OpenKneeboard::DPrintReceiver {
+  : public VisorVR::DPrintReceiver {
  public:
   DPrintReceiver() = default;
   ~DPrintReceiver();
@@ -110,7 +110,7 @@ void TroubleshootingStore::InitializeLogFile() {
   std::sort(existingFiles.begin(), existingFiles.end());
 
   const auto file = directory
-    / std::format(L"OpenKneeboard-{:%Y%m%dT%H%M%S}-{}.{}.{}.{}-{}.log",
+    / std::format(L"VisorVR-{:%Y%m%dT%H%M%S}-{}.{}.{}.{}-{}.log",
                   std::chrono::time_point_cast<std::chrono::seconds>(
                     std::chrono::system_clock::now()),
                   Version::Major,
@@ -267,4 +267,4 @@ std::string TroubleshootingStore::GetDPrintDebugLogAsString() const {
   return winrt::to_string(ret);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

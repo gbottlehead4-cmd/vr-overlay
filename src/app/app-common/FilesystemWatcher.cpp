@@ -5,17 +5,17 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/FilesystemWatcher.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/FilesystemWatcher.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/task/resume_on_signal.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/task/resume_on_signal.hpp>
 
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Search;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 std::shared_ptr<FilesystemWatcher> FilesystemWatcher::Create(
   const std::filesystem::path& path) {
   auto ret = shared_with_final_release(new FilesystemWatcher(path));
@@ -35,13 +35,13 @@ FilesystemWatcher::FilesystemWatcher(const std::filesystem::path& path)
       | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE);
   if (handle == INVALID_HANDLE_VALUE) {
     dprint("Invalid handle: {}", GetLastError());
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mHandle.reset(handle);
 }
 
-OpenKneeboard::fire_and_forget FilesystemWatcher::final_release(
+VisorVR::fire_and_forget FilesystemWatcher::final_release(
   std::unique_ptr<FilesystemWatcher> self) {
   self->mStop.request_stop();
   co_await std::move(self->mImpl).value();
@@ -68,7 +68,7 @@ task<void> FilesystemWatcher::Run() {
   }
 }
 
-OpenKneeboard::fire_and_forget FilesystemWatcher::OnContentsChanged() {
+VisorVR::fire_and_forget FilesystemWatcher::OnContentsChanged() {
   const auto weak = weak_from_this();
 
   try {
@@ -88,7 +88,7 @@ OpenKneeboard::fire_and_forget FilesystemWatcher::OnContentsChanged() {
   // Regular file
 
   constexpr const auto tickDelta = std::chrono::file_clock::duration(1);
-  // This specific value isn't required by OpenKneeboard; this check is just
+  // This specific value isn't required by VisorVR; this check is just
   // paranoia making sure that `std::chrono::file_clock` matches the
   // documented tick length for the Windows FILETIME structure as of
   // 2023-03-26.
@@ -156,4 +156,4 @@ OpenKneeboard::fire_and_forget FilesystemWatcher::OnContentsChanged() {
     co_return;
   }
 }
-}// namespace OpenKneeboard
+}// namespace VisorVR

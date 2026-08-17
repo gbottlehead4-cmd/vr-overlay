@@ -5,15 +5,15 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DoodleSettings.hpp>
+#include <VisorVR/DoodleSettings.hpp>
 
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
-namespace OpenKneeboard {
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+namespace VisorVR {
+VISORVR_DEFINE_SPARSE_JSON(
   DoodleSettings::Tool,
   mMinimumRadius,
   mSensitivity)
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(DoodleSettings, mPen, mEraser)
+VISORVR_DEFINE_SPARSE_JSON(DoodleSettings, mPen, mEraser)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

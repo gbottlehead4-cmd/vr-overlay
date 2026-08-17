@@ -1,8 +1,8 @@
 <Page
-  x:Class="OpenKneeboardApp.HelpPage"
+  x:Class="VisorVRApp.HelpPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="using:OpenKneeboardApp"
+  xmlns:local="using:VisorVRApp"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
@@ -27,28 +27,28 @@
           Quick-start guide
         </HyperlinkButton>
         <HyperlinkButton
-          NavigateUri="https://go.openkneeboard.com/docs">
+          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay#readme">
           Documentation
         </HyperlinkButton>
         <HyperlinkButton
-          NavigateUri="https://go.openkneeboard.com/troubleshooting">
+          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/issues">
           Troubleshooting guides
         </HyperlinkButton>
         <HyperlinkButton
-          NavigateUri="https://go.openkneeboard.com/discord">
+          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/discussions">
           Discord
         </HyperlinkButton>
         <HyperlinkButton
-          NavigateUri="https://go.openkneeboard.com/issues">
+          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/issues">
           Bug Reports and Feature Requests
         </HyperlinkButton>
         <TextBlock
           Foreground="{ThemeResource TextFillColorSecondary}"
           Style="{ThemeResource CaptionTextBlockStyle}">
-          I make OpenKneeboard for my own use, and I share it in the hope others find it 
+          I make VisorVR for my own use, and I share it in the hope others find it 
           useful; I’m not able to commit to support, bug fixes, or feature development. While 
           I try to be active, please do not @mention, email, or DM me for individual help - if
-          the troubleshooting guides don't solve a problem, use the #openkneeboard-help
+          the troubleshooting guides don't solve a problem, use the #visorvr-help
           channel in Discord instead.
         </TextBlock>
         <TextBlock
@@ -151,7 +151,7 @@
             Debugging information and traces can include personal information,
             such as your Windows username, language settings, installation paths,
             graphics card make/model, VR headset make/model, OpenXR drivers or
-            tools, and your OpenKneeboard configuration. Sharing debugging information
+            tools, and your VisorVR configuration. Sharing debugging information
             or traces may share this information with others.
           </TextBlock>
           <Button

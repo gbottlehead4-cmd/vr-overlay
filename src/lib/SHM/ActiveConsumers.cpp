@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Elevation.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
+#include <VisorVR/Elevation.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -18,7 +18,7 @@
 #include <format>
 #include <string>
 
-namespace OpenKneeboard::SHM {
+namespace VisorVR::SHM {
 
 class ActiveConsumers::Impl {
  public:
@@ -177,4 +177,4 @@ ActiveConsumers::T ActiveConsumers::NotVR() const {
   return mViewer;
 }
 
-}// namespace OpenKneeboard::SHM
+}// namespace VisorVR::SHM

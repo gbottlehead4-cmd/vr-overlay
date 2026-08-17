@@ -10,8 +10,8 @@
 #include "pch.h"
 // clang-format on
 
-#include <OpenKneeboard/audited_ptr.hpp>
-#include <OpenKneeboard/task.hpp>
+#include <VisorVR/audited_ptr.hpp>
+#include <VisorVR/task.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -20,7 +20,7 @@
 #include <future>
 #include <memory>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 class KneeboardState;
 
@@ -29,4 +29,4 @@ task<void> InstallPlugin(
   winrt::Microsoft::UI::Xaml::XamlRoot,
   const wchar_t* const commandLine);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

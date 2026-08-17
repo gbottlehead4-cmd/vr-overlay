@@ -20,15 +20,15 @@
 
 #include "WithPropertyChangedEvent.h"
 
-#include <OpenKneeboard/Events.hpp>
+#include <VisorVR/Events.hpp>
 
-#include <OpenKneeboard/audited_ptr.hpp>
-#include <OpenKneeboard/task.hpp>
+#include <VisorVR/audited_ptr.hpp>
+#include <VisorVR/task.hpp>
 
 #include <optional>
 #include <string>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class ITab;
 class TabView;
 class BrowserTab;
@@ -37,41 +37,41 @@ struct DXResources;
 class KneeboardState;
 class WindowCaptureTab;
 enum class TabType;
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Controls::Primitives;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct TabsSettingsPage : TabsSettingsPageT<TabsSettingsPage>,
-                          OpenKneeboard::EventReceiver,
-                          OpenKneeboard::WithPropertyChangedEvent {
+                          VisorVR::EventReceiver,
+                          VisorVR::WithPropertyChangedEvent {
   TabsSettingsPage();
   ~TabsSettingsPage() noexcept override;
 
   IVector<IInspectable> Tabs() noexcept;
 
-  OpenKneeboard::fire_and_forget RestoreDefaults(
+  VisorVR::fire_and_forget RestoreDefaults(
     IInspectable,
     RoutedEventArgs) noexcept;
 
-  OpenKneeboard::fire_and_forget CreateTab(
+  VisorVR::fire_and_forget CreateTab(
     IInspectable,
     RoutedEventArgs) noexcept;
-  OpenKneeboard::fire_and_forget CreatePluginTab(
+  VisorVR::fire_and_forget CreatePluginTab(
     IInspectable,
     RoutedEventArgs) noexcept;
-  OpenKneeboard::fire_and_forget RemoveTab(IInspectable, RoutedEventArgs);
-  OpenKneeboard::fire_and_forget ShowTabSettings(IInspectable, RoutedEventArgs);
-  OpenKneeboard::fire_and_forget ToggleVREditMode(IInspectable, RoutedEventArgs);
-  OpenKneeboard::fire_and_forget RecenterVR(IInspectable, RoutedEventArgs);
-  OpenKneeboard::fire_and_forget GoToInputBindings(IInspectable, RoutedEventArgs);
-  OpenKneeboard::fire_and_forget ShowDebugInfo(IInspectable, RoutedEventArgs);
+  VisorVR::fire_and_forget RemoveTab(IInspectable, RoutedEventArgs);
+  VisorVR::fire_and_forget ShowTabSettings(IInspectable, RoutedEventArgs);
+  VisorVR::fire_and_forget ToggleVREditMode(IInspectable, RoutedEventArgs);
+  VisorVR::fire_and_forget RecenterVR(IInspectable, RoutedEventArgs);
+  VisorVR::fire_and_forget GoToInputBindings(IInspectable, RoutedEventArgs);
+  VisorVR::fire_and_forget ShowDebugInfo(IInspectable, RoutedEventArgs);
   void CopyDebugInfo(const IInspectable&, const RoutedEventArgs&);
 
-  OpenKneeboard::fire_and_forget OnTabsChanged(
+  VisorVR::fire_and_forget OnTabsChanged(
     IInspectable,
     Windows::Foundation::Collections::IVectorChangedEventArgs) noexcept;
   void OnAddBrowserAddressTextChanged(
@@ -82,26 +82,26 @@ struct TabsSettingsPage : TabsSettingsPageT<TabsSettingsPage>,
   void CreateAddTabMenu(const Button& button, FlyoutPlacementMode);
 
   template <class T>
-  OpenKneeboard::fire_and_forget CreateFileTab(
+  VisorVR::fire_and_forget CreateFileTab(
     const std::string& pickerDialogTitle = {});
-  OpenKneeboard::fire_and_forget CreateFolderTab();
-  OpenKneeboard::fire_and_forget CreateWindowCaptureTab();
-  OpenKneeboard::fire_and_forget CreateBrowserTab();
+  VisorVR::fire_and_forget CreateFolderTab();
+  VisorVR::fire_and_forget CreateWindowCaptureTab();
+  VisorVR::fire_and_forget CreateBrowserTab();
   winrt::guid GetFilePickerPersistenceGuid();
 
-  task<void> AddTabs(const std::vector<std::shared_ptr<OpenKneeboard::ITab>>&);
-  static OpenKneeboardApp::TabUIData CreateTabUIData(
-    const std::shared_ptr<OpenKneeboard::ITab>&);
+  task<void> AddTabs(const std::vector<std::shared_ptr<VisorVR::ITab>>&);
+  static VisorVRApp::TabUIData CreateTabUIData(
+    const std::shared_ptr<VisorVR::ITab>&);
 
   bool mUIIsChangingTabs = false;
 
-  OpenKneeboard::audited_ptr<OpenKneeboard::DXResources> mDXR;
-  OpenKneeboard::audited_ptr<OpenKneeboard::KneeboardState> mKneeboard;
+  VisorVR::audited_ptr<VisorVR::DXResources> mDXR;
+  VisorVR::audited_ptr<VisorVR::KneeboardState> mKneeboard;
 };
 
 struct TabUIData : TabUIDataT<TabUIData>,
-                   OpenKneeboard::EventReceiver,
-                   OpenKneeboard::WithPropertyChangedEvent {
+                   VisorVR::EventReceiver,
+                   VisorVR::WithPropertyChangedEvent {
   TabUIData() = default;
   ~TabUIData();
 
@@ -116,18 +116,18 @@ struct TabUIData : TabUIDataT<TabUIData>,
 
   bool HasVRPlacement() const;
   bool IsVREnabled() const;
-  OpenKneeboard::fire_and_forget IsVREnabled(bool);
+  VisorVR::fire_and_forget IsVREnabled(bool);
   float VRWidth() const;
-  OpenKneeboard::fire_and_forget VRWidth(float);
+  VisorVR::fire_and_forget VRWidth(float);
   float VRHeight() const;
-  OpenKneeboard::fire_and_forget VRHeight(float);
+  VisorVR::fire_and_forget VRHeight(float);
   float VRDistance() const;
-  OpenKneeboard::fire_and_forget VRDistance(float);
+  VisorVR::fire_and_forget VRDistance(float);
   int32_t IconIndex() const;
   void IconIndex(int32_t);
 
  protected:
-  std::weak_ptr<OpenKneeboard::ITab> mTab;
+  std::weak_ptr<VisorVR::ITab> mTab;
 
  private:
   std::optional<winrt::guid> GetVRViewID() const;
@@ -135,25 +135,25 @@ struct TabUIData : TabUIDataT<TabUIData>,
 
 struct BrowserTabUIData : BrowserTabUIDataT<
                             BrowserTabUIData,
-                            OpenKneeboardApp::implementation::TabUIData> {
+                            VisorVRApp::implementation::TabUIData> {
   BrowserTabUIData() = default;
 
   bool IsSimHubIntegrationEnabled() const;
-  OpenKneeboard::fire_and_forget IsSimHubIntegrationEnabled(bool);
+  VisorVR::fire_and_forget IsSimHubIntegrationEnabled(bool);
 
   bool AreOpenKneeboardAPIsEnabled() const;
-  OpenKneeboard::fire_and_forget AreOpenKneeboardAPIsEnabled(bool);
+  VisorVR::fire_and_forget AreOpenKneeboardAPIsEnabled(bool);
 
   bool IsBackgroundTransparent() const;
-  OpenKneeboard::fire_and_forget IsBackgroundTransparent(bool);
+  VisorVR::fire_and_forget IsBackgroundTransparent(bool);
 
  private:
-  std::shared_ptr<OpenKneeboard::BrowserTab> GetTab() const;
+  std::shared_ptr<VisorVR::BrowserTab> GetTab() const;
 };
 
 struct DCSRadioLogTabUIData : DCSRadioLogTabUIDataT<
                                 DCSRadioLogTabUIData,
-                                OpenKneeboardApp::implementation::TabUIData> {
+                                VisorVRApp::implementation::TabUIData> {
   DCSRadioLogTabUIData() = default;
   uint8_t MissionStartBehavior() const;
   void MissionStartBehavior(uint8_t value);
@@ -161,15 +161,15 @@ struct DCSRadioLogTabUIData : DCSRadioLogTabUIDataT<
   void TimestampsEnabled(bool value);
 
  private:
-  std::shared_ptr<OpenKneeboard::DCSRadioLogTab> GetTab() const;
+  std::shared_ptr<VisorVR::DCSRadioLogTab> GetTab() const;
 };
 
 struct WindowCaptureTabUIData : WindowCaptureTabUIDataT<
                                   WindowCaptureTabUIData,
-                                  OpenKneeboardApp::implementation::TabUIData> {
+                                  VisorVRApp::implementation::TabUIData> {
   WindowCaptureTabUIData() = default;
 
-  using fire_and_forget = OpenKneeboard::fire_and_forget;
+  using fire_and_forget = VisorVR::fire_and_forget;
 
   hstring WindowTitle();
   fire_and_forget WindowTitle(hstring const& value);
@@ -189,7 +189,7 @@ struct WindowCaptureTabUIData : WindowCaptureTabUIDataT<
   fire_and_forget WindowClass(hstring);
 
  private:
-  std::shared_ptr<OpenKneeboard::WindowCaptureTab> GetTab() const;
+  std::shared_ptr<VisorVR::WindowCaptureTab> GetTab() const;
 };
 
 struct TabUIDataTemplateSelector
@@ -215,8 +215,8 @@ struct TabUIDataTemplateSelector
   DataTemplate mWindowCapture;
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct TabsSettingsPage
   : TabsSettingsPageT<TabsSettingsPage, implementation::TabsSettingsPage> {};
 
@@ -235,4 +235,4 @@ struct TabUIDataTemplateSelector
       TabUIDataTemplateSelector,
       implementation::TabUIDataTemplateSelector> {};
 
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

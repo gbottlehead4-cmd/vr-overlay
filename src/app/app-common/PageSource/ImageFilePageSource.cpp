@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/FileHash.hpp>
-#include <OpenKneeboard/ImageFilePageSource.hpp>
+#include <VisorVR/FileHash.hpp>
+#include <VisorVR/ImageFilePageSource.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <expected>
 #include <mutex>
@@ -18,7 +18,7 @@
 #include <icu.h>
 #include <wincodec.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 static std::expected<std::wstring, HRESULT> variable_sized_string_mem_fn(
   auto self,
   auto impl) {
@@ -67,7 +67,7 @@ GetFileFormatProvidersUncached(IWICImagingFactory* wic) {
       dprint.Warning(
         "Failed to get necessary information for WIC component {}",
         winrt::guid {clsID});
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       continue;
     }
 
@@ -140,7 +140,7 @@ ImageFilePageSource::ImageFilePageSource(const audited_ptr<DXResources>& dxr)
 
 void ImageFilePageSource::SetPaths(
   const std::vector<std::filesystem::path>& paths) {
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity, "ImageFilePageSource::SetPaths()");
   mPages.clear();
   mPages.reserve(paths.size());
@@ -287,7 +287,7 @@ task<void> ImageFilePageSource::RenderPage(
   RenderContext rc,
   PageID pageID,
   PixelRect rect) {
-  OPENKNEEBOARD_TraceLoggingCoro("ImageFilePageSource::RenderPage");
+  VISORVR_TraceLoggingCoro("ImageFilePageSource::RenderPage");
   auto bitmap = GetPageBitmap(pageID);
   if (!bitmap) {
     co_return;
@@ -311,7 +311,7 @@ task<void> ImageFilePageSource::RenderPage(
 }
 
 winrt::com_ptr<ID2D1Bitmap> ImageFilePageSource::GetPageBitmap(PageID pageID) {
-  OPENKNEEBOARD_TraceLoggingCoro("ImageFilePageSource::GetPageBitmap");
+  VISORVR_TraceLoggingCoro("ImageFilePageSource::GetPageBitmap");
   std::unique_lock lock(mMutex);
   TraceLoggingWrite(
     gTraceProvider, "ImageFilePageSource::GetPageBitmap()/acquiredLock");
@@ -337,7 +337,7 @@ winrt::com_ptr<ID2D1Bitmap> ImageFilePageSource::GetPageBitmap(PageID pageID) {
 
   winrt::com_ptr<IWICBitmapFrameDecode> frame;
   {
-    OPENKNEEBOARD_TraceLoggingScope(
+    VISORVR_TraceLoggingScope(
       "ImageFilePageSource::GetPageBitmap/GetFrame");
     decoder->GetFrame(0, frame.put());
   }
@@ -382,7 +382,7 @@ winrt::com_ptr<ID2D1Bitmap> ImageFilePageSource::GetPageBitmap(PageID pageID) {
     D2D1_DEVICE_CONTEXT_OPTIONS_NONE, ctx.put()));
 
   {
-    OPENKNEEBOARD_TraceLoggingScope(
+    VISORVR_TraceLoggingScope(
       "ImageFilePageSource::GetPageBitmap()/CreateBitmapFromWicBitmap");
     ctx->CreateBitmapFromWicBitmap(converter.get(), sharedBitmap.put());
   }
@@ -407,7 +407,7 @@ winrt::com_ptr<ID2D1Bitmap> ImageFilePageSource::GetPageBitmap(PageID pageID) {
     return {};
   }
   {
-    OPENKNEEBOARD_TraceLoggingScope(
+    VISORVR_TraceLoggingScope(
       "ImageFilePageSource::GetPageBitmap()/CopyFromBitmap");
     page.mBitmap->CopyFromBitmap(nullptr, sharedBitmap.get(), nullptr);
   }
@@ -450,4 +450,4 @@ std::optional<PageID> ImageFilePageSource::GetPageIDFromPersistentID(
   return it->mID;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

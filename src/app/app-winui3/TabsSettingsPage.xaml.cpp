@@ -20,24 +20,24 @@
 #include "FilePicker.h"
 #include "Globals.h"
 
-#include <OpenKneeboard/BrowserTab.hpp>
-#include <OpenKneeboard/DCSRadioLogTab.hpp>
-#include <OpenKneeboard/FilePageSource.hpp>
-#include <OpenKneeboard/IHasDebugInformation.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
-#include <OpenKneeboard/PluginStore.hpp>
-#include <OpenKneeboard/PluginTab.hpp>
-#include <OpenKneeboard/TabTypes.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabsList.hpp>
-#include <OpenKneeboard/UserAction.hpp>
-#include <OpenKneeboard/ViewsSettings.hpp>
+#include <VisorVR/BrowserTab.hpp>
+#include <VisorVR/DCSRadioLogTab.hpp>
+#include <VisorVR/FilePageSource.hpp>
+#include <VisorVR/IHasDebugInformation.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/LaunchURI.hpp>
+#include <VisorVR/PluginStore.hpp>
+#include <VisorVR/PluginTab.hpp>
+#include <VisorVR/TabTypes.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabsList.hpp>
+#include <VisorVR/UserAction.hpp>
+#include <VisorVR/ViewsSettings.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/inttypes.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/inttypes.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 
@@ -50,16 +50,16 @@
 
 #include <shobjidl.h>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 
 using WindowSpec = WindowCaptureTab::WindowSpecification;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
-OpenKneeboardApp::TabUIData TabsSettingsPage::CreateTabUIData(
+VisorVRApp::TabUIData TabsSettingsPage::CreateTabUIData(
   const std::shared_ptr<ITab>& tab) {
-  OpenKneeboardApp::TabUIData tabData {nullptr};
+  VisorVRApp::TabUIData tabData {nullptr};
   if (std::dynamic_pointer_cast<BrowserTab>(tab)) {
     tabData = winrt::make<BrowserTabUIData>();
   } else if (std::dynamic_pointer_cast<DCSRadioLogTab>(tab)) {
@@ -128,7 +128,7 @@ void TabsSettingsPage::CreateAddTabMenu(
     } \
     tabTypes.Append(item); \
   }
-  OPENKNEEBOARD_TAB_TYPES
+  VISORVR_TAB_TYPES
 #undef IT
   const auto pluginTabTypes = mKneeboard->GetPluginStore()->GetTabTypes();
   if (!pluginTabTypes.empty()) {
@@ -151,7 +151,7 @@ void TabsSettingsPage::CreateAddTabMenu(
   button.Flyout(flyout);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::RestoreDefaults(
+VisorVR::fire_and_forget TabsSettingsPage::RestoreDefaults(
   IInspectable,
   RoutedEventArgs) noexcept {
   ContentDialog dialog;
@@ -194,7 +194,7 @@ void TabsSettingsPage::CopyDebugInfo(
   Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(package);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::ShowDebugInfo(
+VisorVR::fire_and_forget TabsSettingsPage::ShowDebugInfo(
   IInspectable sender,
   RoutedEventArgs) {
   const std::shared_lock lock(*mKneeboard);
@@ -222,7 +222,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::ShowDebugInfo(
   co_await DebugInfoDialog().ShowAsync();
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::ShowTabSettings(
+VisorVR::fire_and_forget TabsSettingsPage::ShowTabSettings(
   IInspectable sender,
   RoutedEventArgs) {
   // Only hold the lock long enough to resolve the tab. It must NOT be held
@@ -244,7 +244,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::ShowTabSettings(
   if (std::dynamic_pointer_cast<kind##Tab>(tab)) { \
     title = label; \
   }
-  OPENKNEEBOARD_TAB_TYPES
+  VISORVR_TAB_TYPES
 #undef IT
   if (title.empty()) {
     // We reach this for plugin tabs
@@ -277,25 +277,25 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::ShowTabSettings(
   TabSettingsDialogContent().ContentTemplateSelector({nullptr});
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::ToggleVREditMode(
+VisorVR::fire_and_forget TabsSettingsPage::ToggleVREditMode(
   IInspectable,
   RoutedEventArgs) {
   co_await mKneeboard->PostUserAction(UserAction::TOGGLE_VR_EDIT_MODE);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::RecenterVR(
+VisorVR::fire_and_forget TabsSettingsPage::RecenterVR(
   IInspectable,
   RoutedEventArgs) {
   co_await mKneeboard->PostUserAction(UserAction::RECENTER_VR);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::GoToInputBindings(
+VisorVR::fire_and_forget TabsSettingsPage::GoToInputBindings(
   IInspectable,
   RoutedEventArgs) {
   co_await LaunchURI(SpecialURIs::SettingsInput());
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::RemoveTab(
+VisorVR::fire_and_forget TabsSettingsPage::RemoveTab(
   IInspectable sender,
   RoutedEventArgs) {
   const std::shared_lock lock(*mKneeboard);
@@ -327,7 +327,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::RemoveTab(
   auto tabsList = mKneeboard->GetTabsList();
   const auto tabs = tabsList->GetTabs();
   auto it = std::ranges::find(tabs, tab);
-  auto idx = static_cast<OpenKneeboard::TabIndex>(it - tabs.begin());
+  auto idx = static_cast<VisorVR::TabIndex>(it - tabs.begin());
   co_await tabsList->RemoveTab(idx);
   List()
     .ItemsSource()
@@ -335,7 +335,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::RemoveTab(
     .RemoveAt(idx);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::CreatePluginTab(
+VisorVR::fire_and_forget TabsSettingsPage::CreatePluginTab(
   IInspectable sender,
   RoutedEventArgs) noexcept {
   const auto id =
@@ -343,7 +343,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::CreatePluginTab(
   const auto tabTypes = mKneeboard->GetPluginStore()->GetTabTypes();
   const auto it = std::ranges::find(tabTypes, id, &Plugin::TabType::mID);
   if (it == tabTypes.end()) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return;
   }
   const auto tab = co_await PluginTab::Create(
@@ -365,12 +365,12 @@ task<std::shared_ptr<T>> make_tab_without_making_msvc_sad(
   const audited_ptr<DXResources>& dxr,
   KneeboardState* kbs) {
   static_assert(
-    ::OpenKneeboard::detail::
+    ::VisorVR::detail::
       shared_constructible_from<T, audited_ptr<DXResources>, KneeboardState*>);
-  return ::OpenKneeboard::detail::make_shared<T>(dxr, kbs);
+  return ::VisorVR::detail::make_shared<T>(dxr, kbs);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::CreateTab(
+VisorVR::fire_and_forget TabsSettingsPage::CreateTab(
   IInspectable sender,
   RoutedEventArgs) noexcept {
   auto tabType = static_cast<TabType>(
@@ -381,7 +381,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::CreateTab(
   case TabType::##prefix: \
     dprint("Adding " #prefix " tab"); \
     break;
-    OPENKNEEBOARD_TAB_TYPES
+    VISORVR_TAB_TYPES
 #undef IT
     default:
       dprint("Adding tab with kind {}", std::to_underlying(tabType));
@@ -406,7 +406,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::CreateTab(
   }
 #define IT(_, type) \
   if (tabType == TabType::type) { \
-    if constexpr (::OpenKneeboard::detail::shared_constructible_from< \
+    if constexpr (::VisorVR::detail::shared_constructible_from< \
                     type##Tab, \
                     audited_ptr<DXResources>, \
                     KneeboardState*>) { \
@@ -419,13 +419,13 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::CreateTab(
         std::format("Don't know how to construct {}Tab", #type)); \
     } \
   }
-  OPENKNEEBOARD_TAB_TYPES
+  VISORVR_TAB_TYPES
 #undef IT
   throw std::logic_error(
     std::format("Unhandled tab type: {}", static_cast<uint8_t>(tabType)));
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::CreateBrowserTab() {
+VisorVR::fire_and_forget TabsSettingsPage::CreateBrowserTab() {
   AddBrowserAddress().Text({});
 
   if (co_await AddBrowserDialog().ShowAsync() != ContentDialogResult::Primary) {
@@ -466,8 +466,8 @@ void TabsSettingsPage::OnAddBrowserAddressTextChanged(
   AddBrowserDialog().IsPrimaryButtonEnabled(valid);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::CreateWindowCaptureTab() {
-  OpenKneeboardApp::WindowPickerDialog picker;
+VisorVR::fire_and_forget TabsSettingsPage::CreateWindowCaptureTab() {
+  VisorVRApp::WindowPickerDialog picker;
   picker.XamlRoot(this->XamlRoot());
 
   if (co_await picker.ShowAsync() != ContentDialogResult::Primary) {
@@ -532,7 +532,7 @@ winrt::guid TabsSettingsPage::GetFilePickerPersistenceGuid() {
 }
 
 template <class T>
-OpenKneeboard::fire_and_forget TabsSettingsPage::CreateFileTab(
+VisorVR::fire_and_forget TabsSettingsPage::CreateFileTab(
   const std::string& pickerDialogTitle) {
   FilePicker picker(gMainWindow);
   picker.SettingsIdentifier(GetFilePickerPersistenceGuid());
@@ -556,7 +556,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::CreateFileTab(
     co_return;
   }
 
-  std::vector<std::shared_ptr<OpenKneeboard::ITab>> newTabs;
+  std::vector<std::shared_ptr<VisorVR::ITab>> newTabs;
   for (const auto& path: files) {
     // TODO (after v1.4): figure out MSVC compile errors if I move
     // `detail::make_shared()` in TabTypes.h out of the `detail`
@@ -568,7 +568,7 @@ OpenKneeboard::fire_and_forget TabsSettingsPage::CreateFileTab(
   co_await this->AddTabs(newTabs);
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::CreateFolderTab() {
+VisorVR::fire_and_forget TabsSettingsPage::CreateFolderTab() {
   FilePicker picker(gMainWindow);
   picker.SettingsIdentifier(GetFilePickerPersistenceGuid());
   picker.SuggestedStartLocation(FOLDERID_Documents);
@@ -612,7 +612,7 @@ task<void> TabsSettingsPage::AddTabs(
   }
 }
 
-OpenKneeboard::fire_and_forget TabsSettingsPage::OnTabsChanged(
+VisorVR::fire_and_forget TabsSettingsPage::OnTabsChanged(
   IInspectable,
   Windows::Foundation::Collections::IVectorChangedEventArgs) noexcept {
   const std::shared_lock lock(*mKneeboard);
@@ -720,7 +720,7 @@ bool TabUIData::IsVREnabled() const {
   return it != views.end() && it->mVR.mEnabled;
 }
 
-OpenKneeboard::fire_and_forget TabUIData::IsVREnabled(bool value) {
+VisorVR::fire_and_forget TabUIData::IsVREnabled(bool value) {
   const auto viewID = GetVRViewID();
   if (!viewID) {
     co_return;
@@ -756,7 +756,7 @@ float TabUIData::VRWidth() const {
   return it->mVR.GetIndependentSettings().mMaximumPhysicalSize.mWidth;
 }
 
-OpenKneeboard::fire_and_forget TabUIData::VRWidth(float value) {
+VisorVR::fire_and_forget TabUIData::VRWidth(float value) {
   if (std::isnan(value)) {
     co_return;
   }
@@ -800,7 +800,7 @@ float TabUIData::VRHeight() const {
   return it->mVR.GetIndependentSettings().mMaximumPhysicalSize.mHeight;
 }
 
-OpenKneeboard::fire_and_forget TabUIData::VRHeight(float value) {
+VisorVR::fire_and_forget TabUIData::VRHeight(float value) {
   if (std::isnan(value)) {
     co_return;
   }
@@ -845,7 +845,7 @@ float TabUIData::VRDistance() const {
   return -it->mVR.GetIndependentSettings().mPose.mZ;
 }
 
-OpenKneeboard::fire_and_forget TabUIData::VRDistance(float value) {
+VisorVR::fire_and_forget TabUIData::VRDistance(float value) {
   if (std::isnan(value)) {
     co_return;
   }
@@ -976,7 +976,7 @@ bool BrowserTabUIData::IsSimHubIntegrationEnabled() const {
   return GetTab()->IsSimHubIntegrationEnabled();
 }
 
-OpenKneeboard::fire_and_forget BrowserTabUIData::IsSimHubIntegrationEnabled(
+VisorVR::fire_and_forget BrowserTabUIData::IsSimHubIntegrationEnabled(
   bool value) {
   co_await GetTab()->SetSimHubIntegrationEnabled(value);
 }
@@ -985,7 +985,7 @@ bool BrowserTabUIData::AreOpenKneeboardAPIsEnabled() const {
   return GetTab()->AreOpenKneeboardAPIsEnabled();
 }
 
-OpenKneeboard::fire_and_forget BrowserTabUIData::AreOpenKneeboardAPIsEnabled(
+VisorVR::fire_and_forget BrowserTabUIData::AreOpenKneeboardAPIsEnabled(
   const bool value) {
   if (value == GetTab()->AreOpenKneeboardAPIsEnabled()) {
     co_return;
@@ -1002,7 +1002,7 @@ bool BrowserTabUIData::IsBackgroundTransparent() const {
   return GetTab()->IsBackgroundTransparent();
 }
 
-OpenKneeboard::fire_and_forget BrowserTabUIData::IsBackgroundTransparent(
+VisorVR::fire_and_forget BrowserTabUIData::IsBackgroundTransparent(
   bool value) {
   co_await GetTab()->SetBackgroundTransparent(value);
 }
@@ -1058,7 +1058,7 @@ winrt::hstring WindowCaptureTabUIData::WindowTitle() {
   return to_hstring(GetTab()->GetMatchSpecification().mTitle);
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::WindowTitle(
+VisorVR::fire_and_forget WindowCaptureTabUIData::WindowTitle(
   const hstring& title) {
   auto spec = GetTab()->GetMatchSpecification();
   spec.mTitle = to_string(title);
@@ -1069,7 +1069,7 @@ bool WindowCaptureTabUIData::MatchWindowClass() {
   return GetTab()->GetMatchSpecification().mMatchWindowClass;
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::MatchWindowClass(
+VisorVR::fire_and_forget WindowCaptureTabUIData::MatchWindowClass(
   bool value) {
   auto spec = GetTab()->GetMatchSpecification();
   spec.mMatchWindowClass = value;
@@ -1080,7 +1080,7 @@ uint8_t WindowCaptureTabUIData::MatchWindowTitle() {
   return static_cast<uint8_t>(GetTab()->GetMatchSpecification().mMatchTitle);
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::MatchWindowTitle(
+VisorVR::fire_and_forget WindowCaptureTabUIData::MatchWindowTitle(
   uint8_t value) {
   auto spec = GetTab()->GetMatchSpecification();
   spec.mMatchTitle =
@@ -1100,7 +1100,7 @@ bool WindowCaptureTabUIData::IsCursorCaptureEnabled() const {
   return GetTab()->IsCursorCaptureEnabled();
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::IsCursorCaptureEnabled(
+VisorVR::fire_and_forget WindowCaptureTabUIData::IsCursorCaptureEnabled(
   bool value) {
   co_await GetTab()->SetCursorCaptureEnabled(value);
 }
@@ -1109,7 +1109,7 @@ bool WindowCaptureTabUIData::CaptureClientArea() const {
   return GetTab()->GetCaptureArea() == HWNDPageSource::CaptureArea::ClientArea;
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::CaptureClientArea(
+VisorVR::fire_and_forget WindowCaptureTabUIData::CaptureClientArea(
   bool enabled) {
   co_await GetTab()->SetCaptureArea(
     enabled ? HWNDPageSource::CaptureArea::ClientArea
@@ -1120,7 +1120,7 @@ hstring WindowCaptureTabUIData::ExecutablePathPattern() const {
   return to_hstring(GetTab()->GetMatchSpecification().mExecutablePathPattern);
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::ExecutablePathPattern(
+VisorVR::fire_and_forget WindowCaptureTabUIData::ExecutablePathPattern(
   hstring pattern) {
   auto spec = GetTab()->GetMatchSpecification();
   spec.mExecutablePathPattern = to_string(pattern);
@@ -1131,7 +1131,7 @@ hstring WindowCaptureTabUIData::WindowClass() const {
   return to_hstring(GetTab()->GetMatchSpecification().mWindowClass);
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTabUIData::WindowClass(
+VisorVR::fire_and_forget WindowCaptureTabUIData::WindowClass(
   hstring value) {
   auto spec = GetTab()->GetMatchSpecification();
   spec.mWindowClass = to_string(value);
@@ -1146,7 +1146,7 @@ std::shared_ptr<WindowCaptureTab> WindowCaptureTabUIData::GetTab() const {
   auto refined = std::dynamic_pointer_cast<WindowCaptureTab>(tab);
   if (!refined) {
     dprint("Expected a WindowCaptureTab but didn't get one");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   return refined;
 }
@@ -1191,14 +1191,14 @@ void TabUIDataTemplateSelector::WindowCapture(
 
 DataTemplate TabUIDataTemplateSelector::SelectTemplateCore(
   const IInspectable& item) {
-  if (item.try_as<winrt::OpenKneeboardApp::BrowserTabUIData>()) {
+  if (item.try_as<winrt::VisorVRApp::BrowserTabUIData>()) {
     return mBrowser;
   }
-  if (item.try_as<winrt::OpenKneeboardApp::DCSRadioLogTabUIData>()) {
+  if (item.try_as<winrt::VisorVRApp::DCSRadioLogTabUIData>()) {
     return mDCSRadioLog;
   }
 
-  if (item.try_as<winrt::OpenKneeboardApp::WindowCaptureTabUIData>()) {
+  if (item.try_as<winrt::VisorVRApp::WindowCaptureTabUIData>()) {
     return mWindowCapture;
   }
 
@@ -1211,4 +1211,4 @@ DataTemplate TabUIDataTemplateSelector::SelectTemplateCore(
   return this->SelectTemplateCore(item);
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

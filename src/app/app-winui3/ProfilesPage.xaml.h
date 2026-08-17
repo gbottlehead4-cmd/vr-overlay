@@ -12,30 +12,30 @@
 #include "ProfilesPage.g.h"
 // clang-format on
 
-#include <OpenKneeboard/Events.hpp>
+#include <VisorVR/Events.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class KneeboardState;
 }
 
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct ProfilesPage : ProfilesPageT<ProfilesPage>,
-                      private OpenKneeboard::EventReceiver {
+                      private VisorVR::EventReceiver {
   ProfilesPage();
 
   static void final_release(std::unique_ptr<ProfilesPage>);
 
-  OpenKneeboard::fire_and_forget CreateProfile(
+  VisorVR::fire_and_forget CreateProfile(
     Windows::Foundation::IInspectable,
     RoutedEventArgs) noexcept;
-  OpenKneeboard::fire_and_forget RemoveProfile(
+  VisorVR::fire_and_forget RemoveProfile(
     Windows::Foundation::IInspectable,
     RoutedEventArgs);
 
-  OpenKneeboard::fire_and_forget OnList_SelectionChanged(
+  VisorVR::fire_and_forget OnList_SelectionChanged(
     Windows::Foundation::IInspectable,
     SelectionChangedEventArgs);
 
@@ -43,7 +43,7 @@ struct ProfilesPage : ProfilesPageT<ProfilesPage>,
   void UpdateList();
   Windows::Foundation::Collections::IObservableVector<IInspectable>
     mUIProfiles {single_threaded_observable_vector<IInspectable>()};
-  OpenKneeboard::audited_ptr<OpenKneeboard::KneeboardState> mKneeboard;
+  VisorVR::audited_ptr<VisorVR::KneeboardState> mKneeboard;
 };
 
 struct ProfileUIData : ProfileUIDataT<ProfileUIData> {
@@ -64,11 +64,11 @@ struct ProfileUIData : ProfileUIDataT<ProfileUIData> {
   bool mCanDelete {true};
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct ProfilesPage
   : ProfilesPageT<ProfilesPage, implementation::ProfilesPage> {};
 
 struct ProfileUIData
   : ProfileUIDataT<ProfileUIData, implementation::ProfileUIData> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

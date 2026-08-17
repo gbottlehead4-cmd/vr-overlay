@@ -4,9 +4,9 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/RayIntersectsRect.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
-#include <OpenKneeboard/VRKneeboard.hpp>
+#include <VisorVR/RayIntersectsRect.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
+#include <VisorVR/VRKneeboard.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -14,7 +14,7 @@
 
 using namespace DirectX::SimpleMath;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 VRKneeboard::Pose VRKneeboard::GetKneeboardPose(
   const VRRenderSettings& vr,
@@ -219,4 +219,4 @@ bool VRKneeboard::IsLookingAtKneeboard(
   return isLookingAtKneeboard;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

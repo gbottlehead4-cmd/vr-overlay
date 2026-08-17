@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/DXResources.hpp>
+#include <VisorVR/DXResources.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <Windows.h>
 #include <winternl.h>
@@ -22,7 +22,7 @@
 #include <d3dkmthk.h>
 #include <dxgi1_6.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::string HResultToString(const HRESULT hr) {
   return std::system_category().message(hr);
@@ -287,7 +287,7 @@ D2DResources::D2DResources(D3D11Resources* d3d) {
   mD2DDeviceContext = ctx.as<ID2D1DeviceContext5>();
   ctx->SetUnitMode(D2D1_UNIT_MODE_PIXELS);
   // Subpixel antialiasing assumes text is aligned on pixel boundaries;
-  // this isn't the case for OpenKneeboard
+  // this isn't the case for VisorVR
   ctx->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 
   check_hresult(DWriteCreateFactory(
@@ -342,7 +342,7 @@ void D2DResources::PushD2DDraw(std::source_location loc) {
       dprint("Starting a D2D draw while one already in progress:");
       dprint("First: {} (thread ID {})", prev.mLocation, GetCurrentThreadId());
       dprint("Second: {} (thread ID {})", loc, prev.mThreadID);
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
     } else {
       mLocks->mCurrentDraw = {loc, GetCurrentThreadId()};
     }
@@ -354,19 +354,19 @@ HRESULT D2DResources::PopD2DDraw() {
   {
     std::unique_lock lock(mLocks->mCurrentDrawMutex);
     if (!mLocks->mCurrentDraw) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
     }
     mLocks->mCurrentDraw = {};
   }
   const auto result = mD2DDeviceContext->EndDraw();
   if (result != S_OK) [[unlikely]] {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   return result;
 }
 
 void D3D11Resources::lock() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11Resources::lock()");
+  VISORVR_TraceLoggingScope("D3D11Resources::lock()");
 
   // If we've locked D2D, we don't need to separately lock D3D; keeping it
   // here anyway as:
@@ -384,13 +384,13 @@ void D3D11Resources::lock() {
 }
 
 void D3D11Resources::unlock() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11Resources::unlock()");
+  VISORVR_TraceLoggingScope("D3D11Resources::unlock()");
   mLocks->mMutex.unlock();
 }
 
 bool D3D11Resources::try_lock() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11Resources::try_lock()");
+  VISORVR_TraceLoggingScope("D3D11Resources::try_lock()");
   return mLocks->mMutex.try_lock();
 }
 
-};// namespace OpenKneeboard
+};// namespace VisorVR

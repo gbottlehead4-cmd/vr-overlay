@@ -4,15 +4,15 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/SwitchTabAction.hpp>
-#include <OpenKneeboard/SwitchTabFlyout.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabsList.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/SwitchTabAction.hpp>
+#include <VisorVR/SwitchTabFlyout.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabsList.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 SwitchTabFlyout::SwitchTabFlyout(
   KneeboardState* kbs,
@@ -44,4 +44,4 @@ std::vector<std::shared_ptr<IToolbarItem>> SwitchTabFlyout::GetSubItems()
   return ret;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

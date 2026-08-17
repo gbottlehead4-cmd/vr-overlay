@@ -4,20 +4,20 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/D3D11.hpp>
+#include <VisorVR/D3D11.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/winrt/base.h>
 
 #include <d3d11_3.h>
 
-namespace OpenKneeboard::D3D11 {
+namespace VisorVR::D3D11 {
 
 DeviceContextState::DeviceContextState(ID3D11Device1* device) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::DeviceContextState(ID3D11Device1*)");
+  VISORVR_TraceLoggingScope("D3D11::DeviceContextState(ID3D11Device1*)");
 
   auto featureLevel = device->GetFeatureLevel();
   check_hresult(device->CreateDeviceContextState(
@@ -36,7 +36,7 @@ ScopedDeviceContextStateChange::ScopedDeviceContextStateChange(
   const winrt::com_ptr<ID3D11DeviceContext1>& context,
   DeviceContextState* newState)
   : mContext(context) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::ScopedDeviceContextStateChange()");
+  VISORVR_TraceLoggingScope("D3D11::ScopedDeviceContextStateChange()");
   if (!newState->IsValid()) {
     winrt::com_ptr<ID3D11Device> device;
     context->GetDevice(device.put());
@@ -46,8 +46,8 @@ ScopedDeviceContextStateChange::ScopedDeviceContextStateChange(
 }
 
 ScopedDeviceContextStateChange::~ScopedDeviceContextStateChange() {
-  OPENKNEEBOARD_TraceLoggingScope("~D3D11::ScopedDeviceContextStateChange()");
+  VISORVR_TraceLoggingScope("~D3D11::ScopedDeviceContextStateChange()");
   mContext->SwapDeviceContextState(mOriginalState.get(), nullptr);
 }
 
-}// namespace OpenKneeboard::D3D11
+}// namespace VisorVR::D3D11

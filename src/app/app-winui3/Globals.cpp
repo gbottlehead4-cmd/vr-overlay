@@ -10,10 +10,10 @@
 
 #include "Globals.h"
 
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/TroubleshootingStore.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/TroubleshootingStore.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 HWND gMainWindow {};
 std::weak_ptr<TroubleshootingStore> gTroubleshootingStore;
@@ -23,4 +23,4 @@ winrt::handle gMutex {};
 RenderTargetID gGUIRenderTargetID;
 bool gShuttingDown = false;
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

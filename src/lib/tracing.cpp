@@ -4,8 +4,8 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -16,7 +16,7 @@
 
 #include <processthreadsapi.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 wchar_t* GetFullPathForCurrentExecutable() {
   static std::once_flag sOnce;
@@ -52,4 +52,4 @@ wchar_t* GetFullPathForCurrentExecutable() {
   return sBuffer;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

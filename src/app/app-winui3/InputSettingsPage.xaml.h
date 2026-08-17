@@ -13,7 +13,7 @@
 
 #include "WithPropertyChangedEvent.h"
 
-#include <OpenKneeboard/Events.hpp>
+#include <VisorVR/Events.hpp>
 
 #include <string>
 
@@ -21,18 +21,18 @@ using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class KneeboardState;
 }
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct InputSettingsPage
   : InputSettingsPageT<InputSettingsPage>,
-    OpenKneeboard::WithPropertyChangedEventOnProfileChange<InputSettingsPage> {
+    VisorVR::WithPropertyChangedEventOnProfileChange<InputSettingsPage> {
   InputSettingsPage();
   ~InputSettingsPage();
 
-  OpenKneeboard::fire_and_forget RestoreDefaults(
+  VisorVR::fire_and_forget RestoreDefaults(
     IInspectable,
     RoutedEventArgs) noexcept;
 
@@ -43,10 +43,10 @@ struct InputSettingsPage
 
  private:
   winrt::apartment_context mUIThread;
-  OpenKneeboard::audited_ptr<OpenKneeboard::KneeboardState> mKneeboard;
+  VisorVR::audited_ptr<VisorVR::KneeboardState> mKneeboard;
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct InputSettingsPage
   : InputSettingsPageT<InputSettingsPage, implementation::InputSettingsPage> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

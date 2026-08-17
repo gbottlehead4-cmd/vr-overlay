@@ -12,17 +12,17 @@
 
 #include "WithPropertyChangedEvent.h"
 
-#include <OpenKneeboard/ViewsSettings.hpp>
+#include <VisorVR/ViewsSettings.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class KneeboardState;
 }
 
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct VRViewSettingsControl : VRViewSettingsControlT<VRViewSettingsControl>,
                                WithPropertyChangedEvent,
                                EventReceiver {
@@ -33,20 +33,20 @@ struct VRViewSettingsControl : VRViewSettingsControlT<VRViewSettingsControl>,
   void ViewID(const winrt::guid&);
 
   bool IsEnabledInVR();
-  OpenKneeboard::fire_and_forget IsEnabledInVR(bool);
+  VisorVR::fire_and_forget IsEnabledInVR(bool);
 
   IInspectable SelectedKind();
-  OpenKneeboard::fire_and_forget SelectedKind(
+  VisorVR::fire_and_forget SelectedKind(
     Windows::Foundation::IInspectable);
 
   IInspectable SelectedDefaultTab();
-  OpenKneeboard::fire_and_forget SelectedDefaultTab(
+  VisorVR::fire_and_forget SelectedDefaultTab(
     Windows::Foundation::IInspectable);
 
   winrt::Microsoft::UI::Xaml::Visibility TooManyViewsVisibility();
 
  private:
-  audited_ptr<OpenKneeboard::KneeboardState> mKneeboard;
+  audited_ptr<VisorVR::KneeboardState> mKneeboard;
 
   winrt::guid mViewID;
 
@@ -56,9 +56,9 @@ struct VRViewSettingsControl : VRViewSettingsControlT<VRViewSettingsControl>,
 
   Control mSubControl {nullptr};
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct VRViewSettingsControl : VRViewSettingsControlT<
                                  VRViewSettingsControl,
                                  implementation::VRViewSettingsControl> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

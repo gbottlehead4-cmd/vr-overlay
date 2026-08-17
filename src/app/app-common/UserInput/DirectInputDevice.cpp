@@ -5,11 +5,11 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DirectInputDevice.hpp>
-#include <OpenKneeboard/UserInputButtonBinding.hpp>
-#include <OpenKneeboard/UserInputButtonEvent.hpp>
+#include <VisorVR/DirectInputDevice.hpp>
+#include <VisorVR/UserInputButtonBinding.hpp>
+#include <VisorVR/UserInputButtonEvent.hpp>
 
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -19,7 +19,7 @@
 
 using felly::numeric_cast;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 enum class DirectInputButtonType : uint64_t {
@@ -144,7 +144,7 @@ std::string DirectInputDevice::GetButtonLabel(uint64_t button) const {
   }
 
   dprint("Unable to resolve label for DI button {:#016x}", button);
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
   return std::format("INVALID {:#016x}", button);
 }
 
@@ -471,4 +471,4 @@ DIDEVICEINSTANCEW DirectInputDevice::GetDIDeviceInstance() const {
   return mDevice;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

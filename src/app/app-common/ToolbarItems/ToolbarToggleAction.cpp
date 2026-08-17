@@ -4,9 +4,9 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ToolbarToggleAction.hpp>
+#include <VisorVR/ToolbarToggleAction.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 task<void> ToolbarToggleAction::Execute() {
   if (!this->IsEnabled()) {
@@ -20,4 +20,4 @@ task<void> ToolbarToggleAction::Execute() {
   co_await this->Activate();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

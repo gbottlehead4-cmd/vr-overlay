@@ -4,15 +4,15 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include "OpenKneeboard/fatal.hpp"
+#include "VisorVR/fatal.hpp"
 
-#include <OpenKneeboard/RenderDoc.hpp>
+#include <VisorVR/RenderDoc.hpp>
 
 #include <Windows.h>
 
 #include <renderdoc_app.h>
 
-namespace OpenKneeboard::RenderDoc {
+namespace VisorVR::RenderDoc {
 
 struct API {
   HMODULE mModule {NULL};
@@ -31,7 +31,7 @@ struct API {
   operator bool() const noexcept { return mRenderDoc; }
 
   auto operator->() const noexcept {
-    OPENKNEEBOARD_ALWAYS_ASSERT(mRenderDoc);
+    VISORVR_ALWAYS_ASSERT(mRenderDoc);
     return mRenderDoc;
   }
 
@@ -73,4 +73,4 @@ NestedFrameCapture::~NestedFrameCapture() {
   }
 }
 
-}// namespace OpenKneeboard::RenderDoc
+}// namespace VisorVR::RenderDoc

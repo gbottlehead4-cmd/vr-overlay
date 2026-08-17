@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/RuntimeFiles.hpp>
-#include <OpenKneeboard/WindowCaptureControl.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
+#include <VisorVR/WindowCaptureControl.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <Windows.h>
 
-namespace OpenKneeboard::WindowCaptureControl {
+namespace VisorVR::WindowCaptureControl {
 
 Handles InstallHooks(HWND hwnd) {
   DWORD processID {};
@@ -72,4 +72,4 @@ bool Handles::IsValid() const {
   return mLibrary && mMessageHook && mWindowProcHook;
 }
 
-}// namespace OpenKneeboard::WindowCaptureControl
+}// namespace VisorVR::WindowCaptureControl

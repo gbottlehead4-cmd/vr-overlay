@@ -4,18 +4,18 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/EnumerateProcesses.hpp>
-#include <OpenKneeboard/RayIntersectsRect.hpp>
-#include <OpenKneeboard/SHM.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
-#include <OpenKneeboard/SteamVRKneeboard.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/EnumerateProcesses.hpp>
+#include <VisorVR/RayIntersectsRect.hpp>
+#include <VisorVR/SHM.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
+#include <VisorVR/SteamVRKneeboard.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/task/resume_after.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/task/resume_after.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -34,11 +34,11 @@
 
 using namespace DirectX::SimpleMath;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 SteamVRKneeboard::SteamVRKneeboard()
   : mSHM(SHM::ConsumerKind::OpenVR, mDXR.mD3D11Device.get()) {
-  OPENKNEEBOARD_TraceLoggingScope("SteamVRKneeboard::SteamVRKneeboard()");
+  VISORVR_TraceLoggingScope("SteamVRKneeboard::SteamVRKneeboard()");
   auto d3d = mDXR.mD3D11Device.get();
   {
     DXGI_ADAPTER_DESC desc;
@@ -85,12 +85,12 @@ SteamVRKneeboard::SteamVRKneeboard()
 }
 
 SteamVRKneeboard::~SteamVRKneeboard() {
-  OPENKNEEBOARD_TraceLoggingScope("SteamVRKneeboard::~SteamVRKneeboard()");
+  VISORVR_TraceLoggingScope("SteamVRKneeboard::~SteamVRKneeboard()");
   this->Reset();
 }
 
 void SteamVRKneeboard::Reset() {
-  OPENKNEEBOARD_TraceLoggingScope("SteamVRKneeboard::Reset()");
+  VISORVR_TraceLoggingScope("SteamVRKneeboard::Reset()");
   if (!mIVRSystem) {
     return;
   }
@@ -155,7 +155,7 @@ bool SteamVRKneeboard::InitializeOpenVR() {
       L"OpenVR requested adapter '{}' (LUID {:#x})", desc.Description, luid);
     if (luid != mDXR.mAdapterLUID) {
       dprint.Warning(
-        "SteamVR adapter {:#x} != OKB adapter {:#x}", luid, mDXR.mAdapterLUID);
+        "SteamVR adapter {:#x} != VVR adapter {:#x}", luid, mDXR.mAdapterLUID);
     }
   }
 
@@ -183,7 +183,7 @@ static bool IsOtherVRActive() {
 }
 
 void SteamVRKneeboard::Tick() {
-  OPENKNEEBOARD_TraceLoggingScope("SteamVRKneeboard::Tick()");
+  VISORVR_TraceLoggingScope("SteamVRKneeboard::Tick()");
   vr::VREvent_t event;
   for (const auto& layerState: mLayers) {
     if (!layerState.mOverlay) {
@@ -305,7 +305,7 @@ void SteamVRKneeboard::Tick() {
     winrt::check_hresult(mFence->SetEventOnCompletion(
       layerState.mFenceValue, mGPUFlushEvent.get()));
     {
-      OPENKNEEBOARD_TraceLoggingScopedActivity(
+      VISORVR_TraceLoggingScopedActivity(
         waitActivity, "SteamVRKneeboard::Tick()/WaitForSingleObject");
       const auto result = WaitForSingleObject(mGPUFlushEvent.get(), INFINITE);
       if (result != WAIT_OBJECT_0) {
@@ -316,7 +316,7 @@ void SteamVRKneeboard::Tick() {
           TraceLoggingValue(result, "Result"),
           TraceLoggingValue(error, "Error"));
         waitActivity.CancelAutoStop();
-        OPENKNEEBOARD_BREAK;
+        VISORVR_BREAK;
       }
     }
 
@@ -420,11 +420,11 @@ std::optional<SteamVRKneeboard::Pose> SteamVRKneeboard::GetHMDPose(
   };
   sCacheKey = mFrameCounter;
   return sCache;
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 static bool IsSteamVRRunning() {
   static bool sIsRunning = false;
-  OPENKNEEBOARD_TraceLoggingScope("IsSteamVRRunning()");
+  VISORVR_TraceLoggingScope("IsSteamVRRunning()");
   // We 'should' just call `vr::VR_Init()` and check the result, but it leaks:
   // https://github.com/ValveSoftware/openvr/issues/310
   //
@@ -501,7 +501,7 @@ void SteamVRKneeboard::InitializeLayer(size_t layerIndex) {
 
   auto& layerState = mLayers.at(layerIndex);
   auto key = std::format("{}.{}", ProjectReverseDomainA, layerIndex);
-  auto name = std::format("OpenKneeboard {}", layerIndex + 1);
+  auto name = std::format("VisorVR {}", layerIndex + 1);
 
   OVERLAY_CHECK(CreateOverlay, key.c_str(), name.c_str(), &layerState.mOverlay);
 
@@ -521,4 +521,4 @@ void SteamVRKneeboard::InitializeLayer(size_t layerIndex) {
     SHM::SHARED_TEXTURE_IS_PREMULTIPLIED);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

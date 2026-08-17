@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/TabNavigationAction.hpp>
-#include <OpenKneeboard/TabView.hpp>
+#include <VisorVR/TabNavigationAction.hpp>
+#include <VisorVR/TabView.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabNavigationAction::TabNavigationAction(const std::shared_ptr<TabView>& state)
   : ToolbarToggleAction("\uE700", _("Contents")),
@@ -46,4 +46,4 @@ task<void> TabNavigationAction::Deactivate() {
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

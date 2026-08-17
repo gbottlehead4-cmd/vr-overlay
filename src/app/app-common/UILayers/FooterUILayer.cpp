@@ -4,21 +4,21 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include "OpenKneeboard/InterprocessRenderer.hpp"
+#include "VisorVR/InterprocessRenderer.hpp"
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/FooterUILayer.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/FooterUILayer.hpp>
+#include <VisorVR/KneeboardState.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <algorithm>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 FooterUILayer::FooterUILayer(
   const audited_ptr<DXResources>& dxr,
@@ -104,7 +104,7 @@ task<void> FooterUILayer::Render(
   const IUILayer::NextList& next,
   const Context& context,
   const PixelRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope("FooterUILayer::Render()");
+  VISORVR_TraceLoggingScope("FooterUILayer::Render()");
   mLastRenderSize = rect.mSize;
 
   const auto tabView = context.mTabView;
@@ -195,7 +195,7 @@ task<void> FooterUILayer::Render(
     auto ipc = mKneeboard->GetInterprocessRenderer();
     if (ipc) {
       drawClock(
-        std::format(L"OKB Frame {}", ipc->GetFrameCountForMetricsOnly()),
+        std::format(L"VVR Frame {}", ipc->GetFrameCountForMetricsOnly()),
         DWRITE_TEXT_ALIGNMENT_CENTER);
     }
   }
@@ -247,4 +247,4 @@ void FooterUILayer::OnGameChanged(
   mMissionTime = {};
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

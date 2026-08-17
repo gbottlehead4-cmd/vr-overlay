@@ -12,28 +12,28 @@
 #include "Globals.h"
 #include "MainWindow.xaml.h"
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/ChromiumApp.hpp>
-#include <OpenKneeboard/ChromiumWorker.hpp>
-#include <OpenKneeboard/DebugPrivileges.hpp>
-#include <OpenKneeboard/Elevation.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/GetMainHWND.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/OpenXRMode.hpp>
-#include <OpenKneeboard/ProcessShutdownBlock.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
-#include <OpenKneeboard/SHM.hpp>
-#include <OpenKneeboard/TroubleshootingStore.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/ChromiumApp.hpp>
+#include <VisorVR/ChromiumWorker.hpp>
+#include <VisorVR/DebugPrivileges.hpp>
+#include <VisorVR/Elevation.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/GetMainHWND.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/OpenXRMode.hpp>
+#include <VisorVR/ProcessShutdownBlock.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
+#include <VisorVR/SHM.hpp>
+#include <VisorVR/TroubleshootingStore.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/bitflags.hpp>
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/bitflags.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
+#include <VisorVR/version.hpp>
 
 #include <Psapi.h>
 #include <ShlObj.h>
@@ -60,19 +60,19 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Navigation;
-using namespace OpenKneeboardApp::implementation;
-using namespace OpenKneeboardApp;
-using namespace OpenKneeboard;
+using namespace VisorVRApp::implementation;
+using namespace VisorVRApp;
+using namespace VisorVR;
 
-namespace OpenKneeboard {
-/* PS > [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.App")
+namespace VisorVR {
+/* PS > [System.Diagnostics.Tracing.EventSource]::new("VisorVR.App")
  * cc76597c-1041-5d57-c8ab-92cf9437104a
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.App",
+  "VisorVR.App",
   (0xcc76597c, 0x1041, 0x5d57, 0xc8, 0xab, 0x92, 0xcf, 0x94, 0x37, 0x10, 0x4a));
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 App::App() {
   InitializeComponent();
@@ -123,7 +123,7 @@ task<void> App::CleanupAndExitAsync() {
   TraceLoggingWrite(gTraceProvider, "PostQuitMessage()");
 }
 
-OpenKneeboard::fire_and_forget App::OnLaunched(
+VisorVR::fire_and_forget App::OnLaunched(
   LaunchActivatedEventArgs) noexcept {
   DispatcherShutdownMode(
     winrt::Microsoft::UI::Xaml::DispatcherShutdownMode::OnExplicitShutdown);
@@ -194,11 +194,11 @@ static void BackupSettings() {
   }
 
   // Now we create backups outside of that so that people who manually delete
-  // the entire `%LOCALAPPDATA%\OpenKneeboard` folder don't *accidentally*
+  // the entire `%LOCALAPPDATA%\VisorVR` folder don't *accidentally*
   // delete the backups too
   const auto backupsDirectory =
     Filesystem::GetKnownFolderPath<FOLDERID_LocalAppData>()
-    / "OpenKneeboard Backups";
+    / "VisorVR Backups";
   std::filesystem::create_directories(backupsDirectory);
   MigrateBackups(backupsDirectory);
   CreateBackupsShortcut(backupsDirectory);
@@ -214,7 +214,7 @@ static void BackupSettings() {
     std::chrono::time_point_cast<std::chrono::seconds>(
       std::chrono::system_clock::now()));
   const auto backupFile = backupsDirectory
-    / std::format("OpenKneeboard-Settings-{:%Y%m%dT%H%M}.zip", now);
+    / std::format("VisorVR-Settings-{:%Y%m%dT%H%M}.zip", now);
 
   scope_success updateLastRun([backupFile]() {
     wil::reg::set_value_string(
@@ -267,24 +267,24 @@ static void ShowDamagingEnvironmentError(const DamagingEnvironmentFlags flags) {
       nullptr,
       L"Wine is detected; this is unsupported and problems should be expected. "
       L"Wine compatibility issues are not considered bugs.",
-      L"OpenKneeboard",
+      L"VisorVR",
       MB_OK | MB_ICONWARNING);
     return;
   }
 
   std::wstring_view elevationProblem;
   if ((flags & IsElevated) == IsElevated) {
-    elevationProblem = _(L"OpenKneeboard is running elevated");
+    elevationProblem = _(L"VisorVR is running elevated");
   } else if ((flags & UacIsDisabled) == UacIsDisabled) {
     elevationProblem = _(L"User Account Control (UAC) is disabled");
   } else if ((flags & OlderThanWin10) == OlderThanWin10) {
     MessageBoxW(
       nullptr,
-      _(L"Your version of Windows is too old to run OpenKneeboard.\n\n"
-        L"OpenKneeboard requires Windows 10 or newer. If you are using "
+      _(L"Your version of Windows is too old to run VisorVR.\n\n"
+        L"VisorVR requires Windows 10 or newer. If you are using "
         L"Windows 10 or newer, turn off 'Compatibility Mode' in the shortcut "
         L"properties."),
-      L"OpenKneeboard",
+      L"VisorVR",
       MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
     return;
   } else {
@@ -294,8 +294,8 @@ static void ShowDamagingEnvironmentError(const DamagingEnvironmentFlags flags) {
     return;
   }
 
-  OPENKNEEBOARD_ASSERT((flags & ElevationRelated) == ElevationRelated);
-  OPENKNEEBOARD_ASSERT(!elevationProblem.empty());
+  VISORVR_ASSERT((flags & ElevationRelated) == ElevationRelated);
+  VISORVR_ASSERT(!elevationProblem.empty());
 
   const auto isFatal = (flags & Fatal) == Fatal;
 
@@ -311,7 +311,7 @@ static void ShowDamagingEnvironmentError(const DamagingEnvironmentFlags flags) {
   MessageBoxW(
     nullptr,
     message.c_str(),
-    L"OpenKneeboard",
+    L"VisorVR",
     MB_OK | MB_SETFOREGROUND | iconFlag);
 }
 
@@ -501,7 +501,7 @@ static void SetRegistryValues() {
 
   auto utilitiesPath = binPath.parent_path() / "utilities";
   if (!std::filesystem::exists(utilitiesPath)) {
-    if constexpr (!OpenKneeboard::Version::IsGithubActionsBuild) {
+    if constexpr (!VisorVR::Version::IsGithubActionsBuild) {
       utilitiesPath = binPath;
       while (utilitiesPath.has_parent_path()) {
         const auto parent = utilitiesPath.parent_path();
@@ -553,7 +553,7 @@ static void LogInstallationInformation() {
     if (ext != L".dll" && ext != L".exe") {
       continue;
     }
-    if (!path.filename().wstring().starts_with(L"OpenKneeboard")) {
+    if (!path.filename().wstring().starts_with(L"VisorVR")) {
       continue;
     }
 
@@ -647,7 +647,7 @@ static int AppMain(
   } catch (const winrt::hresult_error& error) {
     const auto message = std::format(
       _(L"Windows was unable to find your 'Saved Games' folder; "
-        L"OpenKneeboard "
+        L"VisorVR "
         L"is unable to start.\n\nSHGetKnownFolderPath() failed: {:#08x} - "
         L"{}"),
       static_cast<const uint32_t>(error.code().value),
@@ -670,36 +670,36 @@ static int AppMain(
   // have a known-succeeding initial state.
   SetLastError(ERROR_SUCCESS);
   auto mutex =
-    Win32::CreateMutex(nullptr, TRUE, OpenKneeboard::ProjectReverseDomainW);
+    Win32::CreateMutex(nullptr, TRUE, VisorVR::ProjectReverseDomainW);
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
     // This can still be success
     const auto hwnd = GetMainHWND();
     if (!hwnd) {
       MessageBoxW(
         NULL,
-        _(L"OpenKneeboard is already running, but can't find the existing "
+        _(L"VisorVR is already running, but can't find the existing "
           L"window to switch to it.\n\n"
           L"Switch to it with Alt-Tab or the Windows "
           L"task bar, or kill it with Task Manager, then try again."),
-        _(L"OpenKneeboard"),
+        _(L"VisorVR"),
         MB_OK | MB_ICONERROR);
       return 0;
     }
     ShowWindow(*hwnd, SW_SHOWNORMAL);
     if (SetForegroundWindow(*hwnd)) {
       APIEvent::Send({
-        .name = APIEvent::EVT_OKB_EXECUTABLE_LAUNCHED,
+        .name = APIEvent::EVT_VVR_EXECUTABLE_LAUNCHED,
         .value = winrt::to_string(GetCommandLineW()),
       });
     } else {
       // error codes are not set, so no details :(
       MessageBoxW(
         NULL,
-        _(L"OpenKneeboard is already running, but unable to switch to the "
+        _(L"VisorVR is already running, but unable to switch to the "
           L"existing window .\n\n"
           L"Switch to it with Alt-Tab or the Windows "
           L"task bar, or kill it with Task Manager, then try again."),
-        _(L"OpenKneeboard"),
+        _(L"VisorVR"),
         MB_OK | MB_ICONERROR);
     }
     return 0;
@@ -712,7 +712,7 @@ static int AppMain(
   }
 
   DPrintSettings::Set({
-    .prefix = "OpenKneeboard-WinUI3",
+    .prefix = "VisorVR-WinUI3",
   });
 
   divert_process_failure_to_fatal();
@@ -770,7 +770,7 @@ static int AppMain(
 
       std::ofstream f(warningFile, std::ios::trunc | std::ios::binary);
       f << "Do not put any of your files here; this directory is for "
-           "OpenKneeboard's internal use, and OpenKneeboard may delete any "
+           "VisorVR's internal use, and VisorVR may delete any "
            "files you put here without warning.\n\n"
            "You might want to use the My Documents folder ("
         << Filesystem::GetKnownFolderPath<FOLDERID_Documents>().string()
@@ -794,7 +794,7 @@ static int AppMain(
     MessageBoxA(
       nullptr,
       std::format(
-        "{}\n\nSee https://go.openkneeboard.com/d3d11-unusable", e.what())
+        "{}\n\nSee https://github.com/gbottlehead4-cmd/vr-overlay/issues", e.what())
         .c_str(),
       "Direct3D11 is unusable",
       MB_OK | MB_ICONERROR);
@@ -813,7 +813,7 @@ static int AppMain(
   dprint("----------");
 
   ::winrt::Microsoft::UI::Xaml::Application::Start([](auto&&) {
-    ::winrt::make<::winrt::OpenKneeboardApp::implementation::App>();
+    ::winrt::make<::winrt::VisorVRApp::implementation::App>();
   });
 
   TraceLoggingWrite(gTraceProvider, "ApplicationExit");
@@ -821,7 +821,7 @@ static int AppMain(
   if (gDXResources.use_count() != 1) {
     dprint("----- POTENTIAL LEAK -----");
     gDXResources.dump_refs("gDXResources");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   gDXResources = nullptr;
 

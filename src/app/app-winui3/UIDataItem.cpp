@@ -10,7 +10,7 @@
 #include "UIDataItem.g.cpp"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 hstring UIDataItem::Label() { return mLabel; }
 
 void UIDataItem::Label(hstring const& value) { mLabel = value; }
@@ -19,4 +19,4 @@ winrt::Windows::Foundation::IInspectable UIDataItem::Tag() { return mTag; }
 
 void UIDataItem::Tag(const IInspectable& data) { mTag = data; }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

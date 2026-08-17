@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/D3D11/Renderer.hpp>
+#include <VisorVR/D3D11/Renderer.hpp>
 
-#include <OpenKneeboard/hresult.hpp>
+#include <VisorVR/hresult.hpp>
 
-namespace OpenKneeboard::D3D11 {
+namespace VisorVR::D3D11 {
 
 SwapchainBufferResources::SwapchainBufferResources(
   ID3D11Device* device,
@@ -43,7 +43,7 @@ void Renderer::RenderLayers(
   const SHM::D3D11::Frame& frame,
   const std::span<SHM::LayerSprite>& layers,
   RenderMode renderMode) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::Renderer::RenderLayers()");
+  VISORVR_TraceLoggingScope("D3D11::Renderer::RenderLayers()");
 
   const auto source = frame.mShaderResourceView;
 
@@ -72,4 +72,4 @@ void Renderer::RenderLayers(
   mSpriteBatch->End();
 }
 
-}// namespace OpenKneeboard::D3D11
+}// namespace VisorVR::D3D11

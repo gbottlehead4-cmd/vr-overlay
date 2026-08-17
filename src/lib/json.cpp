@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
-using namespace OpenKneeboard::detail::SparseJson;
+using namespace VisorVR::detail::SparseJson;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static_assert(
   ConstStrLowerFirst(Wrap("FooBar")).mBuffer == std::string_view {"fooBar"});
@@ -18,7 +18,7 @@ static_assert(
   ConstStrSkipFirstLowerNext(Wrap("mFooBar")).mBuffer
   == std::string_view {"fooBar"});
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 namespace nlohmann {
 void adl_serializer<winrt::guid>::to_json(json& j, const winrt::guid& v) {

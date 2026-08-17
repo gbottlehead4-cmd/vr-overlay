@@ -5,29 +5,29 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/Coordinates.hpp>
-#include <OpenKneeboard/DCSBriefingTab.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/DCSExtractedMission.hpp>
-#include <OpenKneeboard/DCSGrid.hpp>
-#include <OpenKneeboard/DCSMagneticModel.hpp>
-#include <OpenKneeboard/ImageFilePageSource.hpp>
-#include <OpenKneeboard/Lua.hpp>
-#include <OpenKneeboard/PlainTextPageSource.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/Coordinates.hpp>
+#include <VisorVR/DCSBriefingTab.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/DCSExtractedMission.hpp>
+#include <VisorVR/DCSGrid.hpp>
+#include <VisorVR/DCSMagneticModel.hpp>
+#include <VisorVR/ImageFilePageSource.hpp>
+#include <VisorVR/Lua.hpp>
+#include <VisorVR/PlainTextPageSource.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <chrono>
 #include <cmath>
 #include <format>
 
 static_assert(
-  std::same_as<OpenKneeboard::DCSEvents::GeoReal, OpenKneeboard::GeoReal>);
+  std::same_as<VisorVR::DCSEvents::GeoReal, VisorVR::GeoReal>);
 
-using namespace OpenKneeboard::Coordinates;
+using namespace VisorVR::Coordinates;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static std::string GetCountries(const LuaRef& countries) {
   std::string ret;
@@ -326,4 +326,4 @@ void DCSBriefingTab::PushMissionObjective(
   dprint("LuaIndexError when loading mission objective: {}", e.what());
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

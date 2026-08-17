@@ -19,31 +19,31 @@
 #include "InstallPlugin.h"
 #include "TabPage.xaml.h"
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/Elevation.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/GetMainHWND.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/InterprocessRenderer.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabletInputAdapter.hpp>
-#include <OpenKneeboard/TabsList.hpp>
-#include <OpenKneeboard/TryEnqueue.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/Elevation.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/GetMainHWND.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/InterprocessRenderer.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/LaunchURI.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabletInputAdapter.hpp>
+#include <VisorVR/TabsList.hpp>
+#include <VisorVR/TryEnqueue.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/task/resume_after.hpp>
-#include <OpenKneeboard/task/resume_on_signal.hpp>
-#include <OpenKneeboard/tracing.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/task/resume_after.hpp>
+#include <VisorVR/task/resume_on_signal.hpp>
+#include <VisorVR/tracing.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/winrt/Microsoft.UI.Interop.h>
 
@@ -65,14 +65,14 @@
 
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
-using namespace ::OpenKneeboard;
+using namespace ::VisorVR;
 
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 
-using TabPage_WinRT = winrt::OpenKneeboardApp::TabPage;
-using TabPage_Implementation = winrt::OpenKneeboardApp::implementation::TabPage;
+using TabPage_WinRT = winrt::VisorVRApp::TabPage;
+using TabPage_Implementation = winrt::VisorVRApp::implementation::TabPage;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 MainWindow::MainWindow() : mDXR(gDXResources) {
   InitializeComponent();
 
@@ -164,7 +164,7 @@ task<void> MainWindow::Init() {
   if (hwndFile.has_value()) {
     mHwndFile = std::move(hwndFile).value();
   } else {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     dprint.Error(
       "Failed to open hwnd file: {} {:#010x}",
       hwndMappingName,
@@ -183,7 +183,7 @@ task<void> MainWindow::Init() {
   UpdateTitleBarMargins(nullptr, nullptr);
 
   RegisterURIHandler(SpecialURIs::Scheme, [this](auto uri) {
-    this->LaunchOpenKneeboardURI(uri);
+    this->LaunchVisorVRURI(uri);
   });
 
   mProfileSwitcher = this->ProfileSwitcher();
@@ -197,7 +197,7 @@ task<void> MainWindow::Init() {
 
   AddEventListener(
     mKneeboard->evCurrentProfileChangedEvent,
-    [](auto self) -> ::OpenKneeboard::fire_and_forget {
+    [](auto self) -> ::VisorVR::fire_and_forget {
       self->mTabSwitchReason = TabSwitchReason::ProfileSwitched;
       self->ResetKneeboardView();
       auto backStack = self->Frame().BackStack();
@@ -255,7 +255,7 @@ task<void> MainWindow::FrameLoop() {
       gTraceProvider,
       "MainWindow::FrameLoop()/WaitStart",
       TraceLoggingValue(waitTime.QuadPart, "interval"));
-    if (!co_await OpenKneeboard::resume_on_signal(timer.get(), stop)) {
+    if (!co_await VisorVR::resume_on_signal(timer.get(), stop)) {
       co_return;
     }
     TraceLoggingWrite(gTraceProvider, "MainWindow::FrameLoop()/WaitComplete");
@@ -276,7 +276,7 @@ void MainWindow::CheckForElevatedConsumer() {
   ShowWarningIfElevated(pid);
 }
 
-OpenKneeboard::fire_and_forget MainWindow::ShowWarningIfElevated(DWORD pid) {
+VisorVR::fire_and_forget MainWindow::ShowWarningIfElevated(DWORD pid) {
   if (pid == mElevatedConsumerProcessID) {
     co_return;
   }
@@ -358,7 +358,7 @@ task<void> MainWindow::FrameTick(
   TraceLoggingWriteTagged(activity, "Acquired shared kneeboard locked");
 
   this->CheckForElevatedConsumer();
-  OPENKNEEBOARD_TraceLoggingScope("evFrameTimerPreEvent.emit()");
+  VISORVR_TraceLoggingScope("evFrameTimerPreEvent.emit()");
   mKneeboard->evFrameTimerPreEvent.Emit();
   TraceLoggingWriteTagged(activity, "Prepared to render");
   // In-VR edit mode: the mouse cursor is fed to the OpenXR layer via the SHM
@@ -371,7 +371,7 @@ task<void> MainWindow::FrameTick(
   if (mKneeboard->IsRepaintNeeded()) {
     const std::unique_lock dxLock(*mDXR);
     TraceLoggingWriteTagged(activity, "DX locked");
-    OPENKNEEBOARD_TraceLoggingCoro("Paint");
+    VISORVR_TraceLoggingCoro("Paint");
     if (auto ipc = mKneeboard->GetInterprocessRenderer()) {
       co_await ipc->RenderNow();
     }
@@ -385,7 +385,7 @@ task<void> MainWindow::FrameTick(
   TraceLoggingWriteStop(
     activity, "FrameTick", TraceLoggingValue(repainted, "Repainted"));
   {
-    OPENKNEEBOARD_TraceLoggingScope("evFrameTimerPostEvent.emit()");
+    VISORVR_TraceLoggingScope("evFrameTimerPostEvent.emit()");
     mKneeboard->evFrameTimerPostEvent.Emit(
       repainted ? FramePostEventKind::WithRepaint
                 : FramePostEventKind::WithoutRepaint);
@@ -397,7 +397,7 @@ task<void> MainWindow::FrameTick(
   co_await mKneeboard->FlushOrderedEventQueue(nextFrameAt);
 }
 
-OpenKneeboard::fire_and_forget MainWindow::OnLoaded() {
+VisorVR::fire_and_forget MainWindow::OnLoaded() {
   // WinUI3 gives us the spinning circle for a long time...
   SetCursor(LoadCursorW(NULL, IDC_ARROW));
 
@@ -510,7 +510,7 @@ MainWindow::~MainWindow() {
   gMainWindow = {};
 }
 
-OpenKneeboard::fire_and_forget MainWindow::UpdateProfileSwitcherVisibility() {
+VisorVR::fire_and_forget MainWindow::UpdateProfileSwitcherVisibility() {
   co_await mUIThread;
   // As of Windows App SDK v1.1.4, changing the visibility and signalling the
   // bound property changed doesn't correctly update the navigation view, even
@@ -558,7 +558,7 @@ OpenKneeboard::fire_and_forget MainWindow::UpdateProfileSwitcherVisibility() {
 
     auto weakItem = make_weak(item);
     item.Click(
-      [](auto self, auto item, auto profile) -> OpenKneeboard::fire_and_forget {
+      [](auto self, auto item, auto profile) -> VisorVR::fire_and_forget {
         auto settings = self->mKneeboard->GetProfileSettings();
         if (settings.mActiveProfile == profile.mGuid) {
           item.IsChecked(true);
@@ -594,7 +594,7 @@ OpenKneeboard::fire_and_forget MainWindow::UpdateProfileSwitcherVisibility() {
 }
 
 void MainWindow::ResetKneeboardView() {
-  OPENKNEEBOARD_TraceLoggingScope("MainWindow::ResetKneeboardView()");
+  VISORVR_TraceLoggingScope("MainWindow::ResetKneeboardView()");
   if (mKneeboard->GetAppWindowView() == mKneeboardView) {
     return;
   }
@@ -671,9 +671,9 @@ void MainWindow::SaveWindowPosition() {
   mWindowPosition = windowRect;
 }
 
-OpenKneeboard::task<void> MainWindow::DisposeAsync() noexcept {
+VisorVR::task<void> MainWindow::DisposeAsync() noexcept {
   auto self = get_strong();
-  OPENKNEEBOARD_TraceLoggingScope("MainWindow::DisposeAsync()");
+  VISORVR_TraceLoggingScope("MainWindow::DisposeAsync()");
 
   const auto disposing = co_await mDisposal.StartOnce();
   if (!disposing) {
@@ -738,9 +738,9 @@ void MainWindow::TriggerApplicationExit() {
   });
 }
 
-OpenKneeboard::fire_and_forget MainWindow::OnTabChanged() noexcept {
+VisorVR::fire_and_forget MainWindow::OnTabChanged() noexcept {
   co_await mUIThread;
-  OPENKNEEBOARD_TraceLoggingCoro("MainWindow::OnTabChanged()");
+  VISORVR_TraceLoggingCoro("MainWindow::OnTabChanged()");
 
   if (mTabSwitchReason != TabSwitchReason::InAppNavSelection) {
     // Don't automatically move away from "Profiles"
@@ -765,7 +765,7 @@ OpenKneeboard::fire_and_forget MainWindow::OnTabChanged() noexcept {
   }
 
   if (mKneeboardView != mKneeboard->GetAppWindowView()) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   const auto tab = mKneeboardView->GetCurrentTab().lock();
   if (!tab) {
@@ -807,8 +807,8 @@ OpenKneeboard::fire_and_forget MainWindow::OnTabChanged() noexcept {
   mTabSwitchReason = TabSwitchReason::Other;
 }
 
-OpenKneeboard::fire_and_forget MainWindow::OnAPIEvent(APIEvent ev) {
-  if (ev.name != APIEvent::EVT_OKB_EXECUTABLE_LAUNCHED) {
+VisorVR::fire_and_forget MainWindow::OnAPIEvent(APIEvent ev) {
+  if (ev.name != APIEvent::EVT_VVR_EXECUTABLE_LAUNCHED) {
     co_return;
   }
   co_await mUIThread;
@@ -828,9 +828,9 @@ OpenKneeboard::fire_and_forget MainWindow::OnAPIEvent(APIEvent ev) {
     mKneeboard, Navigation().XamlRoot(), commandLine.c_str());
 }
 
-OpenKneeboard::fire_and_forget MainWindow::OnTabsChanged() {
+VisorVR::fire_and_forget MainWindow::OnTabsChanged() {
   co_await mUIThread;
-  OPENKNEEBOARD_TraceLoggingScope("MainWindow::OnTabsChanged()");
+  VISORVR_TraceLoggingScope("MainWindow::OnTabsChanged()");
 
   for (auto&& token: mTabsEvents) {
     this->RemoveEventListener(token);
@@ -860,7 +860,7 @@ OpenKneeboard::fire_and_forget MainWindow::OnTabsChanged() {
 
   this->OnTabChanged();
 }
-OpenKneeboard::fire_and_forget MainWindow::OnTabSettingsChanged(
+VisorVR::fire_and_forget MainWindow::OnTabSettingsChanged(
   const std::shared_ptr<ITab> tab) {
   if (!mNavigationItems) {
     this->mPropertyChangedEvent(
@@ -886,10 +886,10 @@ OpenKneeboard::fire_and_forget MainWindow::OnTabSettingsChanged(
 winrt::Windows::Foundation::Collections::IVector<
   winrt::Windows::Foundation::IInspectable>
 MainWindow::NavigationItems() noexcept {
-  OPENKNEEBOARD_TraceLoggingScope("MainWindow::NavigationItems()");
+  VISORVR_TraceLoggingScope("MainWindow::NavigationItems()");
   const std::shared_lock lock(*mKneeboard);
   TraceLoggingWrite(
-    gTraceProvider, "OpenKneeboard::NavigationItems()/HaveLock");
+    gTraceProvider, "VisorVR::NavigationItems()/HaveLock");
   auto navItems = winrt::single_threaded_vector<IInspectable>();
   navItems.Clear();
 
@@ -980,9 +980,9 @@ MainWindow::NavigationItems() noexcept {
   return navItems;
 }
 
-OpenKneeboard::fire_and_forget MainWindow::RenameTab(
+VisorVR::fire_and_forget MainWindow::RenameTab(
   std::shared_ptr<ITab> tab) {
-  OpenKneeboardApp::RenameTabDialog dialog;
+  VisorVRApp::RenameTabDialog dialog;
   dialog.XamlRoot(Navigation().XamlRoot());
   dialog.TabTitle(to_hstring(tab->GetTitle()));
 
@@ -998,11 +998,11 @@ OpenKneeboard::fire_and_forget MainWindow::RenameTab(
   tab->SetTitle(newName);
 }
 
-OpenKneeboard::fire_and_forget MainWindow::RenameBookmark(
+VisorVR::fire_and_forget MainWindow::RenameBookmark(
   std::shared_ptr<ITab> tab,
   Bookmark bookmark,
   winrt::hstring title) {
-  OpenKneeboardApp::RenameTabDialog dialog;
+  VisorVRApp::RenameTabDialog dialog;
   dialog.XamlRoot(Navigation().XamlRoot());
   dialog.TabTitle(to_hstring(title));
   dialog.Prompt(_(L"What would you like to rename this bookmark to?"));
@@ -1097,7 +1097,7 @@ void MainWindow::OnBackRequested(
 }
 
 
-OpenKneeboard::fire_and_forget MainWindow::LaunchOpenKneeboardURI(
+VisorVR::fire_and_forget MainWindow::LaunchVisorVRURI(
   std::string_view uriStr) {
   auto uri = winrt::Windows::Foundation::Uri(winrt::to_hstring(uriStr));
   auto path = winrt::to_string(uri.Path());
@@ -1206,4 +1206,4 @@ LRESULT MainWindow::SubclassProc(
   return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

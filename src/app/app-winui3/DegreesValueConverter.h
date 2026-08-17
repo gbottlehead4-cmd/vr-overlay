@@ -10,7 +10,7 @@
 #include "DegreesValueConverter.g.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct DegreesValueConverter : DegreesValueConverterT<DegreesValueConverter> {
   DegreesValueConverter() = default;
 
@@ -25,9 +25,9 @@ struct DegreesValueConverter : DegreesValueConverterT<DegreesValueConverter> {
     winrt::Windows::Foundation::IInspectable const& parameter,
     hstring const& language);
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct DegreesValueConverter : DegreesValueConverterT<
                                  DegreesValueConverter,
                                  implementation::DegreesValueConverter> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

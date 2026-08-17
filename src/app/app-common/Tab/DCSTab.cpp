@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/DCSTab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/DCSTab.hpp>
+#include <VisorVR/KneeboardState.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DCSTab::DCSTab(KneeboardState* kbs) {
   mAPIEventToken = AddEventListener(
@@ -58,4 +58,4 @@ std::filesystem::path DCSTab::ToAbsolutePath(
   return maybeRelative;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

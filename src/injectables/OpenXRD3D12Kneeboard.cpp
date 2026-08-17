@@ -10,9 +10,9 @@
 #include "OpenXRD3D11Kneeboard.hpp"
 #include "OpenXRNext.hpp"
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -29,7 +29,7 @@
 #define XR_USE_GRAPHICS_API_D3D12
 #include <openxr/openxr_platform.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 OpenXRD3D12Kneeboard::OpenXRD3D12Kneeboard(
   XrInstance instance,
@@ -60,7 +60,7 @@ XrSwapchain OpenXRD3D12Kneeboard::CreateSwapchain(
   XrSession session,
   const PixelSize& size) {
   dprint("{}", __FUNCTION__);
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D12Kneeboard::CreateSwapchain");
+  VISORVR_TraceLoggingScope("OpenXRD3D12Kneeboard::CreateSwapchain");
 
   auto oxr = this->GetOpenXR();
 
@@ -119,7 +119,7 @@ XrSwapchain OpenXRD3D12Kneeboard::CreateSwapchain(
 
   if (images.at(0).type != XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR) {
     dprint("Swap chain is not a D3D12 swapchain");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     oxr->xrDestroySwapchain(swapchain);
     return nullptr;
   }
@@ -150,7 +150,7 @@ XrSwapchain OpenXRD3D12Kneeboard::CreateSwapchain(
     });
     image.texture->SetName(
       std::format(
-        L"OpenKneeboard D3D12 OpenXR swapchain #{} subimage #{}",
+        L"VisorVR D3D12 OpenXR swapchain #{} subimage #{}",
         thisSwapchain,
         imageIndex)
         .c_str());
@@ -171,7 +171,7 @@ void OpenXRD3D12Kneeboard::RenderLayers(
   uint32_t swapchainTextureIndex,
   SHM::Frame frame,
   const std::span<SHM::LayerSprite>& layers) {
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D12Kneeboard::RenderLayers()");
+  VISORVR_TraceLoggingScope("OpenXRD3D12Kneeboard::RenderLayers()");
 
   mRenderer->RenderLayers(
     mSwapchainResources.at(swapchain),
@@ -184,4 +184,4 @@ void OpenXRD3D12Kneeboard::RenderLayers(
 
 SHM::Reader& OpenXRD3D12Kneeboard::GetSHM() { return *mSHM; }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

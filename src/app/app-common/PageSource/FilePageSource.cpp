@@ -4,15 +4,15 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ChromiumPageSource.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/FilePageSource.hpp>
-#include <OpenKneeboard/ImageFilePageSource.hpp>
-#include <OpenKneeboard/PDFFilePageSource.hpp>
-#include <OpenKneeboard/PlainTextFilePageSource.hpp>
+#include <VisorVR/ChromiumPageSource.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/FilePageSource.hpp>
+#include <VisorVR/ImageFilePageSource.hpp>
+#include <VisorVR/PDFFilePageSource.hpp>
+#include <VisorVR/PlainTextFilePageSource.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -21,7 +21,7 @@
 
 #include <icu.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 std::vector<std::string> FilePageSource::GetSupportedExtensions(
   const audited_ptr<DXResources>& dxr) noexcept {
   std::vector<std::string> ret {".txt", ".pdf", ".htm", ".html"};
@@ -81,4 +81,4 @@ task<std::shared_ptr<IPageSource>> FilePageSource::Create(
 
   co_return nullptr;
 }
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -7,12 +7,12 @@
 #pragma once
 #include "TabPage.g.h"
 
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/Events.hpp>
-#include <OpenKneeboard/Pixels.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/ThreadGuard.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/Events.hpp>
+#include <VisorVR/Pixels.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/ThreadGuard.hpp>
 
 #include <memory>
 #include <mutex>
@@ -22,7 +22,7 @@
 #include <d2d1.h>
 #include <dxgi1_2.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class CursorRenderer;
 class D2DErrorRenderer;
 struct DXResources;
@@ -34,38 +34,38 @@ class KneeboardState;
 class RenderTarget;
 class ToolbarAction;
 class ToolbarToggleAction;
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Microsoft::UI::Input;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Input;
 using namespace winrt::Microsoft::UI::Xaml::Navigation;
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct TabPage : TabPageT<TabPage>, EventReceiver {
-  using TabView = ::OpenKneeboard::TabView;
+  using TabView = ::VisorVR::TabView;
 
   TabPage();
   ~TabPage();
 
-  static OpenKneeboard::fire_and_forget final_release(std::unique_ptr<TabPage>);
+  static VisorVR::fire_and_forget final_release(std::unique_ptr<TabPage>);
 
   void OnNavigatedTo(const NavigationEventArgs&) noexcept;
   void OnCanvasSizeChanged(
     const IInspectable&,
     const SizeChangedEventArgs&) noexcept;
   void OnPointerEvent(const IInspectable&, const PointerEventArgs&) noexcept;
-  OpenKneeboard::fire_and_forget ToggleVREditMode(
+  VisorVR::fire_and_forget ToggleVREditMode(
     const IInspectable&,
     const RoutedEventArgs&);
-  OpenKneeboard::fire_and_forget RecenterVR(
+  VisorVR::fire_and_forget RecenterVR(
     const IInspectable&,
     const RoutedEventArgs&);
-  OpenKneeboard::fire_and_forget GoToInputBindings(
+  VisorVR::fire_and_forget GoToInputBindings(
     const IInspectable&,
     const RoutedEventArgs&);
   void ShowPreview(const IInspectable&, const RoutedEventArgs&);
@@ -97,7 +97,7 @@ struct TabPage : TabPageT<TabPage>, EventReceiver {
   void FlushCursorEvents();
 
   void SetTab(const std::shared_ptr<TabView>&);
-  OpenKneeboard::fire_and_forget UpdateToolbar();
+  VisorVR::fire_and_forget UpdateToolbar();
   void SetSettingsVisible(bool);
   void UpdatePanelHeader();
   void InitializeSwapChain();
@@ -150,12 +150,12 @@ struct TabPage : TabPageT<TabPage>, EventReceiver {
     const audited_ptr<DXResources>&,
     const TabView::RuntimeID&);
 
-  audited_ptr<OpenKneeboard::DXResources> mDXR;
-  audited_ptr<OpenKneeboard::KneeboardState> mKneeboard;
+  audited_ptr<VisorVR::DXResources> mDXR;
+  audited_ptr<VisorVR::KneeboardState> mKneeboard;
 
   ThreadGuard mThreadGuard;
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct TabPage : TabPageT<TabPage, implementation::TabPage> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

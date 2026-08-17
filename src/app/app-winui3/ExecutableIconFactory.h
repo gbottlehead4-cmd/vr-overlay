@@ -15,7 +15,7 @@ using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
 struct IWICImagingFactory;
 struct IWICBitmap;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 class ExecutableIconFactory final {
  public:
@@ -28,4 +28,4 @@ class ExecutableIconFactory final {
  private:
   winrt::com_ptr<IWICImagingFactory> mWIC;
 };
-}// namespace OpenKneeboard
+}// namespace VisorVR

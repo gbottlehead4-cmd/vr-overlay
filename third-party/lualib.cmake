@@ -1,4 +1,4 @@
-find_package(openkneeboard-lua CONFIG REQUIRED GLOBAL)
+find_package(visorvr-lua CONFIG REQUIRED GLOBAL)
 
 add_library(ThirdParty::Lua ALIAS lua)
 add_library(lualib_delayload INTERFACE)

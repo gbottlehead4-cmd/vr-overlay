@@ -34,7 +34,7 @@ list(REMOVE_ITEM CEF_EXE_LINKER_FLAGS "/MANIFEST:NO")
 list(REMOVE_ITEM CEF_COMPILER_DEFINES "_HAS_EXCEPTIONS=0")
 # Just no, we're using C++23
 list(REMOVE_ITEM CEF_CXX_COMPILER_FLAGS "/std:c++17")
-# Exclude CEF from OKB's overall /W4 /Wx; we're not going to require dependency *implementations*
+# Exclude CEF from VVR's overall /W4 /Wx; we're not going to require dependency *implementations*
 # pass the same warning requirements
 list(REMOVE_ITEM CEF_COMPILER_FLAGS /W4 /WX)
 

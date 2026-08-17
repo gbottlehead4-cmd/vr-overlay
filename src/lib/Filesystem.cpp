@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/LazyOnceValue.hpp>
-#include <OpenKneeboard/StateMachine.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/LazyOnceValue.hpp>
+#include <VisorVR/StateMachine.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -24,7 +24,7 @@
 #include <fstream>
 #include <mutex>
 
-namespace OpenKneeboard::Filesystem {
+namespace VisorVR::Filesystem {
 namespace {
 using LazyPath = LazyOnceValue<std::filesystem::path>;
 
@@ -185,7 +185,8 @@ void MigrateSettingsDirectory() {
   // layout. This is deliberately COPY-ONLY: the OpenKneeboard Public License
   // permits reading settings from locations carrying the original branding,
   // but does not permit modifying or extending them - so nothing here writes
-  // to, renames, or deletes anything under the old paths.
+  // to, renames, or deletes anything under the old paths. The names below are
+  // therefore deliberately NOT rebranded.
   const auto localAppData = GetKnownFolderPath<FOLDERID_LocalAppData>();
   const std::filesystem::path candidates[] {
     localAppData / "OpenKneeboard" / "Settings",
@@ -285,12 +286,12 @@ std::filesystem::path GetInstalledPluginsDirectory() {
 void OpenExplorerWithSelectedFile(const std::filesystem::path& path) {
   if (!std::filesystem::exists(path)) {
     dprint("{} - path '{}' does not exist (yet?)", __FUNCTION__, path);
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   if (!std::filesystem::is_regular_file(path)) {
     dprint("{} - path '{}' is not a file", __FUNCTION__, path);
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   PIDLIST_ABSOLUTE pidl {nullptr};
@@ -325,4 +326,4 @@ TemporaryCopy::TemporaryCopy(
 TemporaryCopy::~TemporaryCopy() noexcept { std::filesystem::remove(mCopy); }
 
 std::filesystem::path TemporaryCopy::GetPath() const noexcept { return mCopy; }
-};// namespace OpenKneeboard::Filesystem
+};// namespace VisorVR::Filesystem

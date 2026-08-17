@@ -15,7 +15,7 @@
 
 #include <filesystem>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 task<void> CheckAllDCSHooks(winrt::Microsoft::UI::Xaml::XamlRoot root);
 
@@ -39,4 +39,4 @@ task<std::optional<std::filesystem::path>> ChooseDCSSavedGamesFolder(
   const winrt::Microsoft::UI::Xaml::XamlRoot& xamlRoot,
   DCSSavedGamesSelectionTrigger trigger);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

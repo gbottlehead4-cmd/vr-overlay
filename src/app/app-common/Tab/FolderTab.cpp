@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/FolderPageSource.hpp>
-#include <OpenKneeboard/FolderTab.hpp>
+#include <VisorVR/FolderPageSource.hpp>
+#include <VisorVR/FolderTab.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <shims/nlohmann/json.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 FolderTab::FolderTab(
   const audited_ptr<DXResources>& dxr,
@@ -71,4 +71,4 @@ task<void> FolderTab::SetPath(std::filesystem::path path) {
   mPath = path;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

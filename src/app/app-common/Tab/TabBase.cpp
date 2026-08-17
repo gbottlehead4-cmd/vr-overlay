@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Events.hpp>
-#include <OpenKneeboard/TabBase.hpp>
+#include <VisorVR/Events.hpp>
+#include <VisorVR/TabBase.hpp>
 
 #include <unordered_set>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static winrt::guid EnsureNonNullGuid(const winrt::guid& guid) {
   if (guid != winrt::guid {}) {
@@ -21,7 +21,7 @@ static winrt::guid EnsureNonNullGuid(const winrt::guid& guid) {
 
 // Only used if the page does not have a 'real' persistent ID
 static constexpr std::string_view FirstPageFallbackBookmarkPersistentId {
-  "___OKB_FIRST_PAGE___"};
+  "___VVR_FIRST_PAGE___"};
 
 TabBase::TabBase(const winrt::guid& persistentID, std::string_view title)
   : mPersistentID(EnsureNonNullGuid(persistentID)),
@@ -176,4 +176,4 @@ void TabBase::OnContentChanged() {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

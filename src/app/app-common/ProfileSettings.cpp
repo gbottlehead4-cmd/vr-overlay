@@ -4,19 +4,19 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/ProfileSettings.hpp>
-#include <OpenKneeboard/Settings.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/ProfileSettings.hpp>
+#include <VisorVR/Settings.hpp>
 
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <algorithm>
 #include <format>
 #include <fstream>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ProfileSettings::Profile ProfileSettings::GetActiveProfile() const {
   return *std::ranges::find(mProfiles, mActiveProfile, &Profile::mGuid);
@@ -89,7 +89,7 @@ void ProfileSettings::Save() {
   f << std::setw(2) << j << std::endl;
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(ProfileSettings::Profile, mName, mGuid)
+VISORVR_DEFINE_SPARSE_JSON(ProfileSettings::Profile, mName, mGuid)
 
 void from_json(const nlohmann::json& j, ProfileSettings& v) {
   if (j.contains("LoopProfiles")) {
@@ -118,8 +118,8 @@ void from_json(const nlohmann::json& j, ProfileSettings& v) {
         // of people manually editing the profiles.json file incorrectly; the
         // new structure makes some common mistakes impossible.
         //
-        // While editing OpenKneeboard configuration files outside of
-        // OpenKneeboard is not supported, duplicate GUIDs are a particularly
+        // While editing VisorVR configuration files outside of
+        // VisorVR is not supported, duplicate GUIDs are a particularly
         // common case.
         if (guids.contains(profile.mGuid)) {
           const auto newGUID = random_guid();
@@ -188,4 +188,4 @@ void to_json(nlohmann::json& j, const ProfileSettings& v) {
   });
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -1,8 +1,8 @@
 ﻿<Page
-  x:Class="OpenKneeboardApp.AdvancedSettingsPage"
+  x:Class="VisorVRApp.AdvancedSettingsPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="using:OpenKneeboardApp"
+  xmlns:local="using:VisorVRApp"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
@@ -326,7 +326,7 @@
           This will be untrue and should be re-worded once/if
           XR_META_recommended_layer_resolution is adopted.
 
-          https://github.com/OpenKneeboard/OpenKneeboard/issues/503
+          https://github.com/VisorVR/VisorVR/issues/503
         -->
         <TextBlock
           Style="{ThemeResource CaptionTextBlockStyle}"

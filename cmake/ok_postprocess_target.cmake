@@ -76,7 +76,7 @@ function(ok_postprocess_target TARGET)
       IMPORTED_LOCATION "${IMPORTED_LOCATION}"
     )
 
-    if (BUILD_IS_64BIT AND NOT OKB_SKIP_32BIT)
+    if (BUILD_IS_64BIT AND NOT VVR_SKIP_32BIT)
       add_dependencies("${32BIT_TARGET}" build32)
       if (POSTPROCESS_ARG_RUNTIME_DEPENDENCY)
         add_dependencies(runtime-dependencies "${32BIT_TARGET}")

@@ -13,14 +13,14 @@
 
 #include "ExecutableIconFactory.h"
 
-#include <OpenKneeboard/WindowCaptureTab.hpp>
+#include <VisorVR/WindowCaptureTab.hpp>
 
 #include <string_view>
 
 using namespace winrt::Windows::Foundation::Collections;
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 WindowPickerDialog::WindowPickerDialog() {
   InitializeComponent();
@@ -29,7 +29,7 @@ WindowPickerDialog::WindowPickerDialog() {
 
   std::vector<IInspectable> winrtWindows;
   for (const auto& [hwnd, spec]: WindowCaptureTab::GetTopLevelWindows()) {
-    OpenKneeboardApp::WindowPickerUIData uiData;
+    VisorVRApp::WindowPickerUIData uiData;
     uiData.Hwnd(reinterpret_cast<uint64_t>(hwnd));
     uiData.Title(to_hstring(spec.mTitle));
     uiData.Path(spec.mExecutableLastSeenPath.wstring());
@@ -53,7 +53,7 @@ void WindowPickerDialog::OnListSelectionChanged(
     this->IsPrimaryButtonEnabled(false);
   } else {
     auto selected =
-      args.AddedItems().GetAt(0).as<OpenKneeboardApp::WindowPickerUIData>();
+      args.AddedItems().GetAt(0).as<VisorVRApp::WindowPickerUIData>();
     mHwnd = selected.Hwnd();
     this->IsPrimaryButtonEnabled(true);
   }
@@ -83,7 +83,7 @@ void WindowPickerDialog::OnAutoSuggestTextChanged(
 
   std::ranges::sort(matching, {}, [](const auto& inspectable) {
     return fold_utf8(
-      to_string(inspectable.as<OpenKneeboardApp::WindowPickerUIData>()
+      to_string(inspectable.as<VisorVRApp::WindowPickerUIData>()
                   .GetStringRepresentation()));
   });
 
@@ -105,7 +105,7 @@ std::vector<IInspectable> WindowPickerDialog::GetFilteredWindows(
 
   std::vector<IInspectable> ret;
   for (auto rawData: mWindows) {
-    auto window = rawData.as<OpenKneeboardApp::WindowPickerUIData>();
+    auto window = rawData.as<VisorVRApp::WindowPickerUIData>();
     const auto title = fold_utf8(winrt::to_string(window.Title()));
     const auto path = fold_utf8(winrt::to_string(window.Path()));
 
@@ -168,4 +168,4 @@ hstring WindowPickerUIData::GetStringRepresentation() {
     std::filesystem::path(std::wstring_view {Path()}).filename().wstring())};
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

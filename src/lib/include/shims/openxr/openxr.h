@@ -6,13 +6,13 @@
 // OpenKneeboard repository.
 #pragma once
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
-#ifdef OPENKNEEBOARD_32BIT_BUILD
+#ifdef VISORVR_32BIT_BUILD
 
-#include <OpenKneeboard/Opaque64BitHandle.hpp>
+#include <VisorVR/Opaque64BitHandle.hpp>
 
-namespace OpenKneeboard::OpenXR::Detail {
+namespace VisorVR::OpenXR::Detail {
 
 /*
  * The OpenXR headers define handles by default in a way such that
@@ -20,19 +20,19 @@ namespace OpenKneeboard::OpenXR::Detail {
  * in overload resolution. Let's fix this.
  */
 template <class T>
-struct Handle64 : public OpenKneeboard::Opaque64BitHandle<T> {
+struct Handle64 : public VisorVR::Opaque64BitHandle<T> {
   using Opaque64BitHandle<T>::Opaque64BitHandle;
 };
 
-}// namespace OpenKneeboard::OpenXR::Detail
+}// namespace VisorVR::OpenXR::Detail
 
 #define XR_DEFINE_HANDLE(object) \
-  struct object : public ::OpenKneeboard::OpenXR::Detail::Handle64<object> { \
+  struct object : public ::VisorVR::OpenXR::Detail::Handle64<object> { \
     using Handle64<object>::Handle64; \
   };
 // As Vulkan usually uses `uint64_t` for 32-bit handles, it can't use nullptr;
 // as we have a nullptr overload in our struct, it'll work fine
 #define XR_NULL_HANDLE nullptr
-#endif// OPENKNEEBOARD_32BIT_BUILD
+#endif// VISORVR_32BIT_BUILD
 
 #include <openxr/openxr.h>

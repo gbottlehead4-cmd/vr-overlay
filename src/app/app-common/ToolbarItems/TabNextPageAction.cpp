@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/TabNextPageAction.hpp>
-#include <OpenKneeboard/TabView.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/TabNextPageAction.hpp>
+#include <VisorVR/TabView.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabNextPageAction::TabNextPageAction(
   KneeboardState* kneeboard,
@@ -75,4 +75,4 @@ task<void> TabNextPageAction::Execute() {
   tv->SetPageID(*it);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

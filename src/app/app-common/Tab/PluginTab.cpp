@@ -5,21 +5,21 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/ChromiumPageSource.hpp>
-#include <OpenKneeboard/D2DErrorRenderer.hpp>
-#include <OpenKneeboard/IHasDisposeAsync.hpp>
-#include <OpenKneeboard/PluginStore.hpp>
-#include <OpenKneeboard/PluginTab.hpp>
+#include <VisorVR/ChromiumPageSource.hpp>
+#include <VisorVR/D2DErrorRenderer.hpp>
+#include <VisorVR/IHasDisposeAsync.hpp>
+#include <VisorVR/PluginStore.hpp>
+#include <VisorVR/PluginTab.hpp>
 
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/semver.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/semver.hpp>
+#include <VisorVR/version.hpp>
 
 #include <Shlwapi.h>
 
 #include <wininet.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 PluginTab::PluginTab(
   const audited_ptr<DXResources>& dxr,
@@ -99,8 +99,8 @@ task<void> PluginTab::Reload() {
   if (
     CompareVersions(plugin.mMetadata.mOKBMinimumVersion, Version::ReleaseName)
     == ThreeWayCompareResult::GreaterThan) {
-    dprint.Warning("OpenKneeboard is too old for plugin `{}`", plugin.mID);
-    mState = State::OpenKneeboardTooOld;
+    dprint.Warning("VisorVR is too old for plugin `{}`", plugin.mID);
+    mState = State::VisorVRTooOld;
     co_return;
   }
 
@@ -118,7 +118,7 @@ task<void> PluginTab::Reload() {
       const std::string_view pluginScheme {"plugin://"};
       if (settings.mURI.starts_with(pluginScheme)) {
         const auto vhost =
-          std::format("{}.openkneeboardplugins.localhost", plugin.GetIDHash());
+          std::format("{}.visorvrplugins.localhost", plugin.GetIDHash());
         const auto path = plugin.mJSONPath.parent_path();
         settings.mVirtualHosts.emplace(vhost, path);
         settings.mURI.replace(
@@ -138,7 +138,7 @@ task<void> PluginTab::Reload() {
     }
     default:
       dprint("Unrecognized plugin implementation");
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       co_return;
   }
 }
@@ -197,14 +197,14 @@ PluginTab::RenderPage(RenderContext ctx, PageID page, PixelRect rect) {
     case State::PluginNotFound:
       mErrorRenderer->Render(ctx.d2d(), _("Plugin Not Installed"), rect);
       co_return;
-    case State::OpenKneeboardTooOld:
+    case State::VisorVRTooOld:
       mErrorRenderer->Render(
-        ctx.d2d(), _("Plugin Requires Newer OpenKneeboard"), rect);
+        ctx.d2d(), _("Plugin Requires Newer VisorVR"), rect);
       co_return;
   }
   std::unreachable();
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(PluginTab::Settings, mPluginTabTypeID);
+VISORVR_DEFINE_SPARSE_JSON(PluginTab::Settings, mPluginTabTypeID);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -12,7 +12,7 @@
 
 using namespace winrt::Windows::Foundation;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct UIDataItem : UIDataItemT<UIDataItem> {
   UIDataItem() = default;
 
@@ -30,8 +30,8 @@ struct UIDataItem : UIDataItemT<UIDataItem> {
   winrt::hstring mLabel;
   IInspectable mTag;
 };
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation
 
-namespace winrt::OpenKneeboardApp::factory_implementation {
+namespace winrt::VisorVRApp::factory_implementation {
 struct UIDataItem : UIDataItemT<UIDataItem, implementation::UIDataItem> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

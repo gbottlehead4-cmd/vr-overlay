@@ -5,15 +5,15 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/Elevation.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/PluginStore.hpp>
-#include <OpenKneeboard/Registry.hpp>
+#include <VisorVR/Elevation.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/PluginStore.hpp>
+#include <VisorVR/Registry.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/json.hpp>
 
 #include <wil/registry.h>
 
@@ -23,10 +23,10 @@
 #include <fstream>
 #include <ranges>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 PluginStore::PluginStore() {
-  if (OpenKneeboard::IsElevated() || OpenKneeboard::IsShellElevated()) {
-    dprint.Warning("not loading any plugins because OpenKneeboard is elevated");
+  if (VisorVR::IsElevated() || VisorVR::IsShellElevated()) {
+    dprint.Warning("not loading any plugins because VisorVR is elevated");
     return;
   }
   this->LoadPluginsFromFilesystem();
@@ -135,4 +135,4 @@ void PluginStore::Append(const Plugin& plugin) {
     plugin.mMetadata.mPluginReadableVersion,
     plugin.mJSONPath);
 }
-}// namespace OpenKneeboard
+}// namespace VisorVR

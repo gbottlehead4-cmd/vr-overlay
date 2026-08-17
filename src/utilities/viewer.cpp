@@ -10,23 +10,23 @@
 #include "viewer-d3d12.hpp"
 #include "viewer-vulkan.hpp"
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/D2DErrorRenderer.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/GetSystemColor.hpp>
-#include <OpenKneeboard/RenderDoc.hpp>
-#include <OpenKneeboard/SHM.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
-#include <OpenKneeboard/SHM/D3D11.hpp>
-#include <OpenKneeboard/Shaders/Viewer/DXBC.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/D2DErrorRenderer.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/GetSystemColor.hpp>
+#include <VisorVR/RenderDoc.hpp>
+#include <VisorVR/SHM.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
+#include <VisorVR/SHM/D3D11.hpp>
+#include <VisorVR/Shaders/Viewer/DXBC.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -47,30 +47,30 @@
 #include <dwrite.h>
 #include <dxgi1_6.h>
 
-#if OPENKNEEBOARD_32BIT_BUILD
-#define VIEWER_WINDOW_TITLE L"32-bit OpenKneeboard Viewer"
+#if VISORVR_32BIT_BUILD
+#define VIEWER_WINDOW_TITLE L"32-bit VisorVR Viewer"
 #else
-#define VIEWER_WINDOW_TITLE L"OpenKneeboard Viewer"
+#define VIEWER_WINDOW_TITLE L"VisorVR Viewer"
 #endif
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 using felly::numeric_cast;
-using OpenKneeboard::SHM::ActiveConsumers;
+using VisorVR::SHM::ActiveConsumers;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 Viewer::Renderer::~Renderer() = default;
 
 /* PS >
- * [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.Viewer")
+ * [System.Diagnostics.Tracing.EventSource]::new("VisorVR.Viewer")
  * d4df4528-1fae-5d7c-f8ac-0da5654ba6ea
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.Viewer",
+  "VisorVR.Viewer",
   (0xd4df4528, 0x1fae, 0x5d7c, 0xf8, 0xac, 0x0d, 0xa5, 0x65, 0x4b, 0xa6, 0xea));
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 #pragma pack(push)
 struct Pixel {
@@ -211,7 +211,7 @@ class TestViewerWindow final : private D3D11Resources {
  public:
   TestViewerWindow(HINSTANCE instance) {
     gInstance = this;
-    const wchar_t CLASS_NAME[] = L"OpenKneeboard Test Viewer";
+    const wchar_t CLASS_NAME[] = L"VisorVR Test Viewer";
     WNDCLASS wc {
       .lpfnWndProc = WindowProc,
       .hInstance = instance,
@@ -337,7 +337,7 @@ class TestViewerWindow final : private D3D11Resources {
   HWND GetHWND() const { return mHwnd; }
 
   void CheckForUpdate() {
-    OPENKNEEBOARD_TraceLoggingScope("Viewer::CheckForUpdate");
+    VISORVR_TraceLoggingScope("Viewer::CheckForUpdate");
     auto& shm = mRenderer->GetSHM();
     if (!shm) {
       if (mFirstDetached) {
@@ -483,7 +483,7 @@ class TestViewerWindow final : private D3D11Resources {
     if (clientSize == mSwapChainSize) {
       return;
     }
-    OPENKNEEBOARD_TraceLoggingScope("Viewer::InitSwapChain()");
+    VISORVR_TraceLoggingScope("Viewer::InitSwapChain()");
 
     this->OnResize(clientSize);
 
@@ -598,7 +598,7 @@ class TestViewerWindow final : private D3D11Resources {
     }
 
     const auto path =
-      Filesystem::GetKnownFolderPath<FOLDERID_Pictures>() / "OpenKneeboard"
+      Filesystem::GetKnownFolderPath<FOLDERID_Pictures>() / "VisorVR"
       / std::format(
         "capture-v{}.{}.{}.{}-{:%F-%H-%M}.dds",
         Version::Major,
@@ -697,7 +697,7 @@ class TestViewerWindow final : private D3D11Resources {
       return;
     }
 
-    OPENKNEEBOARD_TraceLoggingScope("Viewer::PaintNow()");
+    VISORVR_TraceLoggingScope("Viewer::PaintNow()");
     this->InitSwapChain();
 
     if (!mWindowTexture) {
@@ -817,10 +817,10 @@ class TestViewerWindow final : private D3D11Resources {
   case ViewerAlignment::x: \
     text += L"\n" #x; \
     break;
-    switch (mSettings.mAlignment) { OPENKNEEBOARD_VIEWER_ALIGNMENTS }
+    switch (mSettings.mAlignment) { VISORVR_VIEWER_ALIGNMENTS }
 #undef IT
 
-    // OpenKneeboard is currently VR-only
+    // VisorVR is currently VR-only
     text += L"\nVR";
 
     winrt::com_ptr<IDWriteTextLayout> layout;
@@ -919,7 +919,7 @@ class TestViewerWindow final : private D3D11Resources {
   }
 
   PixelRect GetDestRect(
-    const OpenKneeboard::Geometry2D::Size<uint32_t> imageSize,
+    const VisorVR::Geometry2D::Size<uint32_t> imageSize,
     const float scale) {
     const auto clientSize = GetClientSize();
 
@@ -1125,7 +1125,7 @@ int WINAPI wWinMain(
   // No effect if there is no terminal
   AttachConsole(ATTACH_PARENT_PROCESS);
 
-  DPrintSettings::Set({.prefix = "OpenKneeboard-Viewer"});
+  DPrintSettings::Set({.prefix = "VisorVR-Viewer"});
 
   SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
   winrt::init_apartment(winrt::apartment_type::single_threaded);

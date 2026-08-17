@@ -10,7 +10,7 @@
 #include "MetersValueConverter.g.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct MetersValueConverter : MetersValueConverterT<MetersValueConverter> {
   MetersValueConverter() = default;
 
@@ -25,9 +25,9 @@ struct MetersValueConverter : MetersValueConverterT<MetersValueConverter> {
     winrt::Windows::Foundation::IInspectable const& parameter,
     hstring const& language);
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct MetersValueConverter : MetersValueConverterT<
                                 MetersValueConverter,
                                 implementation::MetersValueConverter> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

@@ -9,12 +9,12 @@
 
 #include "OpenXRKneeboard.hpp"
 
-#include <OpenKneeboard/SHM/Vulkan.hpp>
-#include <OpenKneeboard/Vulkan.hpp>
-#include <OpenKneeboard/Vulkan/ExtendedCreateInfo.hpp>
-#include <OpenKneeboard/Vulkan/SpriteBatch.hpp>
+#include <VisorVR/SHM/Vulkan.hpp>
+#include <VisorVR/Vulkan.hpp>
+#include <VisorVR/Vulkan/ExtendedCreateInfo.hpp>
+#include <VisorVR/Vulkan/SpriteBatch.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
 #include <shims/vulkan/vulkan.h>
 
@@ -22,7 +22,7 @@
 
 #include <d3d11_4.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 class OpenXRVulkanKneeboard final : public OpenXRKneeboard {
  public:
@@ -56,7 +56,7 @@ class OpenXRVulkanKneeboard final : public OpenXRKneeboard {
     const std::span<SHM::LayerSprite>& layers) override;
 
  private:
-  std::unique_ptr<OpenKneeboard::Vulkan::Dispatch> mVK;
+  std::unique_ptr<VisorVR::Vulkan::Dispatch> mVK;
 
   const VkAllocationCallbacks* mAllocator {nullptr};
   VkInstance mVKInstance {VK_NULL_HANDLE};
@@ -94,4 +94,4 @@ class OpenXRVulkanKneeboard final : public OpenXRKneeboard {
   void WaitForAllFences();
 };
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -6,16 +6,16 @@
 // OpenKneeboard repository.
 #include "ChromiumPageSource_RenderHandler.hpp"
 
-#include <OpenKneeboard/fatal.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/fatal.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/tracing.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ChromiumPageSource::RenderHandler::RenderHandler(
   std::shared_ptr<ChromiumPageSource> pageSource)
   : mPageSource(pageSource) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderHandler::RenderHandler()");
   mSize = pageSource->mSettings.mInitialSize;
   check_hresult(pageSource->mDXResources->mD3D11Device->CreateFence(
@@ -27,7 +27,7 @@ ChromiumPageSource::RenderHandler::~RenderHandler() {}
 void ChromiumPageSource::RenderHandler::GetViewRect(
   CefRefPtr<CefBrowser>,
   CefRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderHandler::RenderHandler()");
   const FatalOnUncaughtExceptions exceptionBoundary;
   rect = {0, 0, mSize.Width<int>(), mSize.Height<int>()};
@@ -40,7 +40,7 @@ void ChromiumPageSource::RenderHandler::OnPaint(
   const void* buffer,
   int width,
   int height) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderHandler::OnPaint()");
   const FatalOnUncaughtExceptions exceptionBoundary;
 
@@ -96,7 +96,7 @@ void ChromiumPageSource::RenderHandler::OnAcceleratedPaint(
   PaintElementType,
   const RectList& /*dirtyRects*/,
   const CefAcceleratedPaintInfo& info) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderHandler::OnAcceleratedPaint()");
   const FatalOnUncaughtExceptions exceptionBoundary;
   auto pageSource = mPageSource.lock();
@@ -144,7 +144,7 @@ void ChromiumPageSource::RenderHandler::OnAcceleratedPaint(
 
   if ((!frame.mTexture) || frame.mSize != sourceSize) {
     frame = {};
-    OPENKNEEBOARD_ALWAYS_ASSERT(info.format == CEF_COLOR_TYPE_BGRA_8888);
+    VISORVR_ALWAYS_ASSERT(info.format == CEF_COLOR_TYPE_BGRA_8888);
     wil::com_ptr<ID3D11Texture2D> texture;
     D3D11_TEXTURE2D_DESC desc {
       .Width = sourceSize.mWidth,
@@ -191,7 +191,7 @@ PixelSize ChromiumPageSource::RenderHandler::GetSize() const { return mSize; }
 void ChromiumPageSource::RenderHandler::RenderPage(
   RenderContext rc,
   const PixelRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderHandler::RenderPage()");
   if (mFrameCount == 0) {
     return;
@@ -214,4 +214,4 @@ void ChromiumPageSource::RenderHandler::RenderPage(
   spriteBatch.End();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

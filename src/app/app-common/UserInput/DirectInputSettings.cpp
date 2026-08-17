@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/DirectInputSettings.hpp>
+#include <VisorVR/DirectInputSettings.hpp>
 
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 template <>
 void from_json_postprocess<DirectInputSettings::ButtonBinding>(
@@ -26,19 +26,19 @@ void from_json_postprocess<DirectInputSettings::ButtonBinding>(
 // Not using sparse json as an individual binding should not be diffed/merged:
 // if either the buttons or actions differ, it's a different binding, not a
 // modified one.
-OPENKNEEBOARD_DEFINE_JSON(
+VISORVR_DEFINE_JSON(
   DirectInputSettings::ButtonBinding,
   mButtons,
   mAction);
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   DirectInputSettings::Device,
   mID,
   mName,
   mKind,
   mButtonBindings);
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   DirectInputSettings,
   mEnableMouseButtonBindings,
   mDevices);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

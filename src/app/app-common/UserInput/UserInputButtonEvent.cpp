@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/UserInputButtonEvent.hpp>
-#include <OpenKneeboard/UserInputDevice.hpp>
+#include <VisorVR/UserInputButtonEvent.hpp>
+#include <VisorVR/UserInputDevice.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 UserInputButtonEvent::UserInputButtonEvent(
   std::shared_ptr<UserInputDevice> device,
@@ -27,4 +27,4 @@ uint64_t UserInputButtonEvent::GetButtonID() const { return mButtonID; }
 
 bool UserInputButtonEvent::IsPressed() const { return mPressed; }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

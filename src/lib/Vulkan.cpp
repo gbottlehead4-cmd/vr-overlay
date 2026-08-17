@@ -5,9 +5,9 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/Vulkan.hpp>
+#include <VisorVR/Vulkan.hpp>
 
-namespace OpenKneeboard::Vulkan {
+namespace VisorVR::Vulkan {
 
 Dispatch::Dispatch(
   VkInstance instance,
@@ -15,7 +15,7 @@ Dispatch::Dispatch(
 #define IT(vkfun) \
   this->vkfun = reinterpret_cast<PFN_vk##vkfun>( \
     getInstanceProcAddr(instance, "vk" #vkfun));
-  OPENKNEEBOARD_VK_FUNCS
+  VISORVR_VK_FUNCS
 #undef IT
 }
 
@@ -38,4 +38,4 @@ std::optional<uint32_t> FindMemoryType(
   return {};
 }
 
-}// namespace OpenKneeboard::Vulkan
+}// namespace VisorVR::Vulkan

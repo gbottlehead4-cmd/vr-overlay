@@ -6,11 +6,11 @@
 // OpenKneeboard repository.
 #pragma once
 
-#include <OpenKneeboard/ChromiumPageSource.hpp>
+#include <VisorVR/ChromiumPageSource.hpp>
 
 #include <optional>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 struct ExperimentalFeature {
   std::string mName;
@@ -159,4 +159,4 @@ class ChromiumPageSource::Client final : public CefClient,
   task<JSAPIResult> RequestPageChange(nlohmann::json);
   task<JSAPIResult> GetGraphicsTabletInfo();
 };
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/IPageSourceWithDeveloperTools.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/TabDeveloperToolsAction.hpp>
-#include <OpenKneeboard/TabView.hpp>
+#include <VisorVR/IPageSourceWithDeveloperTools.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/TabDeveloperToolsAction.hpp>
+#include <VisorVR/TabView.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabDeveloperToolsAction::TabDeveloperToolsAction(
   KneeboardState* kneeboard,
@@ -61,4 +61,4 @@ task<void> TabDeveloperToolsAction::Execute() {
   page->OpenDeveloperToolsWindow(mKneeboardView, tv->GetPageID());
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

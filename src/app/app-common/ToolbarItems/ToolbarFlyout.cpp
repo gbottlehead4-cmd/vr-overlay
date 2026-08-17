@@ -4,9 +4,9 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ToolbarFlyout.hpp>
+#include <VisorVR/ToolbarFlyout.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ToolbarFlyout::ToolbarFlyout(
   std::string glyph,
@@ -48,4 +48,4 @@ std::vector<std::shared_ptr<IToolbarItem>> ToolbarFlyout::GetSubItems() const {
   return mSubItems;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

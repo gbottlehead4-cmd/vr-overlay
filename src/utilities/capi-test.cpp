@@ -1,5 +1,5 @@
 /*
- * OpenKneeboard C API Header
+ * VisorVR C API Header
  *
  * Copyright (C) 2022-2023 Fred Emmott <fred@fredemmott.com>
  *
@@ -19,7 +19,7 @@
  * ----- THE ABOVE LICENSE ONLY APPLIES TO THIS SPECIFIC FILE -----
  * ----------------------------------------------------------------
  *
- * The majority of OpenKneeboard is under a different license; check specific
+ * The majority of VisorVR is under a different license; check specific
  * files for more information.
  */
 
@@ -33,9 +33,9 @@
 #include <iostream>
 #include <optional>
 
-#include <OpenKneeboard_CAPI.h>
+#include <VisorVR_CAPI.h>
 
-static std::filesystem::path GetOpenKneeboardDLLPath();
+static std::filesystem::path GetVisorVRDLLPath();
 
 int main(int argc, char** argv) {
   if (argc < 2 || argc > 3) {
@@ -47,12 +47,12 @@ int main(int argc, char** argv) {
   ///// 1. Find the DLL /////
   ///////////////////////////
 
-  const auto dllPath = GetOpenKneeboardDLLPath();
+  const auto dllPath = GetVisorVRDLLPath();
 
   if (!std::filesystem::exists(dllPath)) {
     std::wcout << L"DLL '" << dllPath.wstring()
-               << L"' does not exist. Install OpenKneeboard, or set the "
-                  L"OPENKNEEBOARD_CAPI_DLL environment variable."
+               << L"' does not exist. Install VisorVR, or set the "
+                  L"VISORVR_CAPI_DLL environment variable."
                << std::endl;
     return 2;
   }
@@ -73,11 +73,11 @@ int main(int argc, char** argv) {
 
   // not using bit_cast as we intentionally target an earlier C++ version with
   // this test executable
-  const auto pfn_OpenKneeboard_send_utf8 =
-    reinterpret_cast<decltype(&OpenKneeboard_send_utf8)>(
-      reinterpret_cast<void*>(GetProcAddress(dll, "OpenKneeboard_send_utf8")));
-  if (!pfn_OpenKneeboard_send_utf8) {
-    std::cout << "Failed to find 'OpenKneeboard_send_utf8': " << GetLastError()
+  const auto pfn_VisorVR_send_utf8 =
+    reinterpret_cast<decltype(&VisorVR_send_utf8)>(
+      reinterpret_cast<void*>(GetProcAddress(dll, "VisorVR_send_utf8")));
+  if (!pfn_VisorVR_send_utf8) {
+    std::cout << "Failed to find 'VisorVR_send_utf8': " << GetLastError()
               << std::endl;
     return 4;
   }
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
   ///// 4. Call the function /////
   ////////////////////////////////
 
-  pfn_OpenKneeboard_send_utf8(
+  pfn_VisorVR_send_utf8(
     name.data(), name.size(), value.data(), value.size());
 
   FreeLibrary(dll);
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 }
 
 static std::optional<std::filesystem::path>
-GetOpenKneeboardDLLPathFromEnvironment() {
+GetVisorVRDLLPathFromEnvironment() {
   // When C++23 is widely available, a combination of `std::unique_ptr` and
   // `std::out_ptr` would be better than calling `free()`; there's
   // third-party implementations of `out_ptr` for earlier versions of C++,
@@ -106,7 +106,7 @@ GetOpenKneeboardDLLPathFromEnvironment() {
   wchar_t* fromEnv {nullptr};
   size_t fromEnvCharCount {};
   if (
-    _wdupenv_s(&fromEnv, &fromEnvCharCount, L"OPENKNEEBOARD_CAPI_DLL") != 0
+    _wdupenv_s(&fromEnv, &fromEnvCharCount, L"VISORVR_CAPI_DLL") != 0
     || !fromEnv) {
     // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
     free(fromEnv);
@@ -120,16 +120,16 @@ GetOpenKneeboardDLLPathFromEnvironment() {
   return ret;
 }
 
-// Requires OpenKneeboard v1.8.4 or above
+// Requires VisorVR v1.8.4 or above
 static std::optional<std::filesystem::path>
-GetOpenKneeboardDLLPathFromRegistry() {
+GetVisorVRDLLPathFromRegistry() {
   DWORD regType {REG_SZ};
   wchar_t regValue[MAX_PATH];
   DWORD regValueByteCount {std::size(regValue) * sizeof(wchar_t)};
   if (
     RegGetValueW(
       HKEY_CURRENT_USER,
-      L"Software\\Fred Emmott\\OpenKneeboard",
+      L"Software\\VisorVR",
       L"InstallationBinPath",
       // Always use the 64-bit registry, even if built as 32-bits
       RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY | RRF_ZEROONFAILURE,
@@ -143,15 +143,15 @@ GetOpenKneeboardDLLPathFromRegistry() {
 
   return std::filesystem::path {std::wstring_view {
            regValue, (regValueByteCount / sizeof(wchar_t)) - 1}}
-  / OPENKNEEBOARD_CAPI_DLL_NAME_W;
+  / VISORVR_CAPI_DLL_NAME_W;
 }
 
-static std::filesystem::path GetOpenKneeboardDLLPath() {
-  if (const auto ret = GetOpenKneeboardDLLPathFromEnvironment()) {
+static std::filesystem::path GetVisorVRDLLPath() {
+  if (const auto ret = GetVisorVRDLLPathFromEnvironment()) {
     return *ret;
   }
 
-  if (const auto ret = GetOpenKneeboardDLLPathFromRegistry()) {
+  if (const auto ret = GetVisorVRDLLPathFromRegistry()) {
     return *ret;
   }
 
@@ -167,8 +167,8 @@ static std::filesystem::path GetOpenKneeboardDLLPath() {
     throw;
   }
 
-  const auto ret = std::filesystem::path(programFiles) / L"OpenKneeboard"
-    / L"bin" / OPENKNEEBOARD_CAPI_DLL_NAME_W;
+  const auto ret = std::filesystem::path(programFiles) / L"VisorVR"
+    / L"bin" / VISORVR_CAPI_DLL_NAME_W;
 
   // Another opportunity for std::unique_ptr + std::out_ptr when using C++23
   CoTaskMemFree(programFiles);

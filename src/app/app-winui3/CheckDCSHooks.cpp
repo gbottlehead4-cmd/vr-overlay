@@ -12,12 +12,12 @@
 
 #include "Globals.h"
 
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 
@@ -33,18 +33,18 @@ using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::string GetLuaContent() {
   const auto runtimeDir = Filesystem::GetRuntimeDirectory();
   const auto rootDir = runtimeDir.parent_path();
   return std::format(
-    R"EOF(--[[ OpenKneeboard Hook - @{} ]]--
-local okb_path = "{}"
+    R"EOF(--[[ VisorVR Hook - @{} ]]--
+local vvr_path = "{}"
 --[[ Path for DLL ]]--
-package.cpath = okb_path.."/{}/?.dll;"..package.cpath
---[[ Load the actual LUA hook; ignore failures (e.g. OKB uninstalled) ]]--
-pcall(dofile, okb_path.."/{}")
+package.cpath = vvr_path.."/{}/?.dll;"..package.cpath
+--[[ Load the actual LUA hook; ignore failures (e.g. VVR uninstalled) ]]--
+pcall(dofile, vvr_path.."/{}")
 )EOF",
     "generated",
     weakly_canonical(rootDir).generic_string(),
@@ -88,7 +88,7 @@ task<void> CheckDCSHooks(XamlRoot root, std::filesystem::path savedGamesPath) {
   std::error_code ec;
   if (!std::filesystem::exists(savedGamesPath, ec)) {
     // For example, junctions may have a pass traversal error:
-    // https://github.com/OpenKneeboard/OpenKneeboard/issues/681
+    // https://github.com/VisorVR/VisorVR/issues/681
     if (ec) {
       dprint.Warning(
         "Failed to check if DCS saved games path `{}` exists: {} ({})",
@@ -217,4 +217,4 @@ task<void> CheckAllDCSHooks(XamlRoot root) try {
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

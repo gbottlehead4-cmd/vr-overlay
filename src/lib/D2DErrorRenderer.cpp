@@ -4,18 +4,18 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/D2DErrorRenderer.hpp>
-#include <OpenKneeboard/DXResources.hpp>
+#include <VisorVR/D2DErrorRenderer.hpp>
+#include <VisorVR/DXResources.hpp>
 
-#include <OpenKneeboard/audited_ptr.hpp>
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/hresult.hpp>
+#include <VisorVR/audited_ptr.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/hresult.hpp>
 
 #include <Unknwn.h>
 
 #include <dwrite.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 struct D2DErrorRenderer::Impl final {
   winrt::com_ptr<IDWriteFactory> mDWrite;
@@ -75,4 +75,4 @@ void D2DErrorRenderer::Render(
   ctx->DrawTextLayout({where.left, where.top}, textLayout.get(), brush);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

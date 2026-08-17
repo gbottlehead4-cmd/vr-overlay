@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/OpenXRMode.hpp>
-#include <OpenKneeboard/RunSubprocessAsync.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/OpenXRMode.hpp>
+#include <VisorVR/RunSubprocessAsync.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <format>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static auto LaunchAndWaitForOpenXRHelperSubprocess(
   RunAs runas,
@@ -53,4 +53,4 @@ task<void> SetOpenXR32ModeWithHelperProcess(OpenXRMode mode) {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

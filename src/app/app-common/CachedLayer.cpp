@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CachedLayer.hpp>
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/SHM.hpp>
+#include <VisorVR/CachedLayer.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/SHM.hpp>
 
-#include <OpenKneeboard/audited_ptr.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/audited_ptr.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <DirectXColors.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 CachedLayer::CachedLayer(const audited_ptr<DXResources>& dxr) : mDXR(dxr) {}
 
@@ -31,7 +31,7 @@ task<void> CachedLayer::Render(
     providedCacheDimensions ? *providedCacheDimensions : destRect.mSize;
 
   if (cacheDimensions.IsEmpty()) [[unlikely]] {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return;
   }
 
@@ -89,4 +89,4 @@ void CachedLayer::Reset() {
   mCacheSRV = nullptr;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -10,13 +10,13 @@
 #include "RenameTabDialog.g.cpp"
 // clang-format on
 
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <format>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 RenameTabDialog::RenameTabDialog() {
   InitializeComponent();
@@ -48,4 +48,4 @@ void RenameTabDialog::Prompt(const winrt::hstring& prompt) noexcept {
     winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(L"Prompt"));
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

@@ -11,8 +11,8 @@
 // unavailable. Check for a sentinel file to figure out whether or not we're
 // actually building
 #if __has_include( \
-  "openkneeboard-build-time-marker.hpp") && !defined(OPENKNEEBOARD_PCH_H)
-#define OPENKNEEBOARD_PCH_H
+  "visorvr-build-time-marker.hpp") && !defined(VISORVR_PCH_H)
+#define VISORVR_PCH_H
 
 #define NOMINMAX 1
 
@@ -34,9 +34,9 @@
 #include <ctxtcall.h>
 // clang-format on
 
-#include <OpenKneeboard/bindline.hpp>
-#include <OpenKneeboard/task.hpp>
-#include <OpenKneeboard/weak_refs.hpp>
+#include <VisorVR/bindline.hpp>
+#include <VisorVR/task.hpp>
+#include <VisorVR/weak_refs.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -60,8 +60,8 @@
 
 #include <wil/cppwinrt_helpers.h>
 
-namespace winrt::OpenKneeboardApp {
-using namespace ::OpenKneeboard::task_ns;
+namespace winrt::VisorVRApp {
+using namespace ::VisorVR::task_ns;
 }
 
 #endif

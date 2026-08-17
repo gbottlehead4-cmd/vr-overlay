@@ -5,11 +5,11 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/ThreadGuard.hpp>
+#include <VisorVR/ThreadGuard.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ThreadGuard::ThreadGuard(const std::source_location& loc) : mLocation(loc) {
 #ifdef DEBUG
@@ -31,10 +31,10 @@ void ThreadGuard::CheckThread(const std::source_location& loc) const {
       thisThread);
     dprint("Created at {}", mLocation);
     dprint("Checking at {}", loc);
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
 }
 
 ThreadGuard::~ThreadGuard() { this->CheckThread(); }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

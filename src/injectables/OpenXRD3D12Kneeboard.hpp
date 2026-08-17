@@ -8,11 +8,11 @@
 
 #include "OpenXRKneeboard.hpp"
 
-#include <OpenKneeboard/D3D12.hpp>
-#include <OpenKneeboard/D3D12/Renderer.hpp>
-#include <OpenKneeboard/SHM/D3D12.hpp>
+#include <VisorVR/D3D12.hpp>
+#include <VisorVR/D3D12/Renderer.hpp>
+#include <VisorVR/SHM/D3D12.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
 #include <d3d12.h>
 
@@ -21,7 +21,7 @@
 
 struct XrGraphicsBindingD3D12KHR;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 class OpenXRD3D12Kneeboard final : public OpenXRKneeboard {
  public:
@@ -60,4 +60,4 @@ class OpenXRD3D12Kneeboard final : public OpenXRKneeboard {
   std::unique_ptr<D3D12::Renderer> mRenderer;
 };
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

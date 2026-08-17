@@ -4,35 +4,35 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEventServer.hpp>
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/DirectInputAdapter.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/InterprocessRenderer.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/OpenXRMode.hpp>
-#include <OpenKneeboard/PluginStore.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
-#include <OpenKneeboard/SteamVRKneeboard.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabletInputAdapter.hpp>
-#include <OpenKneeboard/TabsList.hpp>
-#include <OpenKneeboard/TroubleshootingStore.hpp>
-#include <OpenKneeboard/UserAction.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/APIEventServer.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/DirectInputAdapter.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/InterprocessRenderer.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/OpenXRMode.hpp>
+#include <VisorVR/PluginStore.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
+#include <VisorVR/SteamVRKneeboard.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabletInputAdapter.hpp>
+#include <VisorVR/TabsList.hpp>
+#include <VisorVR/TroubleshootingStore.hpp>
+#include <VisorVR/UserAction.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/final_release_deleter.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/final_release_deleter.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <algorithm>
 #include <fstream>
 #include <string>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 // Temporary debug logging for the in-VR edit-mode persistence (remove later).
 static void AppLog(const std::string& line) {
@@ -40,7 +40,7 @@ static void AppLog(const std::string& line) {
   if (!local) {
     return;
   }
-  std::ofstream f(std::string(local) + "\\okb-app.log", std::ios::app);
+  std::ofstream f(std::string(local) + "\\vvr-app.log", std::ios::app);
   f << line << "\n";
 }
 
@@ -73,7 +73,7 @@ KneeboardState::KneeboardState(HWND hwnd, const audited_ptr<DXResources>& dxr)
 }
 
 task<void> KneeboardState::Init() {
-  OPENKNEEBOARD_TraceLoggingCoro("KneeboardState::Init()");
+  VISORVR_TraceLoggingCoro("KneeboardState::Init()");
 
   const scope_success saveMigratedSettings([this]() { this->SaveSettings(); });
 
@@ -121,7 +121,7 @@ task<void> KneeboardState::Init() {
 }
 
 KneeboardState::~KneeboardState() noexcept {
-  OPENKNEEBOARD_TraceLoggingScope("KneeboardState::~KneeboardState()");
+  VISORVR_TraceLoggingScope("KneeboardState::~KneeboardState()");
   dprint("~KneeboardState()");
 }
 
@@ -131,7 +131,7 @@ KneeboardState::GetAllViewsInFixedOrder() const {
 }
 
 std::vector<ViewRenderInfo> KneeboardState::GetViewRenderInfo() const {
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity, "KneeboardState::GetViewRenderInfo()");
   std::vector<ViewRenderInfo> ret;
 
@@ -174,9 +174,9 @@ std::vector<ViewRenderInfo> KneeboardState::GetViewRenderInfo() const {
       TraceLoggingHexUInt64(
         view->GetRuntimeID().GetTemporaryValue(), "RuntimeID"),
       TraceLoggingGuid(view->GetPersistentGUID(), "PersistentID"),
-      OPENKNEEBOARD_TraceLoggingSize2D(
+      VISORVR_TraceLoggingSize2D(
         contentSize.mPixelSize, "PreferredPixelSize"),
-      OPENKNEEBOARD_TraceLoggingRect(
+      VISORVR_TraceLoggingRect(
         (ret.back().mVR ? ret.back().mVR->mLocationOnTexture : PixelRect {}),
         "VRLocationOnTexture"));
   }
@@ -204,7 +204,7 @@ std::shared_ptr<KneeboardView> KneeboardState::GetActiveInGameView() const {
 }
 
 void KneeboardState::SetActiveInGameView(KneeboardViewID runtimeID) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "KneeboardState::SetActiveInGameView()",
     TraceLoggingValue(runtimeID.GetTemporaryValue(), "RuntimeID"));
   for (int i = 0; i < mViews.size(); ++i) {
@@ -241,7 +241,7 @@ std::shared_ptr<KneeboardView> KneeboardState::GetAppWindowView() const {
 }
 
 void KneeboardState::NotifyAppWindowIsForeground(bool isForeground) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "KneeboardState::NotifyAppWindowIsForeground()",
     TraceLoggingValue(isForeground, "isForeground"));
   mAppWindowIsForeground = isForeground;
@@ -278,10 +278,10 @@ task<void> KneeboardState::DisposeAsync() noexcept {
 task<void> KneeboardState::PostUserAction(UserAction action) {
   if (winrt::apartment_context() != mUIThread) {
     dprint("User action in wrong thread!");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return;
   }
-  OPENKNEEBOARD_TraceLoggingCoro(
+  VISORVR_TraceLoggingCoro(
     "KneeboardState::PostUserAction()",
     TraceLoggingValue(to_string(action).c_str(), "Action"));
 
@@ -376,7 +376,7 @@ task<void> KneeboardState::PostUserAction(UserAction action) {
       co_return;
   }
   // Use `return` instead of `break` above
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
 }
 
 void KneeboardState::OnGameChangedEvent(
@@ -399,7 +399,7 @@ void KneeboardState::OnGameChangedEvent(
 void KneeboardState::OnAPIEvent(APIEvent ev) noexcept {
   if (winrt::apartment_context() != mUIThread) {
     dprint("API event in wrong thread!");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   TroubleshootingStore::Get()->OnAPIEvent(ev);
 
@@ -414,17 +414,17 @@ void KneeboardState::EnqueueOrderedEvent(std::function<task<void>()> event) {
 task<void> KneeboardState::FlushOrderedEventQueue(
   std::chrono::time_point<std::chrono::steady_clock> stopAt) {
   if (mFlushingQueue) {
-    OPENKNEEBOARD_TraceLoggingWrite(
+    VISORVR_TraceLoggingWrite(
       "KneeboardState::FlushOrderedEventQueue()/AlreadyFlushing");
     co_await winrt::resume_on_signal(mQueueFlushedEvent.get());
     co_return;
   }
   if (mOrderedEventQueue.empty()) {
-    OPENKNEEBOARD_TraceLoggingWrite(
+    VISORVR_TraceLoggingWrite(
       "KneeboardState::FlushOrderedEventQueue()/Empty");
     co_return;
   }
-  OPENKNEEBOARD_TraceLoggingCoro(
+  VISORVR_TraceLoggingCoro(
     "KneeboardState::FlushOrderedEventQueue()/Flush");
 
   mFlushingQueue = true;
@@ -444,7 +444,7 @@ task<void> KneeboardState::FlushOrderedEventQueue(
     ++processed;
   }
 
-  OPENKNEEBOARD_TraceLoggingWrite(
+  VISORVR_TraceLoggingWrite(
     "KneeboardState::FlushOrderedEventQueue()/Stats",
     TraceLoggingValue(processed, "Processed"),
     TraceLoggingValue(mOrderedEventQueue.size(), "Remaining"));
@@ -459,7 +459,7 @@ task<void> KneeboardState::ProcessAPIEvent(APIEvent ev) noexcept {
     co_await PostUserAction(UserAction::ACTION); \
     co_return; \
   }
-    OPENKNEEBOARD_USER_ACTIONS
+    VISORVR_USER_ACTIONS
 #undef IT
   }
 
@@ -865,7 +865,7 @@ task<void> KneeboardState::SetTextSettings(const TextSettings& value) {
 
 void KneeboardState::StartOpenVRThread() {
   mOpenVRThread = {
-    "OKB OpenVR Client",
+    "VVR OpenVR Client",
     [](std::stop_token stopToken) -> task<void> {
       TraceLoggingWrite(gTraceProvider, "OpenVRThread/Start");
       {
@@ -877,7 +877,7 @@ void KneeboardState::StartOpenVRThread() {
             nullptr,
             std::format(
               "Failed to start OpenVR overlay:\n\n{}\n\nSee "
-              "https://go.openkneeboard.com/d3d11-unusable",
+              "https://github.com/gbottlehead4-cmd/vr-overlay/issues",
               e.what())
               .c_str(),
             "Direct3D11 is unusable",
@@ -926,7 +926,7 @@ task<void> KneeboardState::SetTabsSettings(const nlohmann::json& j) {
 }
 
 task<void> KneeboardState::ReleaseExclusiveResources() {
-  OPENKNEEBOARD_TraceLoggingCoro("ReleaseExclusiveResources");
+  VISORVR_TraceLoggingCoro("ReleaseExclusiveResources");
   mOpenVRThread = {};
   mInterprocessRenderer = {};
   mAPIEventServer = {};
@@ -936,7 +936,7 @@ task<void> KneeboardState::ReleaseExclusiveResources() {
 }
 
 task<void> KneeboardState::StopTabletInput() {
-  OPENKNEEBOARD_TraceLoggingCoro("KneeboardState::StopTabletInput()");
+  VISORVR_TraceLoggingCoro("KneeboardState::StopTabletInput()");
   if (mTabletInput) {
     co_await mTabletInput->DisposeAsync();
     mTabletInput = {};
@@ -994,7 +994,7 @@ task<void> KneeboardState::SwitchProfile(Direction direction) {
 bool KneeboardState::IsRepaintNeeded() const { return mNeedsRepaint; }
 
 void KneeboardState::SetRepaintNeeded() {
-  OPENKNEEBOARD_TraceLoggingWrite("KneeboardState::SetRepaintNeeded()");
+  VISORVR_TraceLoggingWrite("KneeboardState::SetRepaintNeeded()");
   mNeedsRepaint = true;
 }
 
@@ -1004,7 +1004,7 @@ void KneeboardState::lock() {
   if (mUniqueLockThread != std::this_thread::get_id()) {
     mMutex.lock();
     mUniqueLockThread = std::this_thread::get_id();
-    OPENKNEEBOARD_ASSERT(mUniqueLockDepth == 0);
+    VISORVR_ASSERT(mUniqueLockDepth == 0);
   }
   ++mUniqueLockDepth;
 }
@@ -1016,15 +1016,15 @@ bool KneeboardState::try_lock() {
       return false;
     }
     mUniqueLockThread = std::this_thread::get_id();
-    OPENKNEEBOARD_ASSERT(mUniqueLockDepth == 0);
+    VISORVR_ASSERT(mUniqueLockDepth == 0);
   }
   ++mUniqueLockDepth;
   return true;
 }
 
 void KneeboardState::unlock() {
-  OPENKNEEBOARD_ASSERT(mUniqueLockThread == std::this_thread::get_id());
-  OPENKNEEBOARD_ASSERT(mUniqueLockDepth > 0);
+  VISORVR_ASSERT(mUniqueLockThread == std::this_thread::get_id());
+  VISORVR_ASSERT(mUniqueLockDepth > 0);
   if (--mUniqueLockDepth == 0) {
     mUniqueLockThread = std::nullopt;
     mMutex.unlock();
@@ -1118,7 +1118,7 @@ void KneeboardState::InitializeViews() {
           mDXResources,
           this,
           {},
-          "OKB internal independent app window view ('sim racing mode')");
+          "VVR internal independent app window view ('sim racing mode')");
         mAppWindowView->SetTabs(this->GetTabsList()->GetTabs());
         AddEventListener(
           mAppWindowView->evNeedsRepaintEvent,
@@ -1134,7 +1134,7 @@ void KneeboardState::InitializeViews() {
 }
 
 void KneeboardState::BeforeFrame() {
-  OPENKNEEBOARD_TraceLoggingScope("KneeboardState::BeforeFrame()");
+  VISORVR_TraceLoggingScope("KneeboardState::BeforeFrame()");
 
   const auto px = SHM::ActiveConsumers::Get().mNonVRPixelSize;
   if (px == mLastNonVRPixelSize) {
@@ -1145,7 +1145,7 @@ void KneeboardState::BeforeFrame() {
 }
 
 void KneeboardState::AfterFrame(FramePostEventKind) {
-  OPENKNEEBOARD_TraceLoggingScope("KneeboardState::AfterFrame()");
+  VISORVR_TraceLoggingScope("KneeboardState::AfterFrame()");
 
   const auto newActiveViewID = KneeboardViewID::FromTemporaryValue(
     SHM::ActiveConsumers::Get().mActiveInGameViewID);
@@ -1171,7 +1171,7 @@ void KneeboardState::AfterFrame(FramePostEventKind) {
       mProfiles.mDefaultProfile, mProfiles.mActiveProfile); \
     co_await this->Set##name##Settings(newSettings.m##name); \
   }
-OPENKNEEBOARD_SETTINGS_SECTIONS
+VISORVR_SETTINGS_SECTIONS
 #undef IT
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

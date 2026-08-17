@@ -5,14 +5,14 @@ configure_file(
   COPYONLY
 )
 
-target_link_windows_app_sdk(OpenKneeboard-App-WinUI3)
+target_link_windows_app_sdk(VisorVR-App-WinUI3)
 
 set_target_properties(
-  OpenKneeboard-App-WinUI3
+  VisorVR-App-WinUI3
   PROPERTIES
 
   # ----- C++/WinRT, Windows App SDK, and WinUI stuff starts here -----
-  VS_GLOBAL_RootNamespace OpenKneeboardApp
+  VS_GLOBAL_RootNamespace VisorVRApp
   VS_GLOBAL_AppContainerApplication false
   VS_GLOBAL_AppxPackage false
   VS_GLOBAL_CppWinRTOptimized true
@@ -35,7 +35,7 @@ set_target_properties(
 #
 # Without this, `module.g.cpp` will not include the necessary headers
 # for non-Xaml IDL files, e.g. value converters
-get_target_property(SOURCES OpenKneeboard-App-WinUI3 SOURCES)
+get_target_property(SOURCES VisorVR-App-WinUI3 SOURCES)
 
 foreach (SOURCE ${SOURCES})
   cmake_path(GET SOURCE EXTENSION LAST_ONLY EXTENSION)
@@ -76,7 +76,7 @@ foreach (SOURCE ${SOURCES})
 endforeach ()
 
 set(MODULE_G_CPP "${CMAKE_CURRENT_BINARY_DIR}/Generated Files/module.g.cpp")
-target_sources(OpenKneeboard-App-WinUI3 PRIVATE "${MODULE_G_CPP}")
+target_sources(VisorVR-App-WinUI3 PRIVATE "${MODULE_G_CPP}")
 set_property(
   SOURCE "${MODULE_G_CPP}"
   PROPERTY GENERATED ON

@@ -6,16 +6,16 @@
 // OpenKneeboard repository.
 #include "viewer-settings.hpp"
 
-#include <OpenKneeboard/Filesystem.hpp>
+#include <VisorVR/Filesystem.hpp>
 
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <algorithm>
 #include <format>
 #include <fstream>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 ViewerSettings ViewerSettings::Load() {
   ViewerSettings ret;
 
@@ -50,7 +50,7 @@ void ViewerSettings::Save() {
 }
 
 #define IT(x) {ViewerAlignment::x, #x},
-NLOHMANN_JSON_SERIALIZE_ENUM(ViewerAlignment, {OPENKNEEBOARD_VIEWER_ALIGNMENTS})
+NLOHMANN_JSON_SERIALIZE_ENUM(ViewerAlignment, {VISORVR_VIEWER_ALIGNMENTS})
 #undef IT
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
@@ -61,7 +61,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {ViewerFillMode::Transparent, "Transparent"},
   })
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   ViewerSettings,
   mWindowWidth,
   mWindowHeight,
@@ -72,4 +72,4 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mStreamerMode,
   mAlignment)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

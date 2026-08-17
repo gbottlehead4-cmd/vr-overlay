@@ -10,14 +10,14 @@
 #include "pch.h"
 // clang-format on
 
-#include <OpenKneeboard/Events.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
+#include <VisorVR/Events.hpp>
+#include <VisorVR/KneeboardState.hpp>
 
 #include <shims/winrt/base.h>
 
 #include <winrt/Microsoft.UI.Xaml.Data.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 struct WithPropertyChangedEvent {
   winrt::event_token PropertyChanged(
@@ -56,4 +56,4 @@ struct WithPropertyChangedEventOnProfileChange
   EventHandlerToken mProfileChangedEvent {};
 };
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

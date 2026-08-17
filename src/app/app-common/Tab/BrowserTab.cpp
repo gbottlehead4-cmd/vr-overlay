@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/BrowserTab.hpp>
+#include <VisorVR/BrowserTab.hpp>
 
-#include <OpenKneeboard/json/Geometry2D.hpp>
+#include <VisorVR/json/Geometry2D.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 BrowserTab::BrowserTab(
   const audited_ptr<DXResources>& dxr,
@@ -40,7 +40,7 @@ task<std::shared_ptr<BrowserTab>> BrowserTab::Create(
 }
 
 BrowserTab::~BrowserTab() {
-  OPENKNEEBOARD_TraceLoggingScope("BrowserTab::~BrowserTab()");
+  VISORVR_TraceLoggingScope("BrowserTab::~BrowserTab()");
   this->RemoveAllEventListeners();
 }
 
@@ -52,7 +52,7 @@ std::string BrowserTab::GetStaticGlyph() {
 }
 
 task<void> BrowserTab::Reload() {
-  OPENKNEEBOARD_TraceLoggingCoro("BrowserTab::Reload()");
+  VISORVR_TraceLoggingCoro("BrowserTab::Reload()");
   auto keepAlive = shared_from_this();
 
   mDelegate = {};
@@ -83,7 +83,7 @@ bool BrowserTab::IsSimHubIntegrationEnabled() const {
 }
 
 task<void> BrowserTab::SetSimHubIntegrationEnabled(bool enabled) {
-  OPENKNEEBOARD_TraceLoggingCoro("BrowserTab::SetSimHubIntegrationEnabled()");
+  VISORVR_TraceLoggingCoro("BrowserTab::SetSimHubIntegrationEnabled()");
   if (enabled == this->IsSimHubIntegrationEnabled()) {
     co_return;
   }
@@ -97,7 +97,7 @@ bool BrowserTab::AreOpenKneeboardAPIsEnabled() const {
 }
 
 task<void> BrowserTab::SetOpenKneeboardAPIsEnabled(const bool enabled) {
-  OPENKNEEBOARD_TraceLoggingCoro("BrowserTab::SetOpenKneeboardAPIsEnabled()");
+  VISORVR_TraceLoggingCoro("BrowserTab::SetOpenKneeboardAPIsEnabled()");
   if (enabled == this->AreOpenKneeboardAPIsEnabled()) {
     co_return;
   }
@@ -111,7 +111,7 @@ bool BrowserTab::IsBackgroundTransparent() const {
 }
 
 task<void> BrowserTab::SetBackgroundTransparent(bool transparent) {
-  OPENKNEEBOARD_TraceLoggingCoro("BrowserTab::SetBackgroundTransparent()");
+  VISORVR_TraceLoggingCoro("BrowserTab::SetBackgroundTransparent()");
   if (transparent == this->IsBackgroundTransparent()) {
     co_return;
   }
@@ -120,7 +120,7 @@ task<void> BrowserTab::SetBackgroundTransparent(bool transparent) {
   this->evSettingsChangedEvent.Emit();
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   BrowserTab::Settings,
   mURI,
   mInitialSize,
@@ -128,4 +128,4 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mTransparentBackground,
   mExposeOpenKneeboardAPIs)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

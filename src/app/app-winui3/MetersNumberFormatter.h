@@ -9,7 +9,7 @@
 #include "MetersNumberFormatter.g.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct MetersNumberFormatter : MetersNumberFormatterT<MetersNumberFormatter> {
   MetersNumberFormatter() = default;
 
@@ -23,9 +23,9 @@ struct MetersNumberFormatter : MetersNumberFormatterT<MetersNumberFormatter> {
   winrt::Windows::Foundation::IReference<double> ParseDouble(
     hstring const& text);
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct MetersNumberFormatter : MetersNumberFormatterT<
                                  MetersNumberFormatter,
                                  implementation::MetersNumberFormatter> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

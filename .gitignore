@@ -44,8 +44,6 @@ third-party/toolchain.cmake
 *.log
 
 # Generated into source include dirs by an in-source configure (see above)
-src/lib/include/OpenKneeboard/config.hpp
-src/lib/include/OpenKneeboard/version.hpp
 src/lib/include/VisorVR/config.hpp
 src/lib/include/VisorVR/version.hpp
 src/app/app-winui3/*-build-time-marker.hpp

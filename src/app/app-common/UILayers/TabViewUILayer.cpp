@@ -4,17 +4,17 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/D2DErrorRenderer.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabViewUILayer.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/D2DErrorRenderer.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabViewUILayer.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/utf8.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabViewUILayer::TabViewUILayer(const audited_ptr<DXResources>& dxr) {
   mErrorRenderer = std::make_unique<D2DErrorRenderer>(dxr);
@@ -80,7 +80,7 @@ task<void> TabViewUILayer::Render(
     tab = tabView->GetTab().lock();
   }
 
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "TabViewUILayer::Render()",
     TraceLoggingHexUInt64(
       rc.GetRenderTarget()->GetID().GetTemporaryValue(), "RenderTargetID"),
@@ -117,4 +117,4 @@ std::optional<D2D1_POINT_2F> TabViewUILayer::GetCursorPoint() const {
   return mCursorPoint;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/GetDirectInputDevices.hpp>
+#include <VisorVR/GetDirectInputDevices.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <hidusage.h>
 
 using DeviceInstances = std::vector<DIDEVICEINSTANCE>;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static bool IsGameController(LPCDIDEVICEINSTANCE inst) {
   switch (inst->wUsagePage) {
@@ -79,4 +79,4 @@ DeviceInstances GetDirectInputDevices(IDirectInput8W* di, bool includeMice) {
   return ctx.mDeviceInstances;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

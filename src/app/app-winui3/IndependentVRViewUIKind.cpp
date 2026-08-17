@@ -10,10 +10,10 @@
 #include "IndependentVRViewUIKind.g.cpp"
 // clang-format on
 
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/utf8.hpp>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 IndependentVRViewUIKind::IndependentVRViewUIKind() { Label(_(L"Independent")); }
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

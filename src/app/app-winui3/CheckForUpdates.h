@@ -10,7 +10,7 @@
 #include "pch.h"
 // clang-format on
 
-#include <OpenKneeboard/task.hpp>
+#include <VisorVR/task.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -18,7 +18,7 @@
 
 #include <future>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 enum class UpdateCheckType {
   Automatic,
@@ -34,4 +34,4 @@ task<UpdateResult> CheckForUpdates(
   UpdateCheckType,
   winrt::Microsoft::UI::Xaml::XamlRoot);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

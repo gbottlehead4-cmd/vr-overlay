@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/D3D12.hpp>
-#include <OpenKneeboard/RenderDoc.hpp>
-#include <OpenKneeboard/SHM/D3D12.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/D3D12.hpp>
+#include <VisorVR/RenderDoc.hpp>
+#include <VisorVR/SHM/D3D12.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <Windows.h>
 
@@ -21,7 +21,7 @@
 #include <directxtk12/RenderTargetState.h>
 #include <directxtk12/ResourceUploadBatch.h>
 
-namespace OpenKneeboard::SHM::D3D12 {
+namespace VisorVR::SHM::D3D12 {
 namespace {
 
 [[nodiscard]]
@@ -44,7 +44,7 @@ Reader::Reader(
     D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
     D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
     SHM::SwapChainLength);
-  mShaderResourceViewHeap->Heap()->SetName(L"OpenKneeboard::SHM::D3D12 SRV");
+  mShaderResourceViewHeap->Heap()->SetName(L"VisorVR::SHM::D3D12 SRV");
 }
 
 Reader::~Reader() { this->DropResources(); }
@@ -58,7 +58,7 @@ std::expected<Frame, Frame::Error> Reader::MaybeGetMapped() {
 }
 
 Frame Reader::Map(SHM::Frame raw) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::Reader::Map");
+  VISORVR_TraceLoggingScope("D3D12::Reader::Map");
   auto& com = mFrames.at(raw.mIndex);
   if (com.mTextureHandle != raw.mTexture) {
     com.mTextureHandle = raw.mTexture;
@@ -102,7 +102,7 @@ Frame Reader::Map(SHM::Frame raw) {
 }
 
 void Reader::DropResources() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::Reader::DropResources");
+  VISORVR_TraceLoggingScope("D3D12::Reader::DropResources");
   wil::com_ptr<ID3D12Fence> fence;
   check_hresult(
     mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(fence.put())));
@@ -116,8 +116,8 @@ void Reader::DropResources() {
 }
 
 void Reader::OnSessionChanged() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::Reader::OnSessionChanged");
+  VISORVR_TraceLoggingScope("D3D12::Reader::OnSessionChanged");
   this->DropResources();
 }
 
-}// namespace OpenKneeboard::SHM::D3D12
+}// namespace VisorVR::SHM::D3D12

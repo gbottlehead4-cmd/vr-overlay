@@ -5,15 +5,15 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/ProcessShutdownBlock.hpp>
+#include <VisorVR/ProcessShutdownBlock.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <atomic>
 #include <source_location>
 #include <unordered_map>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
@@ -116,4 +116,4 @@ void ProcessShutdownBlock::DumpActiveBlocks() noexcept {
   ShutdownData::Get().DumpActiveBlocks();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

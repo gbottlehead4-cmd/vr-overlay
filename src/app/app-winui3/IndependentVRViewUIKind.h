@@ -12,17 +12,17 @@
 #include "UIDataItem.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct IndependentVRViewUIKind
   : IndependentVRViewUIKindT<
       IndependentVRViewUIKind,
-      OpenKneeboardApp::implementation::UIDataItem> {
+      VisorVRApp::implementation::UIDataItem> {
   IndependentVRViewUIKind();
 };
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation
 
-namespace winrt::OpenKneeboardApp::factory_implementation {
+namespace winrt::VisorVRApp::factory_implementation {
 struct IndependentVRViewUIKind : IndependentVRViewUIKindT<
                                    IndependentVRViewUIKind,
                                    implementation::IndependentVRViewUIKind> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

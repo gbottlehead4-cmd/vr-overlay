@@ -5,15 +5,15 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/RenderTarget.hpp>
-#include <OpenKneeboard/SHM.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/RenderTarget.hpp>
+#include <VisorVR/SHM.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <d2d1_3.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::shared_ptr<RenderTarget> RenderTarget::Create(
   const audited_ptr<DXResources>& dxr,
@@ -111,7 +111,7 @@ RenderTarget::D2D::D2D(
   : mParent(parent),
     mSourceLocation(loc) {
   if (!parent) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mUnsafeParent = mParent.get();
@@ -143,7 +143,7 @@ void RenderTarget::D2D::Release() {
   }
   if (mReleased) {
     dprint("{}: double-release", __FUNCTION__);
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mReleased = true;
@@ -156,7 +156,7 @@ void RenderTarget::D2D::Release() {
 void RenderTarget::D2D::Reacquire() {
   if (!mReleased) {
     dprint("Attempting to re-acquire without release");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   this->Acquire();
@@ -181,7 +181,7 @@ RenderTarget::D2D::operator ID2D1DeviceContext*() const {
 RenderTarget::D3D::D3D(const std::shared_ptr<RenderTarget>& parent)
   : mParent(parent) {
   if (!parent) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mUnsafeParent = parent.get();
@@ -205,4 +205,4 @@ ID3D11RenderTargetView* RenderTarget::D3D::rtv() const {
   return mUnsafeParent->mD3DRenderTargetView.get();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

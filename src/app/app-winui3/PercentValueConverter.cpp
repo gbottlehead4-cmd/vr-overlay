@@ -12,7 +12,7 @@
 
 #include <format>
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 winrt::Windows::Foundation::IInspectable PercentValueConverter::Convert(
   winrt::Windows::Foundation::IInspectable const& value,
   winrt::Windows::UI::Xaml::Interop::TypeName const& /*targetType*/,
@@ -29,4 +29,4 @@ winrt::Windows::Foundation::IInspectable PercentValueConverter::ConvertBack(
   hstring const& /*language*/) {
   throw hresult_not_implemented();
 }
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

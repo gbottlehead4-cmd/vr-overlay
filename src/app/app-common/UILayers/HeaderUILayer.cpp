@@ -4,27 +4,27 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CreateTabActions.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/HeaderUILayer.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/IToolbarItemWithVisibility.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabletInputAdapter.hpp>
-#include <OpenKneeboard/ToolbarAction.hpp>
-#include <OpenKneeboard/ToolbarFlyout.hpp>
-#include <OpenKneeboard/ToolbarSeparator.hpp>
-#include <OpenKneeboard/ToolbarToggleAction.hpp>
+#include <VisorVR/CreateTabActions.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/HeaderUILayer.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/IToolbarItemWithVisibility.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabletInputAdapter.hpp>
+#include <VisorVR/ToolbarAction.hpp>
+#include <VisorVR/ToolbarFlyout.hpp>
+#include <VisorVR/ToolbarSeparator.hpp>
+#include <VisorVR/ToolbarToggleAction.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <algorithm>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::shared_ptr<HeaderUILayer> HeaderUILayer::Create(
   const audited_ptr<DXResources>& dxr,
@@ -121,7 +121,7 @@ void HeaderUILayer::PostCursorEvent(
 IUILayer::Metrics HeaderUILayer::GetMetrics(
   const IUILayer::NextList& next,
   const Context& context) const {
-  OPENKNEEBOARD_TraceLoggingScope("HeaderUILayer::GetMetrics()");
+  VISORVR_TraceLoggingScope("HeaderUILayer::GetMetrics()");
   const auto nextMetrics = next.front()->GetMetrics(next.subspan(1), context);
 
   const auto contentHeight = nextMetrics.mContentArea.Height();
@@ -145,7 +145,7 @@ task<void> HeaderUILayer::Render(
   const IUILayer::NextList& next,
   const Context& context,
   const PixelRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope("HeaderUILayer::Render()");
+  VISORVR_TraceLoggingScope("HeaderUILayer::Render()");
   const auto tabView = context.mTabView;
 
   const auto metrics = this->GetMetrics(next, context);
@@ -348,7 +348,7 @@ void HeaderUILayer::LayoutToolbar(
     const auto selectable =
       std::dynamic_pointer_cast<ISelectableToolbarItem>(item);
     if (!selectable) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       continue;
     }
     AddEventListener(selectable->evStateChangedEvent, resetToolbar);
@@ -375,7 +375,7 @@ void HeaderUILayer::LayoutToolbar(
     const auto selectable =
       std::dynamic_pointer_cast<ISelectableToolbarItem>(item);
     if (!selectable) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       continue;
     }
     AddEventListener(selectable->evStateChangedEvent, resetToolbar);
@@ -427,7 +427,7 @@ void HeaderUILayer::LayoutToolbar(
     .mTextRect = *headerTextRect,
     .mButtons = std::move(toolbarHandler),
   });
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 void HeaderUILayer::DrawHeaderText(
   const std::shared_ptr<TabView>& tabView,
@@ -521,4 +521,4 @@ void HeaderUILayer::OnClick(const Button& button) {
   evNeedsRepaintEvent.Emit();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

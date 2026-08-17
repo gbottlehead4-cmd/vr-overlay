@@ -13,7 +13,7 @@
 #include "InputDeviceUIDataTemplateSelector.g.cpp"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 hstring InputDeviceUIData::Name() { return mName; }
 void InputDeviceUIData::Name(const hstring& value) { mName = value; }
 hstring InputDeviceUIData::DeviceID() { return mDeviceID; }
@@ -45,7 +45,7 @@ void InputDeviceUIDataTemplateSelector::TabletDevice(
 
 DataTemplate InputDeviceUIDataTemplateSelector::SelectTemplateCore(
   const IInspectable& item) {
-  if (item.try_as<winrt::OpenKneeboardApp::TabletInputDeviceUIData>()) {
+  if (item.try_as<winrt::VisorVRApp::TabletInputDeviceUIData>()) {
     return mTabletDevice;
   }
 
@@ -58,4 +58,4 @@ DataTemplate InputDeviceUIDataTemplateSelector::SelectTemplateCore(
   return this->SelectTemplateCore(item);
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

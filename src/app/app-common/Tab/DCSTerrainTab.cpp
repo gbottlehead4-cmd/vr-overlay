@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/DCSTerrainTab.hpp>
-#include <OpenKneeboard/FolderPageSource.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/DCSTerrainTab.hpp>
+#include <VisorVR/FolderPageSource.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DCSTerrainTab::DCSTerrainTab(
   const audited_ptr<DXResources>& dxr,
@@ -58,7 +58,7 @@ static std::string_view NormalizeTerrain(std::string_view terrain) {
   return terrain;
 }
 
-OpenKneeboard::fire_and_forget DCSTerrainTab::OnAPIEvent(
+VisorVR::fire_and_forget DCSTerrainTab::OnAPIEvent(
   APIEvent event,
   std::filesystem::path installPath,
   std::filesystem::path savedGamesPath) {
@@ -114,4 +114,4 @@ OpenKneeboard::fire_and_forget DCSTerrainTab::OnAPIEvent(
   co_await this->SetDelegates(delegates);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

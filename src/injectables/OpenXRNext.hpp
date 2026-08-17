@@ -25,7 +25,7 @@
 
 #include <utility>
 
-#define OPENKNEEBOARD_HOOKED_OPENXR_FUNCS(CORE_FN, EXT_FN) \
+#define VISORVR_HOOKED_OPENXR_FUNCS(CORE_FN, EXT_FN) \
   CORE_FN(xrCreateSession) \
   CORE_FN(xrDestroySession) \
   CORE_FN(xrDestroyInstance) \
@@ -35,8 +35,8 @@
   EXT_FN(XR_KHR_vulkan_enable2, xrCreateVulkanDeviceKHR) \
   EXT_FN(XR_KHR_vulkan_enable2, xrCreateVulkanInstanceKHR)
 
-#define OPENKNEEBOARD_NEXT_OPENXR_FUNCS(CORE_FN, EXT_FN) \
-  OPENKNEEBOARD_HOOKED_OPENXR_FUNCS(CORE_FN, EXT_FN) \
+#define VISORVR_NEXT_OPENXR_FUNCS(CORE_FN, EXT_FN) \
+  VISORVR_HOOKED_OPENXR_FUNCS(CORE_FN, EXT_FN) \
   CORE_FN(xrAcquireSwapchainImage) \
   CORE_FN(xrCreateReferenceSpace) \
   CORE_FN(xrCreateSwapchain) \
@@ -52,7 +52,7 @@
   CORE_FN(xrReleaseSwapchainImage) \
   CORE_FN(xrWaitSwapchainImage)
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 class OpenXRNext final {
  public:
@@ -61,9 +61,9 @@ class OpenXRNext final {
 #define DECLARE_FN_PTR(func) PFN_##func func {nullptr};
 #define DECLARE_EXT_FN_PTR(ext, func) DECLARE_FN_PTR(func)
   DECLARE_FN_PTR(xrGetInstanceProcAddr)
-  OPENKNEEBOARD_NEXT_OPENXR_FUNCS(DECLARE_FN_PTR, DECLARE_EXT_FN_PTR)
+  VISORVR_NEXT_OPENXR_FUNCS(DECLARE_FN_PTR, DECLARE_EXT_FN_PTR)
 #undef DECLARE_FN_PTR
 #undef DECLARE_EXT_FN_PTR
 };
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

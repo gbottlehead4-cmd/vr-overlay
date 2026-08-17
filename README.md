@@ -1,12 +1,12 @@
-OpenKneeboard is an interactive way to show reference information and take notes in games - especially flight simulators - including in VR. 
+VisorVR is an interactive way to show reference information and take notes in games - especially flight simulators - including in VR. 
 
-OpenKneeboard can be controlled via joystick/HOTAS bindings, or a graphics tablet ('artists tablet') such as those made by Wacom or Huion; phones and tablet computers like iPads or Microsoft Surface tablets are **not** compatible. Mice are not supported in-game.
+VisorVR can be controlled via joystick/HOTAS bindings, or a graphics tablet ('artists tablet') such as those made by Wacom or Huion; phones and tablet computers like iPads or Microsoft Surface tablets are **not** compatible. Mice are not supported in-game.
 
-Go to https://openkneeboard.com for more information.
+Go to https://visorvr.com for more information.
 
 ## Building and contributing
 
-See [the internals documentation](https://openkneeboard.com/internals/README.html).
+See [the internals documentation](https://visorvr.com/internals/README.html).
 
 ## License
 

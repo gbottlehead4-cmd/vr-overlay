@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/SwitchProfileAction.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/SwitchProfileAction.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 SwitchProfileAction::SwitchProfileAction(
   KneeboardState* kbs,
@@ -32,4 +32,4 @@ task<void> SwitchProfileAction::Execute() {
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

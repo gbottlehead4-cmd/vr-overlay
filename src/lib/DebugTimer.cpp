@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/DebugTimer.hpp>
+#include <VisorVR/DebugTimer.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <format>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DebugTimer::DebugTimer(std::string_view label)
   : mLabel(label),
@@ -31,4 +31,4 @@ void DebugTimer::End() {
       std::chrono::steady_clock::now() - mStart));
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

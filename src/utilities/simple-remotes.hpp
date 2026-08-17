@@ -5,17 +5,17 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 #pragma once
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/UserAction.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/UserAction.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <magic_args/magic_args.hpp>
 #include <magic_args/subcommands.hpp>
 #include <magic_enum/magic_enum.hpp>
 
-namespace OpenKneeboard::SimpleRemotes {
-using namespace OpenKneeboard;
+namespace VisorVR::SimpleRemotes {
+using namespace VisorVR;
 
 struct Args {
   magic_args::optional_positional_argument<std::size_t> mCount {
@@ -69,4 +69,4 @@ using subcommands = make<
   TOGGLE_TINT,
   TOGGLE_VISIBILITY,
   TOGGLE_VR_EDIT_MODE>;
-};// namespace OpenKneeboard::SimpleRemotes
+};// namespace VisorVR::SimpleRemotes

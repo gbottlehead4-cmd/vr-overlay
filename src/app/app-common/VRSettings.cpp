@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/VRSettings.hpp>
+#include <VisorVR/VRSettings.hpp>
 
-#include <OpenKneeboard/json/VRSettings.hpp>
+#include <VisorVR/json/VRSettings.hpp>
 
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 VRPose VRPose::GetHorizontalMirror() const {
   auto ret = *this;
@@ -22,7 +22,7 @@ VRPose VRPose::GetHorizontalMirror() const {
   return ret;
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(VRPose, mX, mEyeY, mZ, mRX, mRY, mRZ)
+VISORVR_DEFINE_SPARSE_JSON(VRPose, mX, mEyeY, mZ, mRX, mRY, mRZ)
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
   VRRenderSettings::Quirks::Upscaling,
@@ -32,13 +32,13 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {VRRenderSettings::Quirks::Upscaling::AlwaysOn, "AlwaysOn"},
   });
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(VRRenderSettings::Quirks, mOpenXR_Upscaling)
+VISORVR_DEFINE_SPARSE_JSON(VRRenderSettings::Quirks, mOpenXR_Upscaling)
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(GazeTargetScale, mVertical, mHorizontal);
+VISORVR_DEFINE_SPARSE_JSON(GazeTargetScale, mVertical, mHorizontal);
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(VROpacitySettings, mNormal, mGaze);
+VISORVR_DEFINE_SPARSE_JSON(VROpacitySettings, mNormal, mGaze);
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   VRRenderSettings,
   mQuirks,
   mEnableGazeInputFocus)
@@ -70,7 +70,7 @@ void to_json_postprocess<VRSettings>(
     j, parent_v.mDeprecated.mPrimaryLayer, v.mDeprecated.mPrimaryLayer);
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   VRSettings::Deprecated,
   mMaxWidth,
   mMaxHeight,
@@ -78,6 +78,6 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mZoomScale,
   mGazeTargetScale,
   mOpacity)
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(VRSettings, mEnableSteamVR)
+VISORVR_DEFINE_SPARSE_JSON(VRSettings, mEnableSteamVR)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

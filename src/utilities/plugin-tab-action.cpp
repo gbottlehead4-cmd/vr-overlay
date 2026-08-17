@@ -4,32 +4,32 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
+#include <VisorVR/APIEvent.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <Windows.h>
 #include <shellapi.h>
 
 #include <cstdlib>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 /* PS >
- * [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.PluginTabAction")
+ * [System.Diagnostics.Tracing.EventSource]::new("VisorVR.PluginTabAction")
  * 0d024362-97d7-5ba3-7e08-7870f0ea3357
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.PluginTabAction",
+  "VisorVR.PluginTabAction",
   (0x0d024362, 0x97d7, 0x5ba3, 0x7e, 0x08, 0x78, 0x70, 0xf0, 0xea, 0x33, 0x57));
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 // We only need a standard `main()` function, but using wWinMain prevents
 // a window/task bar entry from temporarily appearing
@@ -38,14 +38,14 @@ int WINAPI wWinMain(
   HINSTANCE /*hPrevInstance*/,
   PWSTR /*pCmdLine*/,
   int /*nCmdShow*/) {
-  TraceLoggingRegister(OpenKneeboard::gTraceProvider);
+  TraceLoggingRegister(VisorVR::gTraceProvider);
   TraceLoggingWrite(
-    OpenKneeboard::gTraceProvider,
+    VisorVR::gTraceProvider,
     "Invocation",
     TraceLoggingThisExecutable(),
     TraceLoggingValue(GetCommandLineW(), "Command Line"));
-  OpenKneeboard::scope_exit etwGuard(
-    []() { TraceLoggingUnregister(OpenKneeboard::gTraceProvider); });
+  VisorVR::scope_exit etwGuard(
+    []() { TraceLoggingUnregister(VisorVR::gTraceProvider); });
 
   DPrintSettings::Set({
     .prefix = "Plugin-Tab-Action",

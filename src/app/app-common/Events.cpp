@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Events.hpp>
+#include <VisorVR/Events.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/fatal.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/fatal.hpp>
 
 #include <queue>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static uint64_t sNextUniqueID = 0x1234abcdui64 << 32;
 
@@ -24,7 +24,7 @@ EventReceiver::~EventReceiver() {
     dprint(
       "I'm in danger! ~EventReceiver() called without "
       "RemoveAllEventListeners()");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   this->RemoveAllEventListeners();
 }
@@ -170,4 +170,4 @@ EventDelay::~EventDelay() {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

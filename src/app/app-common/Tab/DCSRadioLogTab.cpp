@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/DCSRadioLogTab.hpp>
-#include <OpenKneeboard/PlainTextPageSource.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/DCSRadioLogTab.hpp>
+#include <VisorVR/PlainTextPageSource.hpp>
 
 #include <chrono>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
   DCSRadioLogTab::MissionStartBehavior,
@@ -112,7 +112,7 @@ PageIndex DCSRadioLogTab::GetPageCount() const {
   return count == 0 ? 1 : count;
 }
 
-OpenKneeboard::fire_and_forget DCSRadioLogTab::OnAPIEvent(
+VisorVR::fire_and_forget DCSRadioLogTab::OnAPIEvent(
   const APIEvent event,
   std::filesystem::path /*installPath*/,
   std::filesystem::path /*savedGamesPath*/) {
@@ -175,7 +175,7 @@ OpenKneeboard::fire_and_forget DCSRadioLogTab::OnAPIEvent(
       break;
     case DCSEvents::MessageType::Invalid:
       dprint("Invalid DCS message type");
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       co_return;
   }
   formatted += parsed.message;
@@ -188,4 +188,4 @@ task<void> DCSRadioLogTab::Reload() {
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

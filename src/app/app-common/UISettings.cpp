@@ -4,21 +4,21 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/AppSettings.hpp>
+#include <VisorVR/AppSettings.hpp>
 
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(BookmarkSettings, mEnabled, mLoop)
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(BookmarkSettings, mEnabled, mLoop)
+VISORVR_DEFINE_SPARSE_JSON(
   InGameUISettings,
   mHeaderEnabled,
   mFooterEnabled,
   mFooterFrameCountEnabled,
   mBookmarksBarEnabled);
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   TintSettings,
   mEnabled,
   mBrightness,
@@ -28,7 +28,7 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mBlue)
 
 // mWindowRect is handled by `*_json_postprocess` functions above
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   UISettings,
   mLoopPages,
   mLoopTabs,
@@ -36,4 +36,4 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mInGameUI,
   mTint)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

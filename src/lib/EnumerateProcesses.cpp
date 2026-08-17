@@ -5,12 +5,12 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/EnumerateProcesses.hpp>
+#include <VisorVR/EnumerateProcesses.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/tracing.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ProcessList::ProcessList() : ProcessList(nullptr, 0) {}
 
@@ -48,7 +48,7 @@ std::expected<ProcessList, HRESULT> EnumerateProcesses() {
   while (true) {
     ret.Release();
 
-    OPENKNEEBOARD_TraceLoggingScope("WTSEnumerateProcessesExW()");
+    VISORVR_TraceLoggingScope("WTSEnumerateProcessesExW()");
     if (WTSEnumerateProcessesExW(
           WTS_CURRENT_SERVER_HANDLE,
           &level,
@@ -68,4 +68,4 @@ std::expected<ProcessList, HRESULT> EnumerateProcesses() {
   return ret;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

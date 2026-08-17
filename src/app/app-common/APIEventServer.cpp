@@ -4,22 +4,22 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEventServer.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/APIEventServer.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/final_release_deleter.hpp>
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/task/resume_on_signal.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/final_release_deleter.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/task/resume_on_signal.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/winrt/base.h>
 
 #include <Windows.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::shared_ptr<APIEventServer> APIEventServer::Create() {
   auto ret = shared_with_final_release(new APIEventServer());
@@ -27,7 +27,7 @@ std::shared_ptr<APIEventServer> APIEventServer::Create() {
   return ret;
 }
 
-OpenKneeboard::fire_and_forget APIEventServer::final_release(
+VisorVR::fire_and_forget APIEventServer::final_release(
   std::unique_ptr<APIEventServer> self) {
   TraceLoggingWrite(gTraceProvider, "APIEventServer::final_release()");
   self->mStop.request_stop();
@@ -37,7 +37,7 @@ OpenKneeboard::fire_and_forget APIEventServer::final_release(
 }
 
 APIEventServer::APIEventServer() {
-  OPENKNEEBOARD_TraceLoggingScope("APIEventServer::APIEventServer()");
+  VISORVR_TraceLoggingScope("APIEventServer::APIEventServer()");
   dprint("{}", __FUNCTION__);
 }
 
@@ -47,7 +47,7 @@ void APIEventServer::Start() {
 }
 
 APIEventServer::~APIEventServer() {
-  OPENKNEEBOARD_TraceLoggingScope("APIEventServer::~APIEventServer()");
+  VISORVR_TraceLoggingScope("APIEventServer::~APIEventServer()");
   dprint("{}", __FUNCTION__);
 }
 
@@ -141,14 +141,14 @@ task<bool> APIEventServer::RunSingle(
   co_return true;
 }
 
-OpenKneeboard::fire_and_forget APIEventServer::DispatchEvent(
+VisorVR::fire_and_forget APIEventServer::DispatchEvent(
   std::string_view ref) {
   const auto stayingAlive = shared_from_this();
   const std::string buffer(ref);
   auto event = APIEvent::Unserialize(buffer);
 
   co_await mUIThread;
-  OPENKNEEBOARD_TraceLoggingCoro(
+  VISORVR_TraceLoggingCoro(
     "APIEvent", TraceLoggingValue(event.name.c_str(), "Name"));
   if (event.name != APIEvent::EVT_MULTI_EVENT) {
     this->evAPIEvent.Emit(event);
@@ -159,7 +159,7 @@ OpenKneeboard::fire_and_forget APIEventServer::DispatchEvent(
   events = nlohmann::json::parse(event.value);
   auto dq = DispatcherQueue::GetForCurrentThread();
   for (auto&& [name, value]: events) {
-    OPENKNEEBOARD_TraceLoggingCoro(
+    VISORVR_TraceLoggingCoro(
       "APIEvent/Multi", TraceLoggingValue(name.c_str(), "Name"));
     this->evAPIEvent.Emit({name, value});
     // Re-enter event loop, even if not switching threads
@@ -169,4 +169,4 @@ OpenKneeboard::fire_and_forget APIEventServer::DispatchEvent(
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

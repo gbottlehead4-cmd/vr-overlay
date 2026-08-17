@@ -6,16 +6,16 @@
 // OpenKneeboard repository.
 #include "simple-remotes.hpp"
 
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <windows.h>
 
 #include <magic_args/magic_args.hpp>
 #include <magic_args/subcommands.hpp>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 struct RootInfo {
   using subcommands = SimpleRemotes::subcommands;
@@ -30,7 +30,7 @@ struct RootInfo {
       return *exitCode;
     }
 
-    using OpenKneeboard::Win32;
+    using VisorVR::Win32;
     const auto message = Win32::UTF8::to_wide(exitCode.error().output);
     const auto title =
       std::filesystem::path {Win32::Wide::or_throw::GetModuleFileName()}
@@ -48,7 +48,7 @@ struct RootInfo {
 
   template <class T, auto Name>
   static consteval auto normalize_subcommand_name() {
-    constexpr std::string_view prefix {"OpenKneeboard-RemoteControl-"};
+    constexpr std::string_view prefix {"VisorVR-RemoteControl-"};
     constexpr std::string_view suffix {magic_enum::enum_name<T::action>()};
     std::array<char, prefix.size() + suffix.size()> ret;
     auto begin = std::ranges::copy(prefix, ret.begin()).out;

@@ -7,14 +7,14 @@
 
 #include "viewer-d3d12.hpp"
 
-#include <OpenKneeboard/D3D12.hpp>
-#include <OpenKneeboard/RenderDoc.hpp>
+#include <VisorVR/D3D12.hpp>
+#include <VisorVR/RenderDoc.hpp>
 
-#include <OpenKneeboard/hresult.hpp>
+#include <VisorVR/hresult.hpp>
 
 #include <directxtk12/ScreenGrab.h>
 
-namespace OpenKneeboard::Viewer {
+namespace VisorVR::Viewer {
 
 D3D12Renderer::D3D12Renderer(IDXGIAdapter* dxgiAdapter) {
   dprint(__FUNCSIG__);
@@ -79,7 +79,7 @@ uint64_t D3D12Renderer::Render(
   const PixelRect& destRect,
   HANDLE fenceHandle,
   uint64_t fenceValueIn) {
-  OPENKNEEBOARD_TraceLoggingScope("Viewer::D3D12Renderer::Render");
+  VISORVR_TraceLoggingScope("Viewer::D3D12Renderer::Render");
 
   const auto source = mSHM->Map(std::move(rawSource));
 
@@ -162,7 +162,7 @@ uint64_t D3D12Renderer::Render(
   check_hresult(mCommandQueue->Signal(mFence.get(), fenceValueOut));
 
   {
-    OPENKNEEBOARD_TraceLoggingScope("ResetCommandList");
+    VISORVR_TraceLoggingScope("ResetCommandList");
     check_hresult(cl->Reset(mCommandAllocator.get(), nullptr));
   }
 
@@ -178,4 +178,4 @@ void D3D12Renderer::SaveToDDSFile(
       mCommandQueue.get(), frame.mTexture, path.wstring().c_str()));
 }
 
-}// namespace OpenKneeboard::Viewer
+}// namespace VisorVR::Viewer

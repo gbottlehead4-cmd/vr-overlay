@@ -5,12 +5,12 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/fatal.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/fatal.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <icu.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
@@ -71,7 +71,7 @@ std::string to_utf8(std::wstring_view in) {
     reinterpret_cast<const UChar*>(in.data()),
     in.size(),
     &ec);
-  OPENKNEEBOARD_ASSERT(
+  VISORVR_ASSERT(
     U_SUCCESS(ec) || ec == U_BUFFER_OVERFLOW_ERROR,
     "u_strToUTF8 failed with {}",
     std::to_underlying(ec));
@@ -90,9 +90,9 @@ std::string to_utf8(std::wstring_view in) {
     reinterpret_cast<const UChar*>(in.data()),
     in.size(),
     &ec);
-  OPENKNEEBOARD_ASSERT(
+  VISORVR_ASSERT(
     U_SUCCESS(ec), "u_strToUTF8 failed with {}", std::to_underlying(ec));
-  OPENKNEEBOARD_ASSERT(static_cast<std::size_t>(length) == ret.size());
+  VISORVR_ASSERT(static_cast<std::size_t>(length) == ret.size());
   return ret;
 }
 
@@ -122,7 +122,7 @@ std::string fold_utf8(std::string_view in) {
   return ret;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
@@ -139,7 +139,7 @@ void adl_serializer<std::filesystem::path>::from_json(
 void adl_serializer<std::filesystem::path>::to_json(
   nlohmann::json& j,
   const std::filesystem::path& p) {
-  j = OpenKneeboard::to_utf8(p);
+  j = VisorVR::to_utf8(p);
 }
 
 NLOHMANN_JSON_NAMESPACE_END

@@ -5,17 +5,17 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/OTDIPCClient.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/OTDIPCClient.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/fatal.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/task/resume_after.hpp>
-#include <OpenKneeboard/task/resume_on_any_signal.hpp>
-#include <OpenKneeboard/task/resume_on_signal.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/fatal.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/task/resume_after.hpp>
+#include <VisorVR/task/resume_on_any_signal.hpp>
+#include <VisorVR/task/resume_on_signal.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -41,7 +41,7 @@
 
 using namespace OTDIPC::Messages;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
@@ -222,7 +222,7 @@ ReadFromSocket(SOCKET s, void* buf, const std::size_t bytesToRead) {
     return std::unexpected {HRESULT_FROM_WIN32(err)};
   }
 
-  OPENKNEEBOARD_ALWAYS_ASSERT(socketReadResult > 0);
+  VISORVR_ALWAYS_ASSERT(socketReadResult > 0);
   const auto bytesRead = static_cast<std::size_t>(socketReadResult);
 
   if (bytesRead != bytesToRead) {
@@ -354,7 +354,7 @@ OTDIPCClient::OTDIPCClient() { dprint("{}", __FUNCTION__); }
 OTDIPCClient::~OTDIPCClient() { dprint("{}", __FUNCTION__); }
 
 task<void> OTDIPCClient::DisposeAsync() noexcept {
-  OPENKNEEBOARD_TraceLoggingCoro("OTDIPCClient::DisposeAsync()");
+  VISORVR_TraceLoggingCoro("OTDIPCClient::DisposeAsync()");
   const auto disposing = co_await mDisposal.StartOnce();
   if (!disposing) {
     co_return;
@@ -367,7 +367,7 @@ task<void> OTDIPCClient::DisposeAsync() noexcept {
 }
 
 task<void> OTDIPCClient::Run() {
-  OPENKNEEBOARD_TraceLoggingCoro("OTDIPCClient::Run()");
+  VISORVR_TraceLoggingCoro("OTDIPCClient::Run()");
   dprint("Starting OTD-IPC client");
   const scope_exit exitMessage([n = std::uncaught_exceptions()]() {
     if (std::uncaught_exceptions() > n) {
@@ -428,7 +428,7 @@ void OTDIPCClient::TimeoutTablets() {
 }
 
 task<void> OTDIPCClient::RunSingle() {
-  OPENKNEEBOARD_TraceLoggingCoro("OTDIPCClient::RunSingle()");
+  VISORVR_TraceLoggingCoro("OTDIPCClient::RunSingle()");
   const auto socketPaths = GetSocketPaths();
   if (socketPaths.empty()) {
     co_return;
@@ -474,8 +474,8 @@ task<void> OTDIPCClient::RunSingle() {
     {
       Hello msg {
         .protocolVersion = 0x02'20260205'01,
-        .humanReadableName = "OpenKneeboard",
-        .implementationID = "openkneeboard.com",
+        .humanReadableName = "VisorVR",
+        .implementationID = "visorvr.com",
         .compatibilityVersion = 1,
       };
       CopyTo(msg.humanReadableVersion, Version::ReleaseName);
@@ -570,7 +570,7 @@ task<void> OTDIPCClient::RunSingle() {
   }
 }
 
-OpenKneeboard::fire_and_forget OTDIPCClient::EnqueueMessage(
+VisorVR::fire_and_forget OTDIPCClient::EnqueueMessage(
   const std::string message) {
   const auto weakThis = weak_from_this();
   co_await mUIThread;
@@ -672,7 +672,7 @@ void OTDIPCClient::ProcessMessage(const OTDIPC::Messages::State& msg) {
 
   const auto it = mTablets.find(msg.nonPersistentTabletId);
   if (it == mTablets.end()) {
-    OPENKNEEBOARD_TraceLoggingWrite(
+    VISORVR_TraceLoggingWrite(
       "BadOTDIPCTabletID",
       TraceLoggingValue(msg.nonPersistentTabletId, "tabletID"));
     static std::once_flag sLogged;
@@ -682,7 +682,7 @@ void OTDIPCClient::ProcessMessage(const OTDIPC::Messages::State& msg) {
         "only)",
         msg.nonPersistentTabletId);
     });
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -723,7 +723,7 @@ void OTDIPCClient::ProcessMessage(const OTDIPC::Messages::State& msg) {
       TimeoutClock::now() + std::chrono::milliseconds(100);
   }
 
-  OPENKNEEBOARD_TraceLoggingScope("OTDIPCClient::evTabletInputEvent");
+  VISORVR_TraceLoggingScope("OTDIPCClient::evTabletInputEvent");
   evTabletInputEvent.Emit(tablet.mDevice.mDevicePersistentID, state);
 }
 
@@ -741,4 +741,4 @@ void OTDIPCClient::ProcessMessage(const OTDIPC::Messages::Hello& msg) {
     msg.compatibilityVersion);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

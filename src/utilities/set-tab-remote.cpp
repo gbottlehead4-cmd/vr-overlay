@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
+#include <VisorVR/APIEvent.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <felly/numeric_cast.hpp>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 #include <Windows.h>
 #include <shellapi.h>

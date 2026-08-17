@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/RayIntersectsRect.hpp>
+#include <VisorVR/RayIntersectsRect.hpp>
 
 using namespace DirectX::SimpleMath;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 bool RayIntersectsRect(
   const Vector3& rayOrigin,
@@ -47,4 +47,4 @@ bool RayIntersectsRect(
   return true;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

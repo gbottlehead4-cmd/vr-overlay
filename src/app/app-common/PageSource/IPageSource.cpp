@@ -4,9 +4,9 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/IPageSource.hpp>
+#include <VisorVR/IPageSource.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 IPageSource::~IPageSource() = default;
 

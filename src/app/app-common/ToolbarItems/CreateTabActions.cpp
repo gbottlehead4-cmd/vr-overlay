@@ -4,28 +4,28 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ClearUserInputAction.hpp>
-#include <OpenKneeboard/CreateTabActions.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/NextTabAction.hpp>
-#include <OpenKneeboard/PreviousTabAction.hpp>
-#include <OpenKneeboard/ReloadTabAction.hpp>
-#include <OpenKneeboard/SwitchProfileFlyout.hpp>
-#include <OpenKneeboard/SwitchTabFlyout.hpp>
-#include <OpenKneeboard/TabDeveloperToolsAction.hpp>
-#include <OpenKneeboard/TabFirstPageAction.hpp>
-#include <OpenKneeboard/TabNavigationAction.hpp>
-#include <OpenKneeboard/TabNextPageAction.hpp>
-#include <OpenKneeboard/TabPreviousPageAction.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/ToggleBookmarkAction.hpp>
-#include <OpenKneeboard/ToolbarAction.hpp>
-#include <OpenKneeboard/ToolbarFlyout.hpp>
-#include <OpenKneeboard/ToolbarSeparator.hpp>
+#include <VisorVR/ClearUserInputAction.hpp>
+#include <VisorVR/CreateTabActions.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/NextTabAction.hpp>
+#include <VisorVR/PreviousTabAction.hpp>
+#include <VisorVR/ReloadTabAction.hpp>
+#include <VisorVR/SwitchProfileFlyout.hpp>
+#include <VisorVR/SwitchTabFlyout.hpp>
+#include <VisorVR/TabDeveloperToolsAction.hpp>
+#include <VisorVR/TabFirstPageAction.hpp>
+#include <VisorVR/TabNavigationAction.hpp>
+#include <VisorVR/TabNextPageAction.hpp>
+#include <VisorVR/TabPreviousPageAction.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/ToggleBookmarkAction.hpp>
+#include <VisorVR/ToolbarAction.hpp>
+#include <VisorVR/ToolbarFlyout.hpp>
+#include <VisorVR/ToolbarSeparator.hpp>
 
 #include <ranges>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 using ItemPtr = std::shared_ptr<IToolbarItem>;
@@ -116,4 +116,4 @@ InAppActions InAppActions::Create(
   };
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

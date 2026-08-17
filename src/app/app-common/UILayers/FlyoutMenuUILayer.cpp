@@ -4,24 +4,24 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ConfirmationUILayer.hpp>
-#include <OpenKneeboard/FlyoutMenuUILayer.hpp>
-#include <OpenKneeboard/ICheckableToolbarItem.hpp>
-#include <OpenKneeboard/ISelectableToolbarItem.hpp>
-#include <OpenKneeboard/IToolbarFlyout.hpp>
-#include <OpenKneeboard/IToolbarItemWithConfirmation.hpp>
-#include <OpenKneeboard/IToolbarItemWithVisibility.hpp>
-#include <OpenKneeboard/ToolbarAction.hpp>
-#include <OpenKneeboard/ToolbarSeparator.hpp>
+#include <VisorVR/ConfirmationUILayer.hpp>
+#include <VisorVR/FlyoutMenuUILayer.hpp>
+#include <VisorVR/ICheckableToolbarItem.hpp>
+#include <VisorVR/ISelectableToolbarItem.hpp>
+#include <VisorVR/IToolbarFlyout.hpp>
+#include <VisorVR/IToolbarItemWithConfirmation.hpp>
+#include <VisorVR/IToolbarItemWithVisibility.hpp>
+#include <VisorVR/ToolbarAction.hpp>
+#include <VisorVR/ToolbarSeparator.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <dwrite.h>
 
 using felly::numeric_cast;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::shared_ptr<FlyoutMenuUILayer> FlyoutMenuUILayer::Create(
   const audited_ptr<DXResources>& dxr,
@@ -108,7 +108,7 @@ task<void> FlyoutMenuUILayer::Render(
   const NextList& next,
   const Context& context,
   const PixelRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope("FlyoutMenuUILayer::Render()");
+  VISORVR_TraceLoggingScope("FlyoutMenuUILayer::Render()");
   auto previous = mPrevious;
   if (previous && !mRecursiveCall) {
     mRecursiveCall = true;
@@ -125,7 +125,7 @@ task<void> FlyoutMenuUILayer::Render(
   if ((!mLastRenderRect) || rect != mLastRenderRect) {
     this->UpdateLayout(rc.d2d(), rect);
     if (!mMenu) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       co_return;
     }
   }
@@ -544,4 +544,4 @@ void FlyoutMenuUILayer::OnClick(const MenuItem& item) {
   evNeedsRepaintEvent.Emit();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

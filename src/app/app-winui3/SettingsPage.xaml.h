@@ -17,7 +17,7 @@
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 struct SettingsPage : SettingsPageT<SettingsPage> {
   SettingsPage();
@@ -42,11 +42,11 @@ struct SettingsSubpageData : SettingsSubpageDataT<SettingsSubpageData> {
   hstring mDescription;
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct SettingsPage
   : SettingsPageT<SettingsPage, implementation::SettingsPage> {};
 struct SettingsSubpageData : SettingsSubpageDataT<
                                SettingsSubpageData,
                                implementation::SettingsSubpageData> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

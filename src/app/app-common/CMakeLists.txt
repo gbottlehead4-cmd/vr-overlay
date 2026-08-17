@@ -1,55 +1,55 @@
-ok_add_library(OpenKneeboard-Events STATIC Events.cpp)
+ok_add_library(VisorVR-Events STATIC Events.cpp)
 target_link_libraries(
-  OpenKneeboard-Events
+  VisorVR-Events
   PUBLIC
-  OpenKneeboard-config
-  OpenKneeboard-dprint
-  OpenKneeboard-task
+  VisorVR-config
+  VisorVR-dprint
+  VisorVR-task
   ThirdParty::WIL
   ThirdParty::CppWinRT
   ThirdParty::bindline
   PRIVATE
-  OpenKneeboard-config
-  OpenKneeboard-fatal
+  VisorVR-config
+  VisorVR-fatal
 )
-target_include_directories(OpenKneeboard-Events PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(VisorVR-Events PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 include(PDFNavigation.cmake)
 include(SteamVRKneeboard.cmake)
 
 ok_add_library(
-  OpenKneeboard-ChromiumApp
+  VisorVR-ChromiumApp
   STATIC
   ChromiumApp.cpp
-  include/OpenKneeboard/ChromiumApp.hpp
+  include/VisorVR/ChromiumApp.hpp
 )
 target_link_libraries(
-  OpenKneeboard-ChromiumApp
+  VisorVR-ChromiumApp
   PUBLIC
   Cef::LibCef
   PRIVATE
-  OpenKneeboard-DXResources
-  OpenKneeboard-Filesystem
-  OpenKneeboard-dprint
-  OpenKneeboard-version
+  VisorVR-DXResources
+  VisorVR-Filesystem
+  VisorVR-dprint
+  VisorVR-version
 )
 target_include_directories(
-  OpenKneeboard-ChromiumApp
+  VisorVR-ChromiumApp
   PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 ok_add_library(
-  OpenKneeboard-ChromiumWorker
+  VisorVR-ChromiumWorker
   STATIC
   ChromiumWorker.cpp
-  include/OpenKneeboard/ChromiumWorker.hpp
+  include/VisorVR/ChromiumWorker.hpp
 )
 target_link_libraries(
-  OpenKneeboard-ChromiumWorker
+  VisorVR-ChromiumWorker
   PUBLIC
   Cef::LibCef
-  OpenKneeboard-JS-Sources
+  VisorVR-JS-Sources
   # Be *very* wary of adding anything else, and make sure
   # to test in release mode.
   #
@@ -57,13 +57,13 @@ target_link_libraries(
   # processes are sandboxed
 )
 target_include_directories(
-  OpenKneeboard-ChromiumWorker
+  VisorVR-ChromiumWorker
   PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 ok_add_library(
-  OpenKneeboard-App-Common
+  VisorVR-App-Common
   STATIC
   APIEventServer.cpp
   AppSettings.cpp
@@ -99,21 +99,21 @@ ok_add_library(
   PageSource/PageSourceWithDelegates.cpp
   PageSource/PlainTextFilePageSource.cpp
   PageSource/PlainTextPageSource.cpp
-  PageSource/include/OpenKneeboard/ChromiumPageSource.hpp
-  PageSource/include/OpenKneeboard/FileHash.hpp
-  PageSource/include/OpenKneeboard/FilePageSource.hpp
-  PageSource/include/OpenKneeboard/FolderPageSource.hpp
-  PageSource/include/OpenKneeboard/HWNDPageSource.hpp
-  PageSource/include/OpenKneeboard/IPageSource.hpp
-  PageSource/include/OpenKneeboard/IPageSourceWithCursorEvents.hpp
-  PageSource/include/OpenKneeboard/IPageSourceWithDeveloperTools.hpp
-  PageSource/include/OpenKneeboard/IPageSourceWithInternalCaching.hpp
-  PageSource/include/OpenKneeboard/IPageSourceWithNavigation.hpp
-  PageSource/include/OpenKneeboard/ImageFilePageSource.hpp
-  PageSource/include/OpenKneeboard/PDFFilePageSource.hpp
-  PageSource/include/OpenKneeboard/PageSourceWithDelegates.hpp
-  PageSource/include/OpenKneeboard/PlainTextFilePageSource.hpp
-  PageSource/include/OpenKneeboard/PlainTextPageSource.hpp
+  PageSource/include/VisorVR/ChromiumPageSource.hpp
+  PageSource/include/VisorVR/FileHash.hpp
+  PageSource/include/VisorVR/FilePageSource.hpp
+  PageSource/include/VisorVR/FolderPageSource.hpp
+  PageSource/include/VisorVR/HWNDPageSource.hpp
+  PageSource/include/VisorVR/IPageSource.hpp
+  PageSource/include/VisorVR/IPageSourceWithCursorEvents.hpp
+  PageSource/include/VisorVR/IPageSourceWithDeveloperTools.hpp
+  PageSource/include/VisorVR/IPageSourceWithInternalCaching.hpp
+  PageSource/include/VisorVR/IPageSourceWithNavigation.hpp
+  PageSource/include/VisorVR/ImageFilePageSource.hpp
+  PageSource/include/VisorVR/PDFFilePageSource.hpp
+  PageSource/include/VisorVR/PageSourceWithDelegates.hpp
+  PageSource/include/VisorVR/PlainTextFilePageSource.hpp
+  PageSource/include/VisorVR/PlainTextPageSource.hpp
   Plugin.cpp
   PluginStore.cpp
   ProcessShutdownBlock.cpp
@@ -137,27 +137,27 @@ ok_add_library(
   Tab/SingleFileTab.cpp
   Tab/TabBase.cpp
   Tab/WindowCaptureTab.cpp
-  Tab/include/OpenKneeboard/BrowserTab.hpp
-  Tab/include/OpenKneeboard/CursorEvent.hpp
-  Tab/include/OpenKneeboard/DCSAircraftTab.hpp
-  Tab/include/OpenKneeboard/DCSBriefingTab.hpp
-  Tab/include/OpenKneeboard/DCSMissionTab.hpp
-  Tab/include/OpenKneeboard/DCSRadioLogTab.hpp
-  Tab/include/OpenKneeboard/DCSTab.hpp
-  Tab/include/OpenKneeboard/DCSTerrainTab.hpp
-  Tab/include/OpenKneeboard/EndlessNotebookTab.hpp
-  Tab/include/OpenKneeboard/FolderTab.hpp
-  Tab/include/OpenKneeboard/ITab.hpp
-  Tab/include/OpenKneeboard/ITabWithSettings.hpp
-  Tab/include/OpenKneeboard/NavigationTab.hpp
-  Tab/include/OpenKneeboard/PluginTab.hpp
-  Tab/include/OpenKneeboard/SingleFileTab.hpp
-  Tab/include/OpenKneeboard/TabBase.hpp
-  Tab/include/OpenKneeboard/WindowCaptureTab.hpp
+  Tab/include/VisorVR/BrowserTab.hpp
+  Tab/include/VisorVR/CursorEvent.hpp
+  Tab/include/VisorVR/DCSAircraftTab.hpp
+  Tab/include/VisorVR/DCSBriefingTab.hpp
+  Tab/include/VisorVR/DCSMissionTab.hpp
+  Tab/include/VisorVR/DCSRadioLogTab.hpp
+  Tab/include/VisorVR/DCSTab.hpp
+  Tab/include/VisorVR/DCSTerrainTab.hpp
+  Tab/include/VisorVR/EndlessNotebookTab.hpp
+  Tab/include/VisorVR/FolderTab.hpp
+  Tab/include/VisorVR/ITab.hpp
+  Tab/include/VisorVR/ITabWithSettings.hpp
+  Tab/include/VisorVR/NavigationTab.hpp
+  Tab/include/VisorVR/PluginTab.hpp
+  Tab/include/VisorVR/SingleFileTab.hpp
+  Tab/include/VisorVR/TabBase.hpp
+  Tab/include/VisorVR/WindowCaptureTab.hpp
   TabView.cpp
   TabsList/TabsList.cpp
-  TabsList/include/OpenKneeboard/TabTypes.hpp
-  TabsList/include/OpenKneeboard/TabsList.hpp
+  TabsList/include/VisorVR/TabTypes.hpp
+  TabsList/include/VisorVR/TabsList.hpp
   TextSettings.cpp
   ToolbarItems/ClearUserInputAction.cpp
   ToolbarItems/CreateTabActions.cpp
@@ -179,31 +179,31 @@ ok_add_library(
   ToolbarItems/ToolbarFlyout.cpp
   ToolbarItems/ToolbarSeparator.cpp
   ToolbarItems/ToolbarToggleAction.cpp
-  ToolbarItems/include/OpenKneeboard/ClearUserInputAction.hpp
-  ToolbarItems/include/OpenKneeboard/CreateTabActions.hpp
-  ToolbarItems/include/OpenKneeboard/ICheckableToolbarItem.hpp
-  ToolbarItems/include/OpenKneeboard/ISelectableToolbarItem.hpp
-  ToolbarItems/include/OpenKneeboard/IToolbarFlyout.hpp
-  ToolbarItems/include/OpenKneeboard/IToolbarItem.hpp
-  ToolbarItems/include/OpenKneeboard/IToolbarItemWithConfirmation.hpp
-  ToolbarItems/include/OpenKneeboard/IToolbarItemWithVisibility.hpp
-  ToolbarItems/include/OpenKneeboard/NextTabAction.hpp
-  ToolbarItems/include/OpenKneeboard/PreviousTabAction.hpp
-  ToolbarItems/include/OpenKneeboard/ReloadTabAction.hpp
-  ToolbarItems/include/OpenKneeboard/SwitchProfileAction.hpp
-  ToolbarItems/include/OpenKneeboard/SwitchProfileFlyout.hpp
-  ToolbarItems/include/OpenKneeboard/SwitchTabAction.hpp
-  ToolbarItems/include/OpenKneeboard/SwitchTabFlyout.hpp
-  ToolbarItems/include/OpenKneeboard/TabDeveloperToolsAction.hpp
-  ToolbarItems/include/OpenKneeboard/TabFirstPageAction.hpp
-  ToolbarItems/include/OpenKneeboard/TabNavigationAction.hpp
-  ToolbarItems/include/OpenKneeboard/TabNextPageAction.hpp
-  ToolbarItems/include/OpenKneeboard/TabPreviousPageAction.hpp
-  ToolbarItems/include/OpenKneeboard/ToggleBookmarkAction.hpp
-  ToolbarItems/include/OpenKneeboard/ToolbarAction.hpp
-  ToolbarItems/include/OpenKneeboard/ToolbarFlyout.hpp
-  ToolbarItems/include/OpenKneeboard/ToolbarSeparator.hpp
-  ToolbarItems/include/OpenKneeboard/ToolbarToggleAction.hpp
+  ToolbarItems/include/VisorVR/ClearUserInputAction.hpp
+  ToolbarItems/include/VisorVR/CreateTabActions.hpp
+  ToolbarItems/include/VisorVR/ICheckableToolbarItem.hpp
+  ToolbarItems/include/VisorVR/ISelectableToolbarItem.hpp
+  ToolbarItems/include/VisorVR/IToolbarFlyout.hpp
+  ToolbarItems/include/VisorVR/IToolbarItem.hpp
+  ToolbarItems/include/VisorVR/IToolbarItemWithConfirmation.hpp
+  ToolbarItems/include/VisorVR/IToolbarItemWithVisibility.hpp
+  ToolbarItems/include/VisorVR/NextTabAction.hpp
+  ToolbarItems/include/VisorVR/PreviousTabAction.hpp
+  ToolbarItems/include/VisorVR/ReloadTabAction.hpp
+  ToolbarItems/include/VisorVR/SwitchProfileAction.hpp
+  ToolbarItems/include/VisorVR/SwitchProfileFlyout.hpp
+  ToolbarItems/include/VisorVR/SwitchTabAction.hpp
+  ToolbarItems/include/VisorVR/SwitchTabFlyout.hpp
+  ToolbarItems/include/VisorVR/TabDeveloperToolsAction.hpp
+  ToolbarItems/include/VisorVR/TabFirstPageAction.hpp
+  ToolbarItems/include/VisorVR/TabNavigationAction.hpp
+  ToolbarItems/include/VisorVR/TabNextPageAction.hpp
+  ToolbarItems/include/VisorVR/TabPreviousPageAction.hpp
+  ToolbarItems/include/VisorVR/ToggleBookmarkAction.hpp
+  ToolbarItems/include/VisorVR/ToolbarAction.hpp
+  ToolbarItems/include/VisorVR/ToolbarFlyout.hpp
+  ToolbarItems/include/VisorVR/ToolbarSeparator.hpp
+  ToolbarItems/include/VisorVR/ToolbarToggleAction.hpp
   TroubleshootingStore.cpp
   UILayers/BookmarksUILayer.cpp
   UILayers/ConfirmationUILayer.cpp
@@ -213,14 +213,14 @@ ok_add_library(
   UILayers/IUILayer.cpp
   UILayers/TabViewUILayer.cpp
   UILayers/UILayerBase.cpp
-  UILayers/include/OpenKneeboard/BookmarksUILayer.hpp
-  UILayers/include/OpenKneeboard/ConfirmationUILayer.hpp
-  UILayers/include/OpenKneeboard/FlyoutMenuUILayer.hpp
-  UILayers/include/OpenKneeboard/FooterUILayer.hpp
-  UILayers/include/OpenKneeboard/HeaderUILayer.hpp
-  UILayers/include/OpenKneeboard/IUILayer.hpp
-  UILayers/include/OpenKneeboard/TabViewUILayer.hpp
-  UILayers/include/OpenKneeboard/UILayerBase.hpp
+  UILayers/include/VisorVR/BookmarksUILayer.hpp
+  UILayers/include/VisorVR/ConfirmationUILayer.hpp
+  UILayers/include/VisorVR/FlyoutMenuUILayer.hpp
+  UILayers/include/VisorVR/FooterUILayer.hpp
+  UILayers/include/VisorVR/HeaderUILayer.hpp
+  UILayers/include/VisorVR/IUILayer.hpp
+  UILayers/include/VisorVR/TabViewUILayer.hpp
+  UILayers/include/VisorVR/UILayerBase.hpp
   UISettings.cpp
   UserActionHandler.cpp
   UserInput/DirectInputAdapter.cpp
@@ -238,110 +238,110 @@ ok_add_library(
   UserInput/UserInputButtonBinding.cpp
   UserInput/UserInputButtonEvent.cpp
   UserInput/UserInputDevice.cpp
-  UserInput/include/OpenKneeboard/CursorClickableRegions.hpp
-  UserInput/include/OpenKneeboard/DirectInputAdapter.hpp
-  UserInput/include/OpenKneeboard/DirectInputDevice.hpp
-  UserInput/include/OpenKneeboard/DirectInputJoystickListener.hpp
-  UserInput/include/OpenKneeboard/DirectInputKeyboardListener.hpp
-  UserInput/include/OpenKneeboard/DirectInputListener.hpp
-  UserInput/include/OpenKneeboard/DirectInputMouseListener.hpp
-  UserInput/include/OpenKneeboard/DirectInputSettings.hpp
-  UserInput/include/OpenKneeboard/GetDirectInputDevices.hpp
-  UserInput/include/OpenKneeboard/OTDIPCClient.hpp
-  UserInput/include/OpenKneeboard/TabletInputAdapter.hpp
-  UserInput/include/OpenKneeboard/TabletInputDevice.hpp
-  UserInput/include/OpenKneeboard/TabletSettings.hpp
-  UserInput/include/OpenKneeboard/UserInputButtonBinding.hpp
-  UserInput/include/OpenKneeboard/UserInputButtonEvent.hpp
-  UserInput/include/OpenKneeboard/UserInputDevice.hpp
+  UserInput/include/VisorVR/CursorClickableRegions.hpp
+  UserInput/include/VisorVR/DirectInputAdapter.hpp
+  UserInput/include/VisorVR/DirectInputDevice.hpp
+  UserInput/include/VisorVR/DirectInputJoystickListener.hpp
+  UserInput/include/VisorVR/DirectInputKeyboardListener.hpp
+  UserInput/include/VisorVR/DirectInputListener.hpp
+  UserInput/include/VisorVR/DirectInputMouseListener.hpp
+  UserInput/include/VisorVR/DirectInputSettings.hpp
+  UserInput/include/VisorVR/GetDirectInputDevices.hpp
+  UserInput/include/VisorVR/OTDIPCClient.hpp
+  UserInput/include/VisorVR/TabletInputAdapter.hpp
+  UserInput/include/VisorVR/TabletInputDevice.hpp
+  UserInput/include/VisorVR/TabletSettings.hpp
+  UserInput/include/VisorVR/UserInputButtonBinding.hpp
+  UserInput/include/VisorVR/UserInputButtonEvent.hpp
+  UserInput/include/VisorVR/UserInputDevice.hpp
   VRSettings.cpp
   ViewsSettings.cpp
   WGCRenderer.cpp
-  include/OpenKneeboard/APIEventServer.hpp
-  include/OpenKneeboard/AppSettings.hpp
-  include/OpenKneeboard/Bookmark.hpp
-  include/OpenKneeboard/CachedLayer.hpp
-  include/OpenKneeboard/Coordinates.hpp
-  include/OpenKneeboard/CursorRenderer.hpp
-  include/OpenKneeboard/DCSExtractedMission.hpp
-  include/OpenKneeboard/DCSEvents.hpp
-  include/OpenKneeboard/DCSGrid.hpp
-  include/OpenKneeboard/DCSMagneticModel.hpp
-  include/OpenKneeboard/DebugPrivileges.hpp
-  include/OpenKneeboard/DoodleRenderer.hpp
-  include/OpenKneeboard/DoodleSettings.hpp
-  include/OpenKneeboard/FilesystemWatcher.hpp
-  include/OpenKneeboard/IHasDebugInformation.hpp
-  include/OpenKneeboard/IHasDisposeAsync.hpp
-  include/OpenKneeboard/InterprocessRenderer.hpp
-  include/OpenKneeboard/KneeboardState.hpp
-  include/OpenKneeboard/KneeboardView.hpp
-  include/OpenKneeboard/KneeboardViewID.hpp
-  include/OpenKneeboard/LaunchURI.hpp
-  include/OpenKneeboard/Lua.hpp
-  include/OpenKneeboard/OpenXRMode.hpp
-  include/OpenKneeboard/Plugin.hpp
-  include/OpenKneeboard/PluginStore.hpp
-  include/OpenKneeboard/ProcessShutdownBlock.hpp
-  include/OpenKneeboard/ProfileSettings.hpp
-  include/OpenKneeboard/Registry.hpp
-  include/OpenKneeboard/RenderTarget.hpp
-  include/OpenKneeboard/RenderTargetID.hpp
-  include/OpenKneeboard/RunSubprocessAsync.hpp
-  include/OpenKneeboard/RunnerThread.hpp
-  include/OpenKneeboard/Settings.hpp
-  include/OpenKneeboard/TabView.hpp
-  include/OpenKneeboard/TextSettings.hpp
-  include/OpenKneeboard/TroubleshootingStore.hpp
-  include/OpenKneeboard/TryEnqueue.hpp
-  include/OpenKneeboard/UISettings.hpp
-  include/OpenKneeboard/UniqueID.hpp
-  include/OpenKneeboard/UserActionHandler.hpp
-  include/OpenKneeboard/ViewsSettings.hpp
-  include/OpenKneeboard/WGCRenderer.hpp
-  include/OpenKneeboard/WebPageSourceKind.hpp
-  include/OpenKneeboard/WebPageSourceSettings.hpp
-  include/OpenKneeboard/bindline.hpp
-  include/OpenKneeboard/cppwinrt.hpp
-  include/OpenKneeboard/enable_shared_from_this.hpp
-  include/OpenKneeboard/final_release_deleter.hpp
-  include/OpenKneeboard/weak_refs.hpp
+  include/VisorVR/APIEventServer.hpp
+  include/VisorVR/AppSettings.hpp
+  include/VisorVR/Bookmark.hpp
+  include/VisorVR/CachedLayer.hpp
+  include/VisorVR/Coordinates.hpp
+  include/VisorVR/CursorRenderer.hpp
+  include/VisorVR/DCSExtractedMission.hpp
+  include/VisorVR/DCSEvents.hpp
+  include/VisorVR/DCSGrid.hpp
+  include/VisorVR/DCSMagneticModel.hpp
+  include/VisorVR/DebugPrivileges.hpp
+  include/VisorVR/DoodleRenderer.hpp
+  include/VisorVR/DoodleSettings.hpp
+  include/VisorVR/FilesystemWatcher.hpp
+  include/VisorVR/IHasDebugInformation.hpp
+  include/VisorVR/IHasDisposeAsync.hpp
+  include/VisorVR/InterprocessRenderer.hpp
+  include/VisorVR/KneeboardState.hpp
+  include/VisorVR/KneeboardView.hpp
+  include/VisorVR/KneeboardViewID.hpp
+  include/VisorVR/LaunchURI.hpp
+  include/VisorVR/Lua.hpp
+  include/VisorVR/OpenXRMode.hpp
+  include/VisorVR/Plugin.hpp
+  include/VisorVR/PluginStore.hpp
+  include/VisorVR/ProcessShutdownBlock.hpp
+  include/VisorVR/ProfileSettings.hpp
+  include/VisorVR/Registry.hpp
+  include/VisorVR/RenderTarget.hpp
+  include/VisorVR/RenderTargetID.hpp
+  include/VisorVR/RunSubprocessAsync.hpp
+  include/VisorVR/RunnerThread.hpp
+  include/VisorVR/Settings.hpp
+  include/VisorVR/TabView.hpp
+  include/VisorVR/TextSettings.hpp
+  include/VisorVR/TroubleshootingStore.hpp
+  include/VisorVR/TryEnqueue.hpp
+  include/VisorVR/UISettings.hpp
+  include/VisorVR/UniqueID.hpp
+  include/VisorVR/UserActionHandler.hpp
+  include/VisorVR/ViewsSettings.hpp
+  include/VisorVR/WGCRenderer.hpp
+  include/VisorVR/WebPageSourceKind.hpp
+  include/VisorVR/WebPageSourceSettings.hpp
+  include/VisorVR/bindline.hpp
+  include/VisorVR/cppwinrt.hpp
+  include/VisorVR/enable_shared_from_this.hpp
+  include/VisorVR/final_release_deleter.hpp
+  include/VisorVR/weak_refs.hpp
 )
 target_compile_definitions(
-  OpenKneeboard-App-Common
+  VisorVR-App-Common
   PUBLIC
   "DIRECTINPUT_VERSION=0x0800"
 )
 target_link_libraries(
-  OpenKneeboard-App-Common
+  VisorVR-App-Common
   PUBLIC
-  OpenKneeboard-Events
-  OpenKneeboard-StateMachine
+  VisorVR-Events
+  VisorVR-StateMachine
   ThirdParty::DirectXTK
   ThirdParty::JSON
   Cef::LibCef
   PRIVATE
-  OpenKneeboard-D2DErrorRenderer
-  OpenKneeboard-DXResources
-  OpenKneeboard-Filesystem
-  OpenKneeboard-APIEvent
-  OpenKneeboard-EnumerateProcesses
-  OpenKneeboard-GetSystemColor
-  OpenKneeboard-PDFNavigation
-  OpenKneeboard-RayIntersectsRect
-  OpenKneeboard-RuntimeFiles
-  OpenKneeboard-SHM
-  OpenKneeboard-SteamVRKneeboard
-  OpenKneeboard-ThreadGuard
-  OpenKneeboard-UTF8
-  OpenKneeboard-WindowCaptureControl
-  OpenKneeboard-config
-  OpenKneeboard-dprint
-  OpenKneeboard-fatal
-  OpenKneeboard-handles
-  OpenKneeboard-scope_exit
-  OpenKneeboard-semver
-  OpenKneeboard-task
+  VisorVR-D2DErrorRenderer
+  VisorVR-DXResources
+  VisorVR-Filesystem
+  VisorVR-APIEvent
+  VisorVR-EnumerateProcesses
+  VisorVR-GetSystemColor
+  VisorVR-PDFNavigation
+  VisorVR-RayIntersectsRect
+  VisorVR-RuntimeFiles
+  VisorVR-SHM
+  VisorVR-SteamVRKneeboard
+  VisorVR-ThreadGuard
+  VisorVR-UTF8
+  VisorVR-WindowCaptureControl
+  VisorVR-config
+  VisorVR-dprint
+  VisorVR-fatal
+  VisorVR-handles
+  VisorVR-scope_exit
+  VisorVR-semver
+  VisorVR-task
   System::D2d1
   System::Dinput8
   System::Dwmapi
@@ -358,7 +358,7 @@ target_link_libraries(
 )
 
 target_include_directories(
-  OpenKneeboard-App-Common
+  VisorVR-App-Common
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/PageSource/include
   ${CMAKE_CURRENT_SOURCE_DIR}/Tab/include
@@ -369,6 +369,6 @@ target_include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_windows_app_sdk(OpenKneeboard-App-Common)
+target_link_windows_app_sdk(VisorVR-App-Common)
 
-ok_add_library(OpenKneeboard::App::Common ALIAS OpenKneeboard-App-Common)
+ok_add_library(VisorVR::App::Common ALIAS VisorVR-App-Common)

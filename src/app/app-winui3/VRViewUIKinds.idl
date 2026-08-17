@@ -1,6 +1,6 @@
 import "UIDataItem.idl";
 
-namespace OpenKneeboardApp
+namespace VisorVRApp
 {
     [default_interface]
     runtimeclass IndependentVRViewUIKind : UIDataItem {

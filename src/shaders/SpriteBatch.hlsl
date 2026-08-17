@@ -4,7 +4,7 @@
 //
 // This program is open source; see the LICENSE file in the root of the OpenKneeboard repository.
 
-// Modified for OpenKneeboard::Vulkan::SpriteBatch:
+// Modified for VisorVR::Vulkan::SpriteBatch:
 // - use descriptor indexing
 // - take pixel coordinates and convert to normalized coordinates
 // - add VK annotations

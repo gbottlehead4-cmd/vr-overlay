@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/RunSubprocessAsync.hpp>
+#include <VisorVR/RunSubprocessAsync.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
 
 #include <Windows.h>
 #include <Psapi.h>
 #include <shellapi.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 task<SubprocessResult> RunSubprocessAsync(
   std::filesystem::path path,
   std::wstring commandLine,
@@ -40,7 +40,7 @@ task<SubprocessResult> RunSubprocessAsync(
 
   if (!shellExecuteInfo.hProcess) {
     dprint("No process handle");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return SubprocessResult::NoProcessHandle;
   }
 
@@ -62,4 +62,4 @@ task<SubprocessResult> RunSubprocessAsync(
   }
   co_return SubprocessResult::NonZeroExit;
 }
-}// namespace OpenKneeboard
+}// namespace VisorVR

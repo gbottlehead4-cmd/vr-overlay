@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-namespace OpenKneeboard::RuntimeFiles {
+namespace VisorVR::RuntimeFiles {
 
 std::filesystem::path GetInstallationDirectory() {
   // When using MSIX, we needed to copy files outside the sandbox; now that
@@ -15,4 +15,4 @@ std::filesystem::path GetInstallationDirectory() {
   return Filesystem::GetRuntimeDirectory();
 }
 
-}// namespace OpenKneeboard::RuntimeFiles
+}// namespace VisorVR::RuntimeFiles

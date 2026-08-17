@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ConfirmationUILayer.hpp>
-#include <OpenKneeboard/IToolbarItemWithConfirmation.hpp>
-#include <OpenKneeboard/ToolbarAction.hpp>
+#include <VisorVR/ConfirmationUILayer.hpp>
+#include <VisorVR/IToolbarItemWithConfirmation.hpp>
+#include <VisorVR/ToolbarAction.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::shared_ptr<ConfirmationUILayer> ConfirmationUILayer::Create(
   const audited_ptr<DXResources>& dxr,
@@ -72,7 +72,7 @@ task<void> ConfirmationUILayer::Render(
   const NextList& next,
   const Context& context,
   const PixelRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope("ConfirmationUILayer::Render()");
+  VISORVR_TraceLoggingScope("ConfirmationUILayer::Render()");
   co_await next.front()->Render(rc, next.subspan(1), context, rect);
 
   if (rect != mCanvasRect) {
@@ -303,7 +303,7 @@ void ConfirmationUILayer::UpdateLayout(const PixelRect& canvasRect) {
     });
   AddEventListener(
     buttons->evClicked,
-    [](auto self, auto, auto button) -> OpenKneeboard::fire_and_forget {
+    [](auto self, auto, auto button) -> VisorVR::fire_and_forget {
       if (button.mAction == ButtonAction::Confirm) {
         auto action = std::dynamic_pointer_cast<ToolbarAction>(self->mItem);
         if (action) {
@@ -359,4 +359,4 @@ IUILayer::Metrics ConfirmationUILayer::GetMetrics(
   return next.front()->GetMetrics(next.subspan(1), context);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

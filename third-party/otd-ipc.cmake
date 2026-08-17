@@ -1,6 +1,6 @@
 ExternalProject_Add(
   OTDIPCFetch
-  GIT_REPOSITORY "https://github.com/OpenKneeboard/OTD-IPC.git"
+  GIT_REPOSITORY "https://github.com/VisorVR/OTD-IPC.git"
   GIT_TAG "f32a777c0b456d74a895defb1101be31b09aea29"
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
@@ -26,6 +26,6 @@ add_library(ThirdParty::OTDIPC ALIAS OTDIPC)
 include(ok_add_license_file)
 ok_add_license_file(
   "${SOURCE_DIR}/LICENSE"
-  "LICENSE-ThirdParty-OpenKneeboard-OTD-IPC.txt"
+  "LICENSE-ThirdParty-VisorVR-OTD-IPC.txt"
   DEPENDS OTDIPCFetch-update
 )

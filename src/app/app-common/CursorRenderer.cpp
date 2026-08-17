@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CursorRenderer.hpp>
-#include <OpenKneeboard/DXResources.hpp>
+#include <VisorVR/CursorRenderer.hpp>
+#include <VisorVR/DXResources.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 CursorRenderer::CursorRenderer(const audited_ptr<DXResources>& dxr) {
   mInnerBrush = dxr->mCursorInnerBrush;
@@ -30,4 +30,4 @@ void CursorRenderer::Render(
   ctx->DrawEllipse(elipse, mInnerBrush.get(), cursorStroke);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

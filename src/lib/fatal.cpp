@@ -5,15 +5,15 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/Elevation.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/Elevation.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/bitflags.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/fatal.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/bitflags.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/fatal.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -43,7 +43,7 @@ extern "C" void __stdcall _CxxThrowException(void*, _ThrowInfo);
 
 using std::operator""s;
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 namespace {
 [[noreturn]] void fast_fail() { __fastfail(FAST_FAIL_FATAL_APP_EXIT); }
@@ -96,11 +96,11 @@ MINIDUMP_TYPE gMinidumpType {MiniDumpNormal};
 }// namespace
 
 template <class CharT>
-struct std::formatter<OpenKneeboard::detail::SourceLocation, CharT>
+struct std::formatter<VisorVR::detail::SourceLocation, CharT>
   : std::formatter<std::basic_string_view<CharT>, CharT> {
   template <class FormatContext>
   auto format(
-    const OpenKneeboard::detail::SourceLocation& loc,
+    const VisorVR::detail::SourceLocation& loc,
     FormatContext& fc) const {
     const auto converted = std::format(
       "{}:{}:{} - {}",
@@ -114,7 +114,7 @@ struct std::formatter<OpenKneeboard::detail::SourceLocation, CharT>
   }
 };
 
-namespace OpenKneeboard::detail {
+namespace VisorVR::detail {
 struct CrashMeta {
   // Stack trace with the second entry being the blame frame.
   //
@@ -143,7 +143,7 @@ struct CrashMeta {
   decltype(&MiniDumpWriteDump) GetWriteMiniDumpProc() {
     this->LoadDbgHelp();
     if (!mMiniDumpWriteDump) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       fast_fail();
     }
     return mMiniDumpWriteDump;
@@ -200,7 +200,7 @@ static void CreateDump(
   }
 
   if (!meta.CanWriteDump()) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -213,7 +213,7 @@ static void CreateDump(
     FILE_ATTRIBUTE_NORMAL,
     NULL);
   if (!dumpFile) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   MINIDUMP_EXCEPTION_INFORMATION exceptionInfo {
@@ -271,7 +271,7 @@ SourceLocation::SourceLocation(const std::stacktrace_entry& entry) noexcept {
   if (!entry) [[unlikely]] {
     dprint(
       "Attempted to construct a SourceLocation with an empty stacktrace_entry");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mFunctionName = entry.description();
@@ -288,7 +288,7 @@ SourceLocation::SourceLocation(const std::source_location& loc) noexcept
 SourceLocation::SourceLocation(StackFramePointer frame) noexcept
   : SourceLocation(std::bit_cast<std::stacktrace_entry>(frame.mValue)) {}
 
-OPENKNEEBOARD_NOINLINE
+VISORVR_NOINLINE
 static std::string GetFatalLogContents(
   const CrashMeta& meta,
   const FatalData& fatal) noexcept {
@@ -341,7 +341,7 @@ static std::string GetFatalLogContents(
          threadDescription.empty() ? "[no description]"s
                                    : std::format("(\"{}\")", threadDescription))
     << std::format("Blame frame: {}\n", blameString)
-    << std::format("OKB Version: {}\n", Version::ReleaseName);
+    << std::format("VVR Version: {}\n", Version::ReleaseName);
 
   f << "\n"
     << "Stack Trace\n"
@@ -405,7 +405,7 @@ static std::string GetFatalLogContents(
   return f.str();
 }
 
-OPENKNEEBOARD_NOINLINE
+VISORVR_NOINLINE
 [[noreturn]] static void FatalAndDump(
   CrashMeta& meta,
   const FatalData& fatal,
@@ -527,7 +527,7 @@ extern "C" HRESULT __stdcall SetThreadDescriptionHook(
   auto& names = *lock;
 
   if (hThread == GetCurrentThread()) [[likely]] {
-    OPENKNEEBOARD_ASSERT(
+    VISORVR_ASSERT(
       GetCurrentThreadId() == std::bit_cast<DWORD>(std::this_thread::get_id()));
     // hThread is a pseudo-handle
     names[std::this_thread::get_id()] = lpThreadDescription;
@@ -540,15 +540,15 @@ extern "C" HRESULT __stdcall SetThreadDescriptionHook(
   return gSetThreadDescription(hThread, lpThreadDescription);
 }
 
-}// namespace OpenKneeboard::detail
+}// namespace VisorVR::detail
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::span<StackFramePointer> StackTrace::GetEntries() const {
   return std::span {reinterpret_cast<StackFramePointer*>(mData.get()), mSize};
 }
 
-OPENKNEEBOARD_FORCEINLINE
+VISORVR_FORCEINLINE
 StackTrace StackTrace::Current(std::size_t skip) noexcept {
   // std::stacktrace::_Max_frames in the Microsoft STL as of 2025-01-16
   void* buffer[0xFFFF];
@@ -608,7 +608,7 @@ void SetDumpType(DumpType type) {
 }
 
 void fatal_with_hresult(HRESULT hr) {
-  using namespace OpenKneeboard::detail;
+  using namespace VisorVR::detail;
   prepare_to_fatal();
   CrashMeta meta {};
   FatalAndDump(
@@ -621,13 +621,13 @@ void fatal_with_hresult(HRESULT hr) {
 }
 
 void fatal_with_exception(std::exception_ptr ep) {
-  using namespace OpenKneeboard::detail;
+  using namespace VisorVR::detail;
   prepare_to_fatal();
   CrashMeta meta {};
   if (!ep) {
     FatalAndDump(
       meta, {"fatal_with_exception() called without an exception"}, nullptr);
-    OPENKNEEBOARD_UNREACHABLE;
+    VISORVR_UNREACHABLE;
   }
 
   try {
@@ -650,7 +650,7 @@ void fatal_with_exception(std::exception_ptr ep) {
           "Uncaught std::exception ({}): {}", typeid(e).name(), e.what()),
       },
       nullptr);
-    OPENKNEEBOARD_UNREACHABLE;
+    VISORVR_UNREACHABLE;
   } catch (...) {
     FatalAndDump(meta, {"Uncaught exception of unknown kind"}, nullptr);
   }
@@ -661,7 +661,7 @@ void divert_process_failure_to_fatal() {
   if (sInstalled.test_and_set()) {
     return;
   }
-  using namespace OpenKneeboard::detail;
+  using namespace VisorVR::detail;
 
   wil::SetResultMessageCallback(&OnWILResult);
 
@@ -697,4 +697,4 @@ FatalOnUncaughtExceptions::~FatalOnUncaughtExceptions() {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/TabFirstPageAction.hpp>
-#include <OpenKneeboard/TabView.hpp>
+#include <VisorVR/TabFirstPageAction.hpp>
+#include <VisorVR/TabView.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabFirstPageAction::TabFirstPageAction(const std::shared_ptr<TabView>& state)
   : ToolbarAction("\uE892", _("First Page")),
@@ -39,4 +39,4 @@ task<void> TabFirstPageAction::Execute() {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

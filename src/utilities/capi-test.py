@@ -5,9 +5,9 @@ import sys
 import winreg
 
 
-def openkneeboard_dll_path():
+def visorvr_dll_path():
     try:
-        override = os.environ["OPENKNEEBOARD_CAPI_DLL"]
+        override = os.environ["VISORVR_CAPI_DLL"]
         if override:
             return override
     except Exception:
@@ -16,13 +16,13 @@ def openkneeboard_dll_path():
     try:
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
-            "Software\\Fred Emmott\\OpenKneeboard",
+            "Software\\VisorVR",
             0,
             winreg.KEY_READ | winreg.KEY_WOW64_64KEY,
         )
         value, result = winreg.QueryValueEx(key, "InstallationBinPath")
         if result == winreg.REG_SZ and type(value) is str:
-            return value + "\\OpenKneeboard_CAPI64.dll"
+            return value + "\\VisorVR_CAPI64.dll"
     except Exception:
         pass
 
@@ -32,29 +32,29 @@ def openkneeboard_dll_path():
         sys.exit("Could not locate program files")
     path = (
         pathlib.Path(program_files)
-        / "OpenKneeboard"
+        / "VisorVR"
         / "bin"
-        / "OpenKneeboard_CAPI64.dll"
+        / "VisorVR_CAPI64.dll"
     )
     if not os.path.exists(path):
         sys.exit(
-            f"'{path}' does not exist; install OpenKneeboard, or set the OPENKNEEBOARD_CAPI_DLL environment variable"
+            f"'{path}' does not exist; install VisorVR, or set the VISORVR_CAPI_DLL environment variable"
         )
     return path
 
 
-def openkneeboard_send(name, value):
-    ok_capi = ctypes.CDLL(openkneeboard_dll_path())
+def visorvr_send(name, value):
+    ok_capi = ctypes.CDLL(visorvr_dll_path())
 
     # Optional, but catches errors sooner:
-    ok_capi.OpenKneeboard_send_wchar_ptr.argtypes = [
+    ok_capi.VisorVR_send_wchar_ptr.argtypes = [
         ctypes.c_wchar_p,
         ctypes.c_size_t,
         ctypes.c_wchar_p,
         ctypes.c_size_t,
     ]
 
-    ok_capi.OpenKneeboard_send_wchar_ptr(name, len(name), value, len(value))
+    ok_capi.VisorVR_send_wchar_ptr(name, len(name), value, len(value))
 
 
 if __name__ == "__main__":
@@ -74,5 +74,5 @@ if __name__ == "__main__":
     elif argc > 3:
         print("Usage: python capi-test.py NAME [VALUE]\n")
         sys.exit()
-    openkneeboard_send(name, value)
-    print("Sent to OpenKneeboard!")
+    visorvr_send(name, value)
+    print("Sent to VisorVR!")

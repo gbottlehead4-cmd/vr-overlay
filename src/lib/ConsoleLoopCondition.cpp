@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ConsoleLoopCondition.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/ConsoleLoopCondition.hpp>
+#include <VisorVR/Win32.hpp>
 
 #include <Windows.h>
 #include <objbase.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 auto& ExitEvent() {
@@ -68,4 +68,4 @@ bool ConsoleLoopCondition::Sleep(
   return true;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -12,29 +12,29 @@
 
 #include "Globals.h"
 
-#include <OpenKneeboard/CreateTabActions.hpp>
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/CursorRenderer.hpp>
-#include <OpenKneeboard/D2DErrorRenderer.hpp>
-#include <OpenKneeboard/ICheckableToolbarItem.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/IToolbarFlyout.hpp>
-#include <OpenKneeboard/IToolbarItemWithConfirmation.hpp>
-#include <OpenKneeboard/IToolbarItemWithVisibility.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/ToolbarAction.hpp>
-#include <OpenKneeboard/ToolbarSeparator.hpp>
-#include <OpenKneeboard/ToolbarToggleAction.hpp>
-#include <OpenKneeboard/UserAction.hpp>
+#include <VisorVR/CreateTabActions.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/CursorRenderer.hpp>
+#include <VisorVR/D2DErrorRenderer.hpp>
+#include <VisorVR/ICheckableToolbarItem.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/IToolbarFlyout.hpp>
+#include <VisorVR/IToolbarItemWithConfirmation.hpp>
+#include <VisorVR/IToolbarItemWithVisibility.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/LaunchURI.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/ToolbarAction.hpp>
+#include <VisorVR/ToolbarSeparator.hpp>
+#include <VisorVR/ToolbarToggleAction.hpp>
+#include <VisorVR/UserAction.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
-#include <winrt/OpenKneeboardApp.h>
+#include <winrt/VisorVRApp.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <microsoft.ui.xaml.media.dxinterop.h>
@@ -43,12 +43,12 @@
 #include <ranges>
 #include <source_location>
 
-using namespace ::OpenKneeboard;
+using namespace ::VisorVR;
 
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace muxcp = winrt::Microsoft::UI::Xaml::Controls::Primitives;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 std::unordered_map<TabView::RuntimeID, std::weak_ptr<RenderTarget>>
   TabPage::sRenderTarget;
@@ -83,7 +83,7 @@ std::shared_ptr<RenderTarget> TabPage::GetRenderTarget(
 
 TabPage::TabPage() {
   InitializeComponent();
-  OPENKNEEBOARD_TraceLoggingScope("TabPage::TabPage()");
+  VISORVR_TraceLoggingScope("TabPage::TabPage()");
   mDXR.copy_from(gDXResources);
   mKneeboard = gKneeboard.lock();
 
@@ -123,11 +123,11 @@ TabPage::TabPage() {
     });
 }
 
-TabPage::~TabPage() { OPENKNEEBOARD_TraceLoggingScope("TabPage::~TabPage()"); }
+TabPage::~TabPage() { VISORVR_TraceLoggingScope("TabPage::~TabPage()"); }
 
-OpenKneeboard::fire_and_forget TabPage::final_release(
+VisorVR::fire_and_forget TabPage::final_release(
   std::unique_ptr<TabPage> instance) {
-  OPENKNEEBOARD_TraceLoggingCoro("TabPage::final_release()");
+  VISORVR_TraceLoggingCoro("TabPage::final_release()");
   instance->RemoveAllEventListeners();
   co_await instance->mUIThread;
 }
@@ -140,7 +140,7 @@ void TabPage::InitializePointerSource() {
       return;
     }
     SetThreadDescription(
-      GetCurrentThread(), L"OKB TabPage IndependentInputSource");
+      GetCurrentThread(), L"VVR TabPage IndependentInputSource");
 
     auto& ips = self->mInputPointerSource;
     ips = self->Canvas().CreateCoreIndependentInputSource(
@@ -217,7 +217,7 @@ muxc::ICommandBarElement TabPage::CreateCommandBarElement(
     return CreateAppBarFlyout(flyout);
   }
 
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
   return {nullptr};
 }
 
@@ -322,7 +322,7 @@ muxc::MenuFlyoutItemBase TabPage::CreateMenuFlyoutItem(
   const std::shared_ptr<IToolbarItem>& item) {
   const auto action = std::dynamic_pointer_cast<ToolbarAction>(item);
   if (!action) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return nullptr;
   }
 
@@ -397,25 +397,25 @@ void TabPage::SetTab(const std::shared_ptr<TabView>& state) {
   this->UpdateToolbar();
 }
 
-OpenKneeboard::fire_and_forget TabPage::ToggleVREditMode(
+VisorVR::fire_and_forget TabPage::ToggleVREditMode(
   const IInspectable&,
   const RoutedEventArgs&) {
   co_await mKneeboard->PostUserAction(UserAction::TOGGLE_VR_EDIT_MODE);
 }
 
-OpenKneeboard::fire_and_forget TabPage::RecenterVR(
+VisorVR::fire_and_forget TabPage::RecenterVR(
   const IInspectable&,
   const RoutedEventArgs&) {
   co_await mKneeboard->PostUserAction(UserAction::RECENTER_VR);
 }
 
-OpenKneeboard::fire_and_forget TabPage::GoToInputBindings(
+VisorVR::fire_and_forget TabPage::GoToInputBindings(
   const IInspectable&,
   const RoutedEventArgs&) {
   co_await LaunchURI(SpecialURIs::SettingsInput());
 }
 
-OpenKneeboard::fire_and_forget TabPage::UpdateToolbar() {
+VisorVR::fire_and_forget TabPage::UpdateToolbar() {
   co_await mUIThread;
 
   auto primary = CommandBar().PrimaryCommands();
@@ -455,7 +455,7 @@ OpenKneeboard::fire_and_forget TabPage::UpdateToolbar() {
   // VisorVR: the panel header (icon / name / live badge) and the
   // Preview <-> Settings switch live outside the command bar.
   if (const auto tab = mTabView->GetTab().lock()) {
-    winrt::OpenKneeboardApp::TabUIData tabData;
+    winrt::VisorVRApp::TabUIData tabData;
     tabData.InstanceID(tab->GetRuntimeID().GetTemporaryValue());
     SettingsContent().Content(tabData);
   }
@@ -524,7 +524,7 @@ void TabPage::OnCanvasSizeChanged(
   const IInspectable&,
   const SizeChangedEventArgs& args) noexcept {
   auto size = args.NewSize();
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity,
     "TabPage::OnCanvasSizeChanged()",
     TraceLoggingPointer(this, "this"),
@@ -544,7 +544,7 @@ void TabPage::OnCanvasSizeChanged(
 }
 
 void TabPage::ResizeSwapChain() {
-  OPENKNEEBOARD_TraceLoggingScope("TabPage::ResizeSwapChain()");
+  VISORVR_TraceLoggingScope("TabPage::ResizeSwapChain()");
 
   // Can't resize swapchain if there are any reference to its' members
   mCanvas = {};
@@ -565,7 +565,7 @@ void TabPage::ResizeSwapChain() {
 }
 
 void TabPage::InitializeSwapChain() {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "TabPage::InitializeSwapChain()",
     TraceLoggingPointer(this, "this"),
     TraceLoggingValue(mPanelDimensions.mWidth, "Width"),
@@ -584,7 +584,7 @@ void TabPage::InitializeSwapChain() {
   // frame will stall until that has completed.
   //
   // We could avoid this by using frame pacing, but we want to decouple the
-  // frame rates - if you're on a 30hz or 60hz monitor, OpenKneeboard should
+  // frame rates - if you're on a 30hz or 60hz monitor, VisorVR should
   // still be able to push VR frames at 90hz
   //
   // So, triple-buffer
@@ -614,22 +614,22 @@ void TabPage::PaintLater() {
 
 task<void> TabPage::PaintNow(std::source_location loc) noexcept {
   if (!mTabView) {
-    OPENKNEEBOARD_TraceLoggingWrite("TabPage::PaintNow()/NoTabView");
+    VISORVR_TraceLoggingWrite("TabPage::PaintNow()/NoTabView");
     co_return;
   }
   const auto rootTab = mTabView->GetRootTab().lock();
   if (!rootTab) {
-    OPENKNEEBOARD_TraceLoggingWrite("TabPage::PaintNow()/StaleTab");
+    VISORVR_TraceLoggingWrite("TabPage::PaintNow()/StaleTab");
     co_return;
   }
-  OPENKNEEBOARD_TraceLoggingCoro(
+  VISORVR_TraceLoggingCoro(
     /*activity,*/
     "TabPage::PaintNow()",
     TraceLoggingPointer(this, "this"),
     TraceLoggingValue(rootTab->GetTitle().c_str(), "TabTitle"),
     TraceLoggingValue(
       to_hstring(rootTab->GetPersistentID()).c_str(), "TabGUID"),
-    OPENKNEEBOARD_TraceLoggingSourceLocation(loc));
+    VISORVR_TraceLoggingSourceLocation(loc));
   // TODO: support 'stop with result' for coros
   if (!mPanelDimensions) {
     co_return;
@@ -648,7 +648,7 @@ task<void> TabPage::PaintNow(std::source_location loc) noexcept {
 
   const std::unique_lock lock(*mDXR);
   const auto cleanup = scope_exit([this]() {
-    OPENKNEEBOARD_TraceLoggingScope("TabPage/Present()");
+    VISORVR_TraceLoggingScope("TabPage/Present()");
     mSwapChain->Present(0, 0);
     mNeedsFrame = false;
   });
@@ -698,7 +698,7 @@ task<void> TabPage::PaintNow(std::source_location loc) noexcept {
     co_return;
   }
   if (tab->GetPageCount()) {
-    OPENKNEEBOARD_TraceLoggingCoro("TabPage/RenderPage");
+    VISORVR_TraceLoggingCoro("TabPage/RenderPage");
     co_await tab->RenderPage(
       RenderContext {
         mRenderTarget.get(),
@@ -738,7 +738,7 @@ task<void> TabPage::PaintNow(std::source_location loc) noexcept {
 }
 
 TabPage::PageMetrics TabPage::GetPageMetrics() {
-  OPENKNEEBOARD_ASSERT(
+  VISORVR_ASSERT(
     mTabView, "Attempt to fetch Page Metrics without a TabView");
 
   const auto preferredSize =
@@ -840,4 +840,4 @@ void TabPage::EnqueueCursorEvent(const CursorEvent& ev) {
   mHaveCursorEvents = true;
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

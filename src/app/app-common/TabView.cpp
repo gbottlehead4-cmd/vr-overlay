@@ -4,19 +4,19 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/IPageSourceWithCursorEvents.hpp>
-#include <OpenKneeboard/IPageSourceWithNavigation.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/NavigationTab.hpp>
-#include <OpenKneeboard/TabView.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/IPageSourceWithCursorEvents.hpp>
+#include <VisorVR/IPageSourceWithNavigation.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/NavigationTab.hpp>
+#include <VisorVR/TabView.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabView::TabView(
   const audited_ptr<DXResources>& dxr,
@@ -240,7 +240,7 @@ bool TabView::SupportsTabMode(TabMode mode) const {
     }
   }
   // above switch should be exhaustive
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
   return false;
 }
 
@@ -263,7 +263,7 @@ bool TabView::SetTabMode(TabMode mode) {
     case TabMode::Normal:
       break;
     case TabMode::Navigation: {
-      OPENKNEEBOARD_TraceLoggingScope(
+      VISORVR_TraceLoggingScope(
         "TabView::SetTabMode(TabMode::Navigation)");
       auto tab = mRootTab.lock();
       if (!tab) {
@@ -300,7 +300,7 @@ bool TabView::SetTabMode(TabMode mode) {
 
   if (mode != TabMode::Normal && !mActiveSubTab) {
     // Switch should have been exhaustive
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
 
   evPageChangedEvent.Emit();
@@ -311,4 +311,4 @@ bool TabView::SetTabMode(TabMode mode) {
   return true;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

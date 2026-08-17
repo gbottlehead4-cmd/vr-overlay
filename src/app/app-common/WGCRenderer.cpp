@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
-#include <OpenKneeboard/WGCRenderer.hpp>
-#include <OpenKneeboard/WindowCaptureControl.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
+#include <VisorVR/WGCRenderer.hpp>
+#include <VisorVR/WindowCaptureControl.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/winrt/Microsoft.UI.Interop.h>
 
@@ -43,7 +43,7 @@
 namespace WGC = winrt::Windows::Graphics::Capture;
 namespace WGDX = winrt::Windows::Graphics::DirectX;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 task<void> WGCRenderer::Init() {
   const auto keepAlive = shared_from_this();
@@ -94,7 +94,7 @@ task<void> WGCRenderer::Init() {
   if (size.Width < 1 || size.Height < 1) {
     dprint.Warning(
       "WGC width ({}) or height ({}) < 1", size.Width, size.Height);
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return;
   }
 
@@ -137,15 +137,15 @@ WGCRenderer::WGCRenderer(
   }
 
   AddEventListener(
-    kneeboard->evFrameTimerPreEvent, [this]() { this->PreOKBFrame(); });
+    kneeboard->evFrameTimerPreEvent, [this]() { this->PreVVRFrame(); });
 }
 
 WGCRenderer::~WGCRenderer() {
-  OPENKNEEBOARD_TraceLoggingWrite("WGCRenderer::~WGCRenderer");
+  VISORVR_TraceLoggingWrite("WGCRenderer::~WGCRenderer");
 }
 
 task<void> WGCRenderer::DisposeAsync() noexcept {
-  OPENKNEEBOARD_TraceLoggingCoro("WGCRenderer::DisposeAsync");
+  VISORVR_TraceLoggingCoro("WGCRenderer::DisposeAsync");
   const auto disposing = co_await mDisposal.StartOnce();
   if (!disposing) {
     co_return;
@@ -211,7 +211,7 @@ void WGCRenderer::Render(RenderTarget* rt, const PixelRect& rect) {
 
 void WGCRenderer::OnWGCFrame(
   winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frame) {
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity, "WGCRenderer::OnWGCFrame()");
 
   const auto keepAlive = shared_from_this();
@@ -237,7 +237,7 @@ void WGCRenderer::OnWGCFrame(
       });
 
   if (swapchainDimensions != mSwapchainDimensions) {
-    OPENKNEEBOARD_TraceLoggingScope(
+    VISORVR_TraceLoggingScope(
       "WGCRenderer::OnWGCFrame()/RecreatePool",
       TraceLoggingValue(swapchainDimensions.mWidth, "Width"),
       TraceLoggingValue(swapchainDimensions.mHeight, "Height"));
@@ -269,7 +269,7 @@ void WGCRenderer::OnWGCFrame(
   }
 
   if (!mTexture) {
-    OPENKNEEBOARD_TraceLoggingScope("WGCRenderer::OnWGCFrame()/CreateTexture");
+    VISORVR_TraceLoggingScope("WGCRenderer::OnWGCFrame()/CreateTexture");
     std::unique_lock lock(*mDXR);
     auto desc = surfaceDesc;
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -298,7 +298,7 @@ void WGCRenderer::OnWGCFrame(
   this->evNeedsRepaintEvent.Emit();
 }
 
-void WGCRenderer::PreOKBFrame() {
+void WGCRenderer::PreVVRFrame() {
   if (!mFramePool) {
     return;
   }
@@ -309,8 +309,8 @@ void WGCRenderer::PreOKBFrame() {
   }
 }
 
-OpenKneeboard::fire_and_forget WGCRenderer::ForceResize(PixelSize size) {
-  OPENKNEEBOARD_TraceLoggingCoro(
+VisorVR::fire_and_forget WGCRenderer::ForceResize(PixelSize size) {
+  VISORVR_TraceLoggingCoro(
     "WGCRenderer::ForceResize()",
     TraceLoggingValue(size.mWidth, "Width"),
     TraceLoggingValue(size.mHeight, "Height"));
@@ -323,4 +323,4 @@ OpenKneeboard::fire_and_forget WGCRenderer::ForceResize(PixelSize size) {
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

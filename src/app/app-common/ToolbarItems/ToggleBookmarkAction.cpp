@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/ToggleBookmarkAction.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/ToggleBookmarkAction.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ToggleBookmarkAction::ToggleBookmarkAction(
   KneeboardState* kneeboardState,
@@ -87,4 +87,4 @@ task<void> ToggleBookmarkAction::Execute() {
   co_await ToolbarToggleAction::Execute();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

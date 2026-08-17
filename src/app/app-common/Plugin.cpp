@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Plugin.hpp>
+#include <VisorVR/Plugin.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/json.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -15,7 +15,7 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Storage.Streams.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::string Plugin::GetIDHash() const noexcept {
   using namespace winrt::Windows::Security::Cryptography::Core;
@@ -34,7 +34,7 @@ std::string Plugin::GetIDHash() const noexcept {
       EncodeToHexString(hashObj.GetValueAndReset()));
 }
 
-OPENKNEEBOARD_DEFINE_JSON(
+VISORVR_DEFINE_JSON(
   Plugin::Metadata,
   mPluginName,
   mPluginReadableVersion,
@@ -44,7 +44,7 @@ OPENKNEEBOARD_DEFINE_JSON(
   mAuthor,
   mWebsite)
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(Plugin::CustomAction, mID, mName)
+VISORVR_DEFINE_SPARSE_JSON(Plugin::CustomAction, mID, mName)
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
   Plugin::TabType::Implementation,
@@ -54,7 +54,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      "WebBrowser",
    }})
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   Plugin::TabType::WebBrowserArgs,
   mURI,
   mInitialSize);
@@ -95,7 +95,7 @@ void to_json(nlohmann::json& j, const Plugin::TabType::ImplementationArgs& v) {
     return;
   }
 
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
 }
 
 template <>
@@ -117,7 +117,7 @@ void to_json_postprocess<Plugin::TabType>(
   }
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   Plugin::TabType,
   mID,
   mName,
@@ -126,6 +126,6 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mCustomActions,
   mImplementation)
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(Plugin, mID, mMetadata, mTabTypes)
+VISORVR_DEFINE_SPARSE_JSON(Plugin, mID, mMetadata, mTabTypes)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -4,15 +4,15 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/ProfileSettings.hpp>
-#include <OpenKneeboard/Settings.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/ProfileSettings.hpp>
+#include <VisorVR/Settings.hpp>
 
-#include <OpenKneeboard/json/VRSettings.hpp>
+#include <VisorVR/json/VRSettings.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -21,7 +21,7 @@
 #include <format>
 #include <fstream>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 template <class T>
 static void MaybeSetFromJSON(T& out, const std::filesystem::path& path) {
@@ -38,12 +38,12 @@ static void MaybeSetFromJSON(T& out, const std::filesystem::path& path) {
     if constexpr (std::same_as<T, nlohmann::json>) {
       out = json;
     } else {
-      OpenKneeboard::from_json(json, out);
+      VisorVR::from_json(json, out);
     }
   } catch (const nlohmann::json::exception& e) {
     dprint(
       "Error reading JSON from file '{}': {}", fullPath.string(), e.what());
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
 }
 
@@ -129,11 +129,11 @@ void Settings::Save(
 
 #define IT(cpptype, x) \
   MaybeSaveJSON(parentSettings.m##x, this->m##x, profileDir / #x ".json");
-  OPENKNEEBOARD_PER_PROFILE_SETTINGS_SECTIONS
+  VISORVR_PER_PROFILE_SETTINGS_SECTIONS
 #undef IT
 #define IT(cpptype, x) \
   MaybeSaveJSON(parentSettings.m##x, this->m##x, #x ".json");
-  OPENKNEEBOARD_GLOBAL_SETTINGS_SECTIONS
+  VISORVR_GLOBAL_SETTINGS_SECTIONS
 #undef IT
 }
 
@@ -149,7 +149,7 @@ void from_json_postprocess<Settings>(const nlohmann::json& j, Settings& s) {
   }
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   Settings,
   mTabs,
   mApp,
@@ -179,10 +179,10 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
     name, \
     "Profiles" / ProfileSettings::Profile::GetDirectoryName(activeProfile) \
       / #name ".json")
-OPENKNEEBOARD_PER_PROFILE_SETTINGS_SECTIONS
+VISORVR_PER_PROFILE_SETTINGS_SECTIONS
 #undef IT
 #define IT(cpptype, name) RESET_IT(cpptype, name, #name ".json")
-OPENKNEEBOARD_GLOBAL_SETTINGS_SECTIONS
+VISORVR_GLOBAL_SETTINGS_SECTIONS
 #undef IT
 #undef RESET_IT
 
@@ -267,10 +267,10 @@ Settings Settings::Load(
     / ProfileSettings::Profile::GetDirectoryName(activeProfile);
 
 #define IT(cpptype, x) MaybeSetFromJSON(settings.m##x, profileDir / #x ".json");
-  OPENKNEEBOARD_PER_PROFILE_SETTINGS_SECTIONS
+  VISORVR_PER_PROFILE_SETTINGS_SECTIONS
 #undef IT
 #define IT(cpptype, x) MaybeSetFromJSON(settings.m##x, #x ".json");
-  OPENKNEEBOARD_GLOBAL_SETTINGS_SECTIONS
+  VISORVR_GLOBAL_SETTINGS_SECTIONS
 #undef IT
 
   if (
@@ -306,9 +306,9 @@ Settings Settings::Load(
   MessageBoxW(
     nullptr,
     wideMessage.c_str(),
-    L"OpenKneeboard",
+    L"VisorVR",
     MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
   return Settings {};
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

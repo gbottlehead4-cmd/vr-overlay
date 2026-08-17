@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <OpenKneeboard/bitflags.hpp>
+#include <VisorVR/bitflags.hpp>
 
 #include <Windows.h>
 
-namespace OpenKneeboard::DDS {
+namespace VisorVR::DDS {
 
 static constexpr char Magic[] {'D', 'D', 'S', ' '};
 
@@ -68,4 +68,4 @@ constexpr bool supports_bitflags(Header::Flags) { return true; }
 
 constexpr bool supports_bitflags(Header::Caps) { return true; }
 
-}// namespace OpenKneeboard::DDS
+}// namespace VisorVR::DDS

@@ -13,14 +13,14 @@
 
 #include "Globals.h"
 
-#include <OpenKneeboard/KneeboardState.hpp>
+#include <VisorVR/KneeboardState.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/version.hpp>
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 SettingsPage::SettingsPage() { InitializeComponent(); }
 
@@ -43,8 +43,8 @@ void SettingsPage::OnItemClick(
   IT(Advanced)
 #undef IT
 
-  OPENKNEEBOARD_BREAK;
-}// namespace winrt::OpenKneeboardApp::implementation
+  VISORVR_BREAK;
+}// namespace winrt::VisorVRApp::implementation
 
 hstring SettingsSubpageData::Title() { return mTitle; }
 
@@ -60,4 +60,4 @@ void SettingsSubpageData::Description(hstring const& value) {
   mDescription = value;
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

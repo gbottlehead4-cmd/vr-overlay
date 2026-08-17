@@ -14,18 +14,18 @@
 #include "FilePicker.h"
 #include "Globals.h"
 
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
-#include <OpenKneeboard/SHM/ActiveConsumers.hpp>
-#include <OpenKneeboard/Settings.hpp>
-#include <OpenKneeboard/TroubleshootingStore.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/LaunchURI.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
+#include <VisorVR/SHM/ActiveConsumers.hpp>
+#include <VisorVR/Settings.hpp>
+#include <VisorVR/TroubleshootingStore.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/utf8.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/utf8.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -48,7 +48,7 @@
 #include <time.h>
 #include <zip.h>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 namespace {
 enum class RegistryView {
@@ -76,14 +76,14 @@ std::expected<std::wstring, LSTATUS> GetRegistryStringValue(
   const auto result = RegGetValueW(
     hkey, subKey, value, flags, nullptr, buffer.data(), &byteCount);
   if (result != ERROR_SUCCESS) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return std::unexpected {result};
   }
   return {buffer};
 }
 }// namespace
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 bool HelpPage::mAgreedToPrivacyWarning = false;
 
@@ -93,7 +93,7 @@ HelpPage::HelpPage() {
   this->PopulateVersion();
   this->PopulateLicenses();
 
-  QuickStartLink().Click([]() -> OpenKneeboard::fire_and_forget {
+  QuickStartLink().Click([]() -> VisorVR::fire_and_forget {
     const auto quickStartPath =
       RuntimeFiles::GetInstallationDirectory() / RuntimeFiles::QUICK_START_PDF;
 
@@ -105,7 +105,7 @@ HelpPage::~HelpPage() { this->RemoveAllEventListeners(); }
 
 void HelpPage::PopulateVersion() {
   auto details = std::format(
-    "OpenKneeboard {}\n\n"
+    "VisorVR {}\n\n"
     "Copyright © 2021-2024 Frederick Emmott.\n\n"
     "With thanks to Paul 'Goldwolf' Whittingham for the logo and banner "
     "artwork.\n\n"
@@ -155,7 +155,7 @@ auto ReadableTime(const std::chrono::time_point<C, T>& time) {
     std::chrono::time_point_cast<std::chrono::seconds>(time));
 }
 
-OpenKneeboard::fire_and_forget HelpPage::OnExportClick(
+VisorVR::fire_and_forget HelpPage::OnExportClick(
   IInspectable,
   RoutedEventArgs) noexcept {
   constexpr winrt::guid thisCall {
@@ -170,7 +170,7 @@ OpenKneeboard::fire_and_forget HelpPage::OnExportClick(
   picker.AppendFileType(_(L"Zip archive"), {L".zip"});
   picker.SuggestedFileName(
     std::format(
-      L"OpenKneeboard-v{}.{}.{}.{}-{:%Y%m%dT%H%M}.zip",
+      L"VisorVR-v{}.{}.{}.{}-{:%Y%m%dT%H%M}.zip",
       Version::Major,
       Version::Minor,
       Version::Patch,
@@ -242,7 +242,7 @@ OpenKneeboard::fire_and_forget HelpPage::OnExportClick(
 
     const auto relative =
       to_utf8(std::filesystem::proximate(path, settingsDir).generic_wstring());
-    // v1.8 and below; PID etc. Now in %LOCALAPPDATA% / OpenKneeboard /
+    // v1.8 and below; PID etc. Now in %LOCALAPPDATA% / VisorVR /
     // instance.txt
     if (relative == ".instance") {
       continue;
@@ -268,7 +268,7 @@ OpenKneeboard::fire_and_forget HelpPage::OnExportClick(
       for (const auto entry:
            std::filesystem::recursive_directory_iterator(crashDumps)) {
         if (entry.path().filename().wstring().starts_with(
-              L"OpenKneeboardApp.exe")) {
+              L"VisorVRApp.exe")) {
           dumps.push_back({entry.path(), entry.last_write_time()});
         }
       }
@@ -287,7 +287,7 @@ OpenKneeboard::fire_and_forget HelpPage::OnExportClick(
     }
 
     if (path.extension() != ".txt") {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       continue;
     }
 
@@ -316,7 +316,7 @@ OpenKneeboard::fire_and_forget HelpPage::OnExportClick(
   }
 }
 
-OpenKneeboard::fire_and_forget HelpPage::OnCheckForUpdatesClick(
+VisorVR::fire_and_forget HelpPage::OnCheckForUpdatesClick(
   IInspectable,
   RoutedEventArgs) noexcept {
   co_await CheckForUpdates(UpdateCheckType::Manual, this->XamlRoot());
@@ -342,12 +342,12 @@ void HelpPage::PopulateLicenses() noexcept {
       children.Append(link);
     };
 
-  addEntry("OpenKneeboard", docDir / "LICENSE.txt");
+  addEntry("VisorVR (OpenKneeboard Public License)", docDir / "LICENSE.txt");
 
   Controls::TextBlock ackBlock;
   ackBlock.TextWrapping(TextWrapping::WrapWholeWords);
   ackBlock.Text(
-    _(L"OpenKneeboard uses and includes software from the following "
+    _(L"VisorVR uses and includes software from the following "
       L"projects:"));
   children.Append(ackBlock);
 
@@ -740,4 +740,4 @@ void HelpPage::DisplayLicense(
   ShellExecuteW(NULL, L"open", path.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/BookmarksUILayer.hpp>
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
+#include <VisorVR/BookmarksUILayer.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/KneeboardState.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::shared_ptr<BookmarksUILayer> BookmarksUILayer::Create(
   const audited_ptr<DXResources>& dxr,
@@ -137,7 +137,7 @@ task<void> BookmarksUILayer::Render(
   const IUILayer::NextList& next,
   const Context& context,
   const PixelRect& rect) {
-  OPENKNEEBOARD_TraceLoggingScope("BookmarksUILayer::Render()");
+  VISORVR_TraceLoggingScope("BookmarksUILayer::Render()");
   auto [first, rest] = Split(next);
 
   if (!this->IsEnabled()) {
@@ -305,4 +305,4 @@ void BookmarksUILayer::OnClick(const Button& button) {
   tabView->SetPageID(button.mBookmark.mPageID);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

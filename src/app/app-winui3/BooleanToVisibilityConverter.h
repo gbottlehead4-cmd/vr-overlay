@@ -10,7 +10,7 @@
 #include "BooleanToVisibilityConverter.g.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct BooleanToVisibilityConverter
   : BooleanToVisibilityConverterT<BooleanToVisibilityConverter> {
   BooleanToVisibilityConverter() = default;
@@ -26,10 +26,10 @@ struct BooleanToVisibilityConverter
     winrt::Windows::Foundation::IInspectable const& parameter,
     hstring const& language);
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct BooleanToVisibilityConverter
   : BooleanToVisibilityConverterT<
       BooleanToVisibilityConverter,
       implementation::BooleanToVisibilityConverter> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

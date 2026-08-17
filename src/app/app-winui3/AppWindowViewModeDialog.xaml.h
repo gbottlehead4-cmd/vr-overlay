@@ -14,7 +14,7 @@ using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct AppWindowViewModeDialog
   : AppWindowViewModeDialogT<AppWindowViewModeDialog> {
   AppWindowViewModeDialog();
@@ -23,10 +23,10 @@ struct AppWindowViewModeDialog
   uint8_t SelectedMode(ContentDialogResult) const noexcept;
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct AppWindowViewModeDialog : AppWindowViewModeDialogT<
                                    AppWindowViewModeDialog,
                                    implementation::AppWindowViewModeDialog> {};
 
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

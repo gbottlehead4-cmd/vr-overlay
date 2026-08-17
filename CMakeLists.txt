@@ -128,7 +128,7 @@ endif ()
 
 set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo)
 
-project(OpenKneeboard VERSION 1.13.0.${VERSION_BUILD} LANGUAGES CXX C)
+project(VisorVR VERSION 1.13.0.${VERSION_BUILD} LANGUAGES CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(smol_binaries)
 
@@ -153,7 +153,7 @@ set(BUILD_OUT_PDBDIR "${BUILD_OUT_ROOT}/pdb")
 math(EXPR OPENXR_API_LAYER_IMPLEMENTATION_VERSION "(${CMAKE_PROJECT_VERSION_MAJOR} << 24) | ${CMAKE_PROJECT_VERSION_MINOR}")
 message(STATUS "OpenXR API layer implementation version: ${OPENXR_API_LAYER_IMPLEMENTATION_VERSION}")
 
-message(STATUS "Building OpenKneeboard v${CMAKE_PROJECT_VERSION}")
+message(STATUS "Building VisorVR v${CMAKE_PROJECT_VERSION}")
 
 message(STATUS "CMake Generator: ${CMAKE_GENERATOR}")
 
@@ -228,7 +228,7 @@ else ()
   set(BUILD_IS_64BIT ON CACHE INTERNAL "")
 endif ()
 
-option(OKB_SKIP_32BIT "Dev: skip the 32-bit companion build (iRacing is 64-bit)" OFF)
+option(VVR_SKIP_32BIT "Dev: skip the 32-bit companion build (iRacing is 64-bit)" OFF)
 option(ENABLE_APP "Build the main app, not just the injectables" ON)
 option(ENABLE_APP_COMMON "Build the main app excluding the GUI, not just the injectables" "${ENABLE_APP}")
 
@@ -250,8 +250,8 @@ endif ()
 add_subdirectory("src")
 
 # MUST be set in this CMakeLists.txt to work, not a subfolder
-set_property(GLOBAL PROPERTY VS_STARTUP_PROJECT OpenKneeboard-App-WinUI3)
+set_property(GLOBAL PROPERTY VS_STARTUP_PROJECT VisorVR-App-WinUI3)
 
 ok_add_license_file(LICENSE LICENSE.txt)
 
-add_subdirectory(OpenKneeboard-Installer)
+add_subdirectory(VisorVR-Installer)

@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/DoodleRenderer.hpp>
-#include <OpenKneeboard/EndlessNotebookTab.hpp>
-#include <OpenKneeboard/FilePageSource.hpp>
+#include <VisorVR/DoodleRenderer.hpp>
+#include <VisorVR/EndlessNotebookTab.hpp>
+#include <VisorVR/FilePageSource.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/nlohmann/json.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::optional<std::string> EndlessNotebookTab::GetPersistentIDForPage(
   PageID) const {
@@ -216,4 +216,4 @@ void EndlessNotebookTab::ClearUserInput() {
   evAvailableFeaturesChangedEvent.Emit();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

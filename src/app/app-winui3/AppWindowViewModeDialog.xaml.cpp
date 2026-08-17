@@ -10,15 +10,15 @@
 #include "AppWindowViewModeDialog.g.cpp"
 // clang-format on
 
-#include <OpenKneeboard/ViewsSettings.hpp>
+#include <VisorVR/ViewsSettings.hpp>
 
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <format>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 AppWindowViewModeDialog::AppWindowViewModeDialog() { InitializeComponent(); }
 
@@ -26,7 +26,7 @@ AppWindowViewModeDialog::~AppWindowViewModeDialog() = default;
 
 uint8_t AppWindowViewModeDialog::SelectedMode(
   ContentDialogResult result) const noexcept {
-  using OpenKneeboard::AppWindowViewMode;
+  using VisorVR::AppWindowViewMode;
   switch (result) {
     case ContentDialogResult::Primary:
       return static_cast<uint8_t>(AppWindowViewMode::ActiveView);
@@ -37,4 +37,4 @@ uint8_t AppWindowViewModeDialog::SelectedMode(
   }
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

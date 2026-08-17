@@ -9,13 +9,13 @@
 #include "MainWindow.g.h"
 #include "WithPropertyChangedEvent.h"
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/Bookmark.hpp>
-#include <OpenKneeboard/Events.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/Bookmark.hpp>
+#include <VisorVR/Events.hpp>
+#include <VisorVR/KneeboardView.hpp>
 
-#include <OpenKneeboard/audited_ptr.hpp>
-#include <OpenKneeboard/single_threaded_lockable.hpp>
+#include <VisorVR/audited_ptr.hpp>
+#include <VisorVR/single_threaded_lockable.hpp>
 
 #include <memory>
 #include <thread>
@@ -24,12 +24,12 @@ using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Navigation;
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct MainWindow : MainWindowT<MainWindow>,
                     EventReceiver,
-                    OpenKneeboard::WithPropertyChangedEvent,
+                    VisorVR::WithPropertyChangedEvent,
                     IHasDisposeAsync {
   MainWindow();
   ~MainWindow();
@@ -107,21 +107,21 @@ struct MainWindow : MainWindowT<MainWindow>,
 
   std::vector<EventHandlerToken> mTabsEvents;
 
-  OpenKneeboard::fire_and_forget LaunchOpenKneeboardURI(std::string_view);
-  OpenKneeboard::fire_and_forget OnTabChanged() noexcept;
-  OpenKneeboard::fire_and_forget OnTabsChanged();
-  OpenKneeboard::fire_and_forget OnTabSettingsChanged(std::shared_ptr<ITab>);
-  OpenKneeboard::fire_and_forget OnAPIEvent(APIEvent);
-  OpenKneeboard::fire_and_forget OnLoaded();
+  VisorVR::fire_and_forget LaunchVisorVRURI(std::string_view);
+  VisorVR::fire_and_forget OnTabChanged() noexcept;
+  VisorVR::fire_and_forget OnTabsChanged();
+  VisorVR::fire_and_forget OnTabSettingsChanged(std::shared_ptr<ITab>);
+  VisorVR::fire_and_forget OnAPIEvent(APIEvent);
+  VisorVR::fire_and_forget OnLoaded();
   task<void> PromptForViewMode();
-  OpenKneeboard::fire_and_forget UpdateProfileSwitcherVisibility();
-  OpenKneeboard::fire_and_forget RenameTab(std::shared_ptr<ITab>);
+  VisorVR::fire_and_forget UpdateProfileSwitcherVisibility();
+  VisorVR::fire_and_forget RenameTab(std::shared_ptr<ITab>);
   void TriggerApplicationExit();
 
   void CheckForElevatedConsumer();
-  OpenKneeboard::fire_and_forget ShowWarningIfElevated(DWORD pid);
+  VisorVR::fire_and_forget ShowWarningIfElevated(DWORD pid);
 
-  OpenKneeboard::fire_and_forget
+  VisorVR::fire_and_forget
   RenameBookmark(std::shared_ptr<ITab>, Bookmark, winrt::hstring title);
 
   void SaveWindowPosition();
@@ -152,8 +152,8 @@ struct MainWindow : MainWindowT<MainWindow>,
 
   void ResetKneeboardView();
 };
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation
 
-namespace winrt::OpenKneeboardApp::factory_implementation {
+namespace winrt::VisorVRApp::factory_implementation {
 struct MainWindow : MainWindowT<MainWindow, implementation::MainWindow> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

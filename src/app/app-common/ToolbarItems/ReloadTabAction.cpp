@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/ReloadTabAction.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabsList.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/ReloadTabAction.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabsList.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ReloadTabAction::ReloadTabAction(
   KneeboardState* kbs,
@@ -75,4 +75,4 @@ std::string_view ReloadTabAction::GetCancelButtonLabel() const {
   return _("Cancel");
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

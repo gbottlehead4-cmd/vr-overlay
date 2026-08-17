@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/UserInputButtonBinding.hpp>
-#include <OpenKneeboard/UserInputButtonEvent.hpp>
-#include <OpenKneeboard/UserInputDevice.hpp>
+#include <VisorVR/UserInputButtonBinding.hpp>
+#include <VisorVR/UserInputButtonEvent.hpp>
+#include <VisorVR/UserInputDevice.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 UserInputDevice::UserInputDevice() {
   AddEventListener(
@@ -54,4 +54,4 @@ void UserInputDevice::OnButtonEvent(UserInputButtonEvent ev) {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

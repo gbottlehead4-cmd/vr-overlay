@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <Fragment>
+        <DirectoryRef Id="INSTALLDIR">
+            <Component Id="OpenKneeboardPlugin_FileType" Guid="{19114ecc-d339-4109-a94d-a069b9fb808a}">
+                <RegistryValue
+                    Root="HKLM"
+                    Key="SOFTWARE\Classes\VisorVR.Plugin"
+                    Name="FriendlyTypeName"
+                    Value="VisorVR Plugin"
+                    Type="string"
+                    KeyPath="yes"
+                />
+                <RegistryValue
+                    Root="HKLM"
+                    Key="SOFTWARE\Classes\VisorVR.Plugin\shell\open"
+                    Name="FriendlyAppName"
+                    Value="VisorVR"
+                    Type="string"
+                />
+                <ProgId
+                    Id="VisorVR"
+                    Icon="File_Bin_VisorVRApp_exe"
+                    IconIndex="0">
+                    <ProgId Id="VisorVR.Plugin">
+                        <Extension
+                            Id="OpenKneeboardPlugin"
+                            Advertise="no"
+                            ContentType="application/x.visorvr.plugin" >
+                            <Verb
+                                Id="open"
+                                Command="Open"
+                                TargetFile="File_Bin_VisorVRApp_exe"
+                                Argument="--plugin &quot;%1&quot;"
+                            />
+                        </Extension>
+                    </ProgId>
+                </ProgId>
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+</Wix>

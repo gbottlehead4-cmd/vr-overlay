@@ -5,10 +5,10 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/IHasDebugInformation.hpp>
+#include <VisorVR/IHasDebugInformation.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 IHasDebugInformation::~IHasDebugInformation() = default;
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

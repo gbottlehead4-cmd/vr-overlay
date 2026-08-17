@@ -4,7 +4,7 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/LaunchURI.hpp>
+#include <VisorVR/LaunchURI.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -24,7 +24,7 @@ auto& Handlers() {
 }
 }// namespace
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 void RegisterURIHandler(
   std::string_view schemeName,
@@ -50,12 +50,12 @@ task<void> LaunchURI(std::string_view uriStr) {
   ShellExecuteW(NULL, L"open", uriWstr.c_str(), nullptr, nullptr, SW_NORMAL);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
-namespace OpenKneeboard::SpecialURIs {
+namespace VisorVR::SpecialURIs {
 
 std::string_view SettingsInput() {
   static auto value = std::format("{}:///{}", Scheme, Paths::SettingsInput);
   return value;
 }
-}// namespace OpenKneeboard::SpecialURIs
+}// namespace VisorVR::SpecialURIs

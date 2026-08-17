@@ -4,8 +4,8 @@ set(
   enable-full-dumps.reg
   enable-mini-dumps.reg
   enable-log-files.reg
-  OpenKneeboard.wprp
-  OpenKneeboard-with-d3d11.wprp
+  VisorVR.wprp
+  VisorVR-with-d3d11.wprp
 )
 
 foreach (FILE IN LISTS SCRIPT_FILES)

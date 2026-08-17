@@ -24,48 +24,48 @@ endfunction()
 include(remote-control.cmake)
 
 add_utility_executable(
-  OpenKneeboard-Plugin-Tab-Action
+  VisorVR-Plugin-Tab-Action
   WIN32
   plugin-tab-action.cpp
 )
 target_link_libraries(
-  OpenKneeboard-Plugin-Tab-Action
+  VisorVR-Plugin-Tab-Action
   PRIVATE
-  OpenKneeboard-dprint
-  OpenKneeboard-APIEvent
-  OpenKneeboard-tracing
+  VisorVR-dprint
+  VisorVR-APIEvent
+  VisorVR-tracing
 )
 
 add_utility_executable(
-  OpenKneeboard-RemoteControl-SET_TAB
+  VisorVR-RemoteControl-SET_TAB
   WIN32
   set-tab-remote.cpp
   remote-traceprovider.cpp
 )
 target_link_libraries(
-  OpenKneeboard-RemoteControl-SET_TAB
+  VisorVR-RemoteControl-SET_TAB
   PRIVATE
-  OpenKneeboard-dprint
-  OpenKneeboard-APIEvent
-  OpenKneeboard-tracing
+  VisorVR-dprint
+  VisorVR-APIEvent
+  VisorVR-tracing
 )
 
 add_utility_executable(
-  OpenKneeboard-RemoteControl-SET_PROFILE
+  VisorVR-RemoteControl-SET_PROFILE
   WIN32
   set-profile-remote.cpp
   remote-traceprovider.cpp
 )
 target_link_libraries(
-  OpenKneeboard-RemoteControl-SET_PROFILE
+  VisorVR-RemoteControl-SET_PROFILE
   PRIVATE
-  OpenKneeboard-APIEvent
-  OpenKneeboard-dprint
-  OpenKneeboard-tracing
+  VisorVR-APIEvent
+  VisorVR-dprint
+  VisorVR-tracing
 )
 
 add_utility_executable(
-  OpenKneeboard-Viewer
+  VisorVR-Viewer
   WIN32
   viewer.cpp
   viewer-settings.cpp
@@ -76,25 +76,25 @@ add_utility_executable(
   icon.rc
 )
 target_link_libraries(
-  OpenKneeboard-Viewer
+  VisorVR-Viewer
   PRIVATE
-  OpenKneeboard-fatal
-  OpenKneeboard-config
-  OpenKneeboard-D2DErrorRenderer
-  OpenKneeboard-D3D11
-  OpenKneeboard-D3D12
-  OpenKneeboard-Vulkan
-  OpenKneeboard-DXResources
-  OpenKneeboard-Filesystem
-  OpenKneeboard-APIEvent
-  OpenKneeboard-GetSystemColor
-  OpenKneeboard-RenderDoc
-  OpenKneeboard-SHM
-  OpenKneeboard-SHM-Client-D3D11
-  OpenKneeboard-SHM-Client-D3D12
-  OpenKneeboard-SHM-Client-Vulkan
-  OpenKneeboard-Viewer-Shaders
-  OpenKneeboard-scope_exit
+  VisorVR-fatal
+  VisorVR-config
+  VisorVR-D2DErrorRenderer
+  VisorVR-D3D11
+  VisorVR-D3D12
+  VisorVR-Vulkan
+  VisorVR-DXResources
+  VisorVR-Filesystem
+  VisorVR-APIEvent
+  VisorVR-GetSystemColor
+  VisorVR-RenderDoc
+  VisorVR-SHM
+  VisorVR-SHM-Client-D3D11
+  VisorVR-SHM-Client-D3D12
+  VisorVR-SHM-Client-Vulkan
+  VisorVR-Viewer-Shaders
+  VisorVR-scope_exit
   System::D2d1
   System::D3d11
   System::Dcomp
@@ -103,31 +103,31 @@ target_link_libraries(
 )
 
 add_helper_executable(
-  OpenKneeboard-OpenXR-Helper
+  VisorVR-OpenXR-Helper
   WIN32
   openxr-helper.cpp
   icon.rc
 )
 target_link_libraries(
-  OpenKneeboard-OpenXR-Helper
+  VisorVR-OpenXR-Helper
   PRIVATE
-  OpenKneeboard-RuntimeFiles
-  OpenKneeboard-dprint
+  VisorVR-RuntimeFiles
+  VisorVR-dprint
 )
 
 add_helper_executable(
-  OpenKneeboard-WindowCaptureHook-Helper
+  VisorVR-WindowCaptureHook-Helper
   WIN32
   32BIT_ONLY
   WindowCaptureHook-helper.cpp
 )
 target_link_libraries(
-  OpenKneeboard-WindowCaptureHook-Helper
+  VisorVR-WindowCaptureHook-Helper
   PRIVATE
-  OpenKneeboard-WindowCaptureControl
-  OpenKneeboard-consolelib
-  OpenKneeboard-dprint
-  OpenKneeboard-shims
+  VisorVR-WindowCaptureControl
+  VisorVR-consolelib
+  VisorVR-dprint
+  VisorVR-shims
   System::Shell32
 )
 
@@ -135,7 +135,7 @@ add_executable(capi-test capi-test.cpp)
 target_include_directories(
   capi-test
   PRIVATE
-  "$<TARGET_PROPERTY:OpenKneeboard-c-api,INTERFACE_INCLUDE_DIRECTORIES>")
+  "$<TARGET_PROPERTY:VisorVR-c-api,INTERFACE_INCLUDE_DIRECTORIES>")
 set_property(
   TARGET capi-test
   PROPERTY CXX_STANDARD 17)
@@ -144,7 +144,7 @@ ok_add_executable(symbolize-traces symbolize-traces.cpp)
 target_link_libraries(
   symbolize-traces
   PRIVATE
-  OpenKneeboard-shims
+  VisorVR-shims
   ThirdParty::DIA
   ThirdParty::WIL
 )
@@ -170,5 +170,5 @@ target_link_libraries(
   task-test
   PRIVATE
   ThirdParty::WIL
-  OpenKneeboard-task
+  VisorVR-task
 )

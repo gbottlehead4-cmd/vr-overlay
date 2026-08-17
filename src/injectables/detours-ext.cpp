@@ -6,13 +6,13 @@
 // OpenKneeboard repository.
 #include "detours-ext.hpp"
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <TlHelp32.h>
 
 #include <vector>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 namespace {
 
@@ -72,7 +72,7 @@ DetourTransaction::DetourTransaction() : p(std::make_unique<Impl>()) {
   Impl::mActive = true;
   if (!HeapLock(p->mHeap)) {
     dprint("Failed to lock heap: {:#x}", GetLastError());
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   DetourTransactionBegin();
@@ -103,7 +103,7 @@ DetourTransaction::~DetourTransaction() noexcept {
   Impl::mActive = false;
   if (!HeapUnlock(p->mHeap)) {
     dprint("Failed to unlock heap: {:#x}", GetLastError());
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
   // We need to resume the threads before doing *anything* else:
   // dprint/dprintf can malloc/new, which will deadlock

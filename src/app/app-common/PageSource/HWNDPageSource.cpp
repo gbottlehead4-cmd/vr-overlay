@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/HWNDPageSource.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
-#include <OpenKneeboard/WindowCaptureControl.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/HWNDPageSource.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
+#include <VisorVR/WindowCaptureControl.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/winrt/Microsoft.UI.Interop.h>
 
@@ -45,7 +45,7 @@ namespace WGDX = winrt::Windows::Graphics::DirectX;
 
 // TODO: error handling :)
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static UINT gControlMessage;
 
@@ -111,7 +111,7 @@ void HWNDPageSource::LogAdapter(HMONITOR monitor) {
           std::bit_cast<uint64_t>(adapterDesc.AdapterLuid)
           != mDXR->mAdapterLUID) {
           dprint.Warning(
-            "Capture adapter LUID {:#x} != OKB adapter LUID {:#x}",
+            "Capture adapter LUID {:#x} != VVR adapter LUID {:#x}",
             std::bit_cast<uint64_t>(adapterDesc.AdapterLuid),
             mDXR->mAdapterLUID);
         }
@@ -217,7 +217,7 @@ HWNDPageSource::CreateWGCaptureItem() {
   return item;
 }
 
-OpenKneeboard::fire_and_forget HWNDPageSource::InitializeInputHook() noexcept {
+VisorVR::fire_and_forget HWNDPageSource::InitializeInputHook() noexcept {
   auto weak = weak_from_this();
   co_await winrt::resume_after(std::chrono::milliseconds(100));
   auto self = weak.lock();
@@ -285,7 +285,7 @@ PixelRect HWNDPageSource::GetContentRect(const PixelSize& captureSize) const {
   if (mOptions.mCaptureArea != CaptureArea::ClientArea) {
     if (mOptions.mCaptureArea != CaptureArea::FullWindow) {
       dprint("Invalid capture area specified, defaulting to full window");
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
     }
     return {{0, 0}, captureSize};
   }
@@ -450,7 +450,7 @@ std::optional<PixelRect> HWNDPageSource::GetClientArea(
   const PixelSize& captureSize) const {
   if (mOptions.mCaptureArea != CaptureArea::ClientArea) {
     dprint("{} called, but capture area is not client area", __FUNCTION__);
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return {};
   }
 
@@ -562,4 +562,4 @@ std::optional<PageID> HWNDPageSource::GetPageIDFromPersistentID(
   return std::nullopt;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

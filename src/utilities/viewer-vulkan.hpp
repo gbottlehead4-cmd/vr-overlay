@@ -8,14 +8,14 @@
 
 #include "viewer.hpp"
 
-#include <OpenKneeboard/SHM/Vulkan.hpp>
-#include <OpenKneeboard/Vulkan/SpriteBatch.hpp>
+#include <VisorVR/SHM/Vulkan.hpp>
+#include <VisorVR/Vulkan/SpriteBatch.hpp>
 
 #include <wil/resource.h>
 
 #include <cinttypes>
 
-namespace OpenKneeboard::Viewer {
+namespace VisorVR::Viewer {
 class VulkanRenderer final : public Renderer {
  public:
   VulkanRenderer() = delete;
@@ -42,10 +42,10 @@ class VulkanRenderer final : public Renderer {
   wil::unique_hmodule mVulkanLoader;
 
   template <class T>
-  using unique_vk = OpenKneeboard::Vulkan::unique_vk<T>;
+  using unique_vk = VisorVR::Vulkan::unique_vk<T>;
 
   unique_vk<VkInstance> mVKInstance;
-  std::unique_ptr<OpenKneeboard::Vulkan::Dispatch> mVK;
+  std::unique_ptr<VisorVR::Vulkan::Dispatch> mVK;
 #ifdef DEBUG
   unique_vk<VkDebugUtilsMessengerEXT> mVKDebugMessenger;
 #endif
@@ -74,7 +74,7 @@ class VulkanRenderer final : public Renderer {
   // refcounting, we need to make sure these are released before the `unique_vk`
   // above.
   std::unique_ptr<SHM::Vulkan::Reader> mSHM;
-  std::unique_ptr<OpenKneeboard::Vulkan::SpriteBatch> mSpriteBatch;
+  std::unique_ptr<VisorVR::Vulkan::SpriteBatch> mSpriteBatch;
 
   void InitializeSemaphore(HANDLE);
   void InitializeDest(HANDLE, const PixelSize&);
@@ -88,4 +88,4 @@ class VulkanRenderer final : public Renderer {
     const std::filesystem::path&);
 };
 
-}// namespace OpenKneeboard::Viewer
+}// namespace VisorVR::Viewer

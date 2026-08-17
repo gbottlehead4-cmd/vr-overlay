@@ -17,7 +17,7 @@ using namespace winrt::Microsoft::UI::Xaml::Data;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
 using namespace winrt::Windows::Foundation;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct WindowPickerDialog : WindowPickerDialogT<WindowPickerDialog> {
   WindowPickerDialog();
   ~WindowPickerDialog();
@@ -59,7 +59,7 @@ struct WindowPickerUIData : WindowPickerUIDataT<WindowPickerUIData> {
   // ICustomPropertyProvider
 
   auto Type() const {
-    return xaml_typename<OpenKneeboardApp::WindowPickerUIData>();
+    return xaml_typename<VisorVRApp::WindowPickerUIData>();
   }
 
   auto GetCustomProperty(const auto&) { return ICustomProperty {nullptr}; }
@@ -77,8 +77,8 @@ struct WindowPickerUIData : WindowPickerUIDataT<WindowPickerUIData> {
   uint64_t mHwnd {};
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct WindowPickerDialog : WindowPickerDialogT<
                               WindowPickerDialog,
                               implementation::WindowPickerDialog> {};
@@ -87,4 +87,4 @@ struct WindowPickerUIData : WindowPickerUIDataT<
                               WindowPickerUIData,
                               implementation::WindowPickerUIData> {};
 
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

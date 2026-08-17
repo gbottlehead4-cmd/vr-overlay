@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/DebugPrivileges.hpp>
+#include <VisorVR/DebugPrivileges.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 static bool sHaveInstance = false;
 
 DebugPrivileges::DebugPrivileges() {
@@ -65,4 +65,4 @@ DebugPrivileges::~DebugPrivileges() {
   dprint("Released debug privileges");
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

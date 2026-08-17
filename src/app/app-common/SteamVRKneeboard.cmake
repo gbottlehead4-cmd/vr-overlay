@@ -1,28 +1,28 @@
 ok_add_library(
-  OpenKneeboard-SteamVRKneeboard
+  VisorVR-SteamVRKneeboard
   STATIC
   SteamVRKneeboard.cpp
 )
 target_link_libraries(
-  OpenKneeboard-SteamVRKneeboard
+  VisorVR-SteamVRKneeboard
   PUBLIC
-  OpenKneeboard-DXResources
-  OpenKneeboard-D3D11
-  OpenKneeboard-SHM-Client-D3D11
-  OpenKneeboard-VRKneeboard
-  OpenKneeboard-config
+  VisorVR-DXResources
+  VisorVR-D3D11
+  VisorVR-SHM-Client-D3D11
+  VisorVR-VRKneeboard
+  VisorVR-config
   ThirdParty::DirectXTK
   ThirdParty::OpenVR
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
 )
 target_link_libraries(
-  OpenKneeboard-SteamVRKneeboard
+  VisorVR-SteamVRKneeboard
   PRIVATE
-  OpenKneeboard-dprint
-  OpenKneeboard-EnumerateProcesses
+  VisorVR-dprint
+  VisorVR-EnumerateProcesses
 )
 target_include_directories(
-  OpenKneeboard-SteamVRKneeboard
+  VisorVR-SteamVRKneeboard
   PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )

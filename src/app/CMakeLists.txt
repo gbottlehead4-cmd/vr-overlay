@@ -6,4 +6,4 @@ endif ()
 
 add_subdirectory(app-winui3)
 
-add_dependencies(OpenKneeboard-App-WinUI3 runtime-dependencies)
+add_dependencies(VisorVR-App-WinUI3 runtime-dependencies)

@@ -6,17 +6,17 @@
 // OpenKneeboard repository.
 #pragma once
 
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/RenderTargetID.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/RenderTargetID.hpp>
 
-#include <OpenKneeboard/audited_ptr.hpp>
+#include <VisorVR/audited_ptr.hpp>
 
-#include <winrt/OpenKneeboardApp.h>
+#include <winrt/VisorVRApp.h>
 
 #include <memory>
 #include <vector>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class KneeboardState;
 class TroubleshootingStore;
 
@@ -25,8 +25,8 @@ extern audited_weak_ptr<KneeboardState> gKneeboard;
 extern audited_ptr<DXResources> gDXResources;
 extern winrt::handle gMutex;
 extern std::weak_ptr<TroubleshootingStore> gTroubleshootingStore;
-extern std::vector<winrt::weak_ref<winrt::OpenKneeboardApp::TabPage>> gTabs;
+extern std::vector<winrt::weak_ref<winrt::VisorVRApp::TabPage>> gTabs;
 extern RenderTargetID gGUIRenderTargetID;
 extern bool gShuttingDown;
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

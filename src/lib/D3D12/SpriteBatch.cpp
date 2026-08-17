@@ -5,12 +5,12 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/D3D12/SpriteBatch.hpp>
-#include <OpenKneeboard/Shaders/SpriteBatch/DXIL.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/D3D12/SpriteBatch.hpp>
+#include <VisorVR/Shaders/SpriteBatch/DXIL.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <felly/numeric_cast.hpp>
 
@@ -18,7 +18,7 @@
 
 using namespace felly::numeric_cast_types;
 
-namespace OpenKneeboard::D3D12 {
+namespace VisorVR::D3D12 {
 
 SpriteBatch::SpriteBatch(
   ID3D12Device* device,
@@ -26,7 +26,7 @@ SpriteBatch::SpriteBatch(
   DXGI_FORMAT format)
   : mDevice(device),
     mCommandQueue(queue) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::SpriteBatch::SpriteBatch()");
+  VISORVR_TraceLoggingScope("D3D12::SpriteBatch::SpriteBatch()");
   constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
     D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
     | D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS
@@ -98,7 +98,7 @@ SpriteBatch::SpriteBatch(
     signature->GetBufferSize(),
     IID_PPV_ARGS(mRootSignature.put())));
   check_hresult(mRootSignature->SetName(
-    L"OpenKneeboard::D3D12::SpriteBatch::RootSignature"));
+    L"VisorVR::D3D12::SpriteBatch::RootSignature"));
 
   constexpr auto inputElements = std::array {
     D3D12_INPUT_ELEMENT_DESC {
@@ -177,11 +177,11 @@ SpriteBatch::SpriteBatch(
     D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
     MaxSpritesPerBatch * MaxInflightFrames);
   check_hresult(mShaderResourceViewHeap->Heap()->SetName(
-    L"OpenKneeboard::D3D12::SpriteBatch::mShaderResourceViewHeap"));
+    L"VisorVR::D3D12::SpriteBatch::mShaderResourceViewHeap"));
 }
 
 SpriteBatch::~SpriteBatch() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::SpriteBatch::~SpriteBatch()");
+  VISORVR_TraceLoggingScope("D3D12::SpriteBatch::~SpriteBatch()");
   if (mNextFrame) [[unlikely]] {
     fatal("Destroying while frame in progress; did you call End()?");
   }
@@ -191,7 +191,7 @@ void SpriteBatch::Begin(
   ID3D12GraphicsCommandList* commandList,
   const D3D12_CPU_DESCRIPTOR_HANDLE& renderTargetView,
   const PixelSize& rtvSize) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::SpriteBatch::Begin()");
+  VISORVR_TraceLoggingScope("D3D12::SpriteBatch::Begin()");
   if (mNextFrame) [[unlikely]] {
     fatal("frame already in progress; did you call End()?");
   }
@@ -226,7 +226,7 @@ void SpriteBatch::Begin(
 }
 
 void SpriteBatch::Clear(DirectX::XMVECTORF32 color) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::SpriteBatch::Clear()");
+  VISORVR_TraceLoggingScope("D3D12::SpriteBatch::Clear()");
   if (!mNextFrame) [[unlikely]] {
     fatal("target not set, call BeginFrame()");
   }
@@ -241,7 +241,7 @@ void SpriteBatch::Draw(
   const PixelRect& sourceRect,
   const PixelRect& destRect,
   const DirectX::XMVECTORF32 tint) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::SpriteBatch::Draw()");
+  VISORVR_TraceLoggingScope("D3D12::SpriteBatch::Draw()");
   if (!mNextFrame) [[unlikely]] {
     fatal("target not set, call Begin()");
   }
@@ -257,7 +257,7 @@ void SpriteBatch::Draw(
 }
 
 void SpriteBatch::End() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D12::SpriteBatch::End()");
+  VISORVR_TraceLoggingScope("D3D12::SpriteBatch::End()");
   if (!mNextFrame) [[unlikely]] {
     fatal("target not set; double-End() or Begin() not called?");
   }
@@ -367,4 +367,4 @@ void SpriteBatch::End() {
   commandList->DrawInstanced(vertices.size(), 1, 0, 0);
 }
 
-}// namespace OpenKneeboard::D3D12
+}// namespace VisorVR::D3D12

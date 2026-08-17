@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Elevation.hpp>
+#include <VisorVR/Elevation.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -16,7 +16,7 @@
 
 #include <thread>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 bool IsElevated(HANDLE process) noexcept {
   winrt::handle token;
@@ -69,4 +69,4 @@ bool IsShellElevated() noexcept {
   return sRet;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

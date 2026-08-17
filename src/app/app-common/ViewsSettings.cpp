@@ -4,20 +4,20 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/PreferredSize.hpp>
-#include <OpenKneeboard/ViewsSettings.hpp>
+#include <VisorVR/PreferredSize.hpp>
+#include <VisorVR/ViewsSettings.hpp>
 
-#include <OpenKneeboard/json/Geometry2D.hpp>
-#include <OpenKneeboard/json/VRSettings.hpp>
+#include <VisorVR/json/Geometry2D.hpp>
+#include <VisorVR/json/VRSettings.hpp>
 
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <Windows.h>
 
 #include <algorithm>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::optional<SHM::VRLayer> ViewVRSettings::Resolve(
   const PreferredSize& contentSize,
@@ -128,7 +128,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {ViewDisplayArea::ContentOnly, "ContentOnly"},
   })
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   IndependentViewVRSettings,
   mPose,
   mMaximumPhysicalSize,
@@ -166,7 +166,7 @@ void from_json(const nlohmann::json& j, ViewVRSettings& v) {
       v.SetHorizontalMirrorOf(MaybeGet<winrt::guid>(j, "MirrorOf"));
       return;
     default:
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
   }
 }
 
@@ -186,11 +186,11 @@ void to_json(nlohmann::json& j, const ViewVRSettings& v) {
       MaybeSet(j, "MirrorOf", v.GetMirrorOfGUID());
       return;
     default:
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
   }
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   ViewSettings,
   mGuid,
   mName,
@@ -205,5 +205,5 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {AppWindowViewMode::ActiveView, "ActiveView"},
   });
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(ViewsSettings, mViews, mAppWindowMode);
-};// namespace OpenKneeboard
+VISORVR_DEFINE_SPARSE_JSON(ViewsSettings, mViews, mAppWindowMode);
+};// namespace VisorVR

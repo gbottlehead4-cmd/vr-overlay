@@ -17,7 +17,7 @@ configure_file(
   @ONLY
 )
 
-set(OKB_VCPKG_SHARE_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share")
+set(VVR_VCPKG_SHARE_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share")
 
 scoped_include(bindline.cmake)
 scoped_include(boost.cmake)
@@ -48,7 +48,7 @@ scoped_include(windowsappsdk.cmake)
 scoped_include(wmm.cmake)
 
 include(ok_add_license_file)
-file(GLOB COPYRIGHT_FILES "${OKB_VCPKG_SHARE_DIR}/*/copyright")
+file(GLOB COPYRIGHT_FILES "${VVR_VCPKG_SHARE_DIR}/*/copyright")
 foreach (FILE IN LISTS COPYRIGHT_FILES)
   cmake_path(GET FILE PARENT_PATH PACKAGE_FOLDER)
   cmake_path(GET PACKAGE_FOLDER FILENAME PACKAGE_NAME)

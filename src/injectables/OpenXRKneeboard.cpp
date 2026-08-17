@@ -12,15 +12,15 @@
 #include "OpenXRNext.hpp"
 #include "OpenXRVulkanKneeboard.hpp"
 
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/Elevation.hpp>
-#include <OpenKneeboard/Spriting.hpp>
-#include <OpenKneeboard/StateMachine.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/Elevation.hpp>
+#include <VisorVR/Spriting.hpp>
+#include <VisorVR/StateMachine.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/tracing.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/tracing.hpp>
+#include <VisorVR/version.hpp>
 
 #include <shims/vulkan/vulkan.h>
 
@@ -43,16 +43,16 @@
 #include <openxr/openxr_platform.h>
 #include <openxr/openxr_reflection.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
-// M2a debug: append a line to %LOCALAPPDATA%\okb-m2a.log so we can observe what
+// M2a debug: append a line to %LOCALAPPDATA%\vvr-m2a.log so we can observe what
 // the game does with OpenXR input, without needing a live debug-stream capturer.
 void M2ALog(const std::string& msg) {
   const char* dir = std::getenv("LOCALAPPDATA");
   const std::string path
-    = std::string(dir ? dir : "C:\\Temp") + "\\okb-m2a.log";
+    = std::string(dir ? dir : "C:\\Temp") + "\\vvr-m2a.log";
   std::ofstream {path, std::ios::app} << msg << "\n";
 }
 
@@ -150,7 +150,7 @@ OpenXRKneeboard::OpenXRKneeboard(
   const std::shared_ptr<OpenXRNext>& next)
   : mOpenXR(next) {
   dprint("{}", __FUNCTION__);
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRKneeboard::OpenXRKneeboard()");
+  VISORVR_TraceLoggingScope("OpenXRKneeboard::OpenXRKneeboard()");
 
   XrSystemProperties systemProperties {
     .type = XR_TYPE_SYSTEM_PROPERTIES,
@@ -198,7 +198,7 @@ OpenXRKneeboard::OpenXRKneeboard(
 }
 
 OpenXRKneeboard::~OpenXRKneeboard() {
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRKneeboard::OpenXRKneeboard()");
+  VISORVR_TraceLoggingScope("OpenXRKneeboard::OpenXRKneeboard()");
 
   if (mLocalSpace) {
     mOpenXR->xrDestroySpace(mLocalSpace);
@@ -217,7 +217,7 @@ OpenXRNext* OpenXRKneeboard::GetOpenXR() { return mOpenXR.get(); }
 XrResult OpenXRKneeboard::xrEndFrame(
   XrSession session,
   const XrFrameEndInfo* frameEndInfo) {
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity, "OpenXRKneeboard::xrEndFrame()");
   if (frameEndInfo->layerCount == 0) {
     TraceLoggingWriteTagged(activity, "No game layers.");
@@ -236,7 +236,7 @@ XrResult OpenXRKneeboard::xrEndFrame(
     TraceLoggingWriteTagged(
       activity,
       "No frame",
-      OPENKNEEBOARD_TraceLoggingStringView(
+      VISORVR_TraceLoggingStringView(
         magic_enum::enum_name(frame.error()), "Error"));
     return mOpenXR->xrEndFrame(session, frameEndInfo);
   }
@@ -276,14 +276,14 @@ XrResult OpenXRKneeboard::xrEndFrame(
   swapchainDimensions.mHeight += kCursorTilePx;
 
   if (mSwapchain && mSwapchainDimensions != swapchainDimensions) {
-    OPENKNEEBOARD_TraceLoggingScope("DestroySwapchain");
+    VISORVR_TraceLoggingScope("DestroySwapchain");
     this->ReleaseSwapchainResources(mSwapchain);
     mOpenXR->xrDestroySwapchain(mSwapchain);
     mSwapchain = {};
   }
 
   if (!mSwapchain) {
-    OPENKNEEBOARD_TraceLoggingScope(
+    VISORVR_TraceLoggingScope(
       "CreateSwapchain",
       TraceLoggingValue(swapchainDimensions.mWidth, "width"),
       TraceLoggingValue(swapchainDimensions.mHeight, "height"));
@@ -673,12 +673,12 @@ XrResult OpenXRKneeboard::xrEndFrame(
 
   for (size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex) {
     const auto [layer, params] = vrLayers.at(layerIndex);
-    OPENKNEEBOARD_TraceLoggingScopedActivity(
+    VISORVR_TraceLoggingScopedActivity(
       layerActivity,
       "OpenXRKneeboard::xrEndFrame()/LayerSprites",
       TraceLoggingValue(layerIndex, "LayerIndex"),
       TraceLoggingHexUInt64(layer->mLayerID, "LayerID"),
-      OPENKNEEBOARD_TraceLoggingRect(
+      VISORVR_TraceLoggingRect(
         layer->mVR.mLocationOnTexture, "LocationOnTexture"));
 
     PixelRect destRect {
@@ -698,8 +698,8 @@ XrResult OpenXRKneeboard::xrEndFrame(
         TraceLoggingWriteTagged(
           layerActivity,
           "OpenXRKneeboard::xrEndFrame()/LayerSprites/Upscale",
-          OPENKNEEBOARD_TraceLoggingSize2D(destRect.mSize, "OriginalSize"),
-          OPENKNEEBOARD_TraceLoggingSize2D(upscaled, "NewSize"));
+          VISORVR_TraceLoggingSize2D(destRect.mSize, "OriginalSize"),
+          VISORVR_TraceLoggingSize2D(upscaled, "NewSize"));
         destRect.mSize = upscaled;
         break;
       }
@@ -727,9 +727,9 @@ XrResult OpenXRKneeboard::xrEndFrame(
     TraceLoggingWriteTagged(
       layerActivity,
       "OpenXRKneeboard::xrEndFrame()/LayerSprites/Sprite",
-      OPENKNEEBOARD_TraceLoggingRect(
+      VISORVR_TraceLoggingRect(
         layerSprites.back().mSourceRect, "SourceRect"),
-      OPENKNEEBOARD_TraceLoggingRect(layerSprites.back().mDestRect, "DestRect"),
+      VISORVR_TraceLoggingRect(layerSprites.back().mDestRect, "DestRect"),
       TraceLoggingValue(layerSprites.back().mOpacity, "Opacity"));
 
     if (layer->mLayerID == frame->mConfig.mGlobalInputLayerID) {
@@ -787,13 +787,13 @@ XrResult OpenXRKneeboard::xrEndFrame(
 
   uint32_t swapchainTextureIndex {~(0ui32)};
   {
-    OPENKNEEBOARD_TraceLoggingScope("AcquireSwapchainImage");
+    VISORVR_TraceLoggingScope("AcquireSwapchainImage");
     check_xrresult(mOpenXR->xrAcquireSwapchainImage(
       mSwapchain, nullptr, &swapchainTextureIndex));
   }
 
   {
-    OPENKNEEBOARD_TraceLoggingScope("WaitSwapchainImage");
+    VISORVR_TraceLoggingScope("WaitSwapchainImage");
     XrSwapchainImageWaitInfo waitInfo {
       .type = XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO,
       .timeout = XR_INFINITE_DURATION,
@@ -802,7 +802,7 @@ XrResult OpenXRKneeboard::xrEndFrame(
   }
 
   {
-    OPENKNEEBOARD_TraceLoggingScope("RenderLayers()");
+    VISORVR_TraceLoggingScope("RenderLayers()");
     this->RenderLayers(
       mSwapchain, swapchainTextureIndex, *std::move(frame), layerSprites);
   }
@@ -810,12 +810,12 @@ XrResult OpenXRKneeboard::xrEndFrame(
   // P2: draw the cursor dot into its reserved tile AFTER the panels (which
   // clear the whole image), so it survives to be composited by the quad above.
   if (showCursor) {
-    OPENKNEEBOARD_TraceLoggingScope("FillCursorTile()");
+    VISORVR_TraceLoggingScope("FillCursorTile()");
     this->FillCursorTile(mSwapchain, swapchainTextureIndex, cursorTileRect);
   }
 
   {
-    OPENKNEEBOARD_TraceLoggingScope("xrReleaseSwapchainImage()");
+    VISORVR_TraceLoggingScope("xrReleaseSwapchainImage()");
     check_xrresult(mOpenXR->xrReleaseSwapchainImage(mSwapchain, nullptr));
   }
 
@@ -825,7 +825,7 @@ XrResult OpenXRKneeboard::xrEndFrame(
 
   XrResult nextResult {};
   {
-    OPENKNEEBOARD_TraceLoggingScope("next_xrEndFrame");
+    VISORVR_TraceLoggingScope("next_xrEndFrame");
     nextResult = mOpenXR->xrEndFrame(session, &nextFrameEndInfo);
   }
   if (!XR_SUCCEEDED(nextResult)) [[unlikely]] {
@@ -836,7 +836,7 @@ XrResult OpenXRKneeboard::xrEndFrame(
 }
 
 OpenXRKneeboard::Pose OpenXRKneeboard::GetHMDPose(XrTime displayTime) {
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity,
     "OpenXRKNeeboard::GetHMDPose()",
     TraceLoggingValue(displayTime, "displayTime"));
@@ -970,7 +970,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSession(
         break;
       default:
         dprint.Error("Unrecognized VulkanXRState: {}", std::to_underlying(s));
-        OPENKNEEBOARD_BREAK;
+        VISORVR_BREAK;
         return ret;
     }
     if (!gPFN_vkGetInstanceProcAddr) {
@@ -1240,7 +1240,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetInstanceProcAddr(
     } \
     return XR_ERROR_FUNCTION_UNSUPPORTED; \
   }
-  OPENKNEEBOARD_HOOKED_OPENXR_FUNCS(HOOK_FUNC, HOOK_EXT_FUNC)
+  VISORVR_HOOKED_OPENXR_FUNCS(HOOK_FUNC, HOOK_EXT_FUNC)
 #undef HOOK_FUNC
 #undef HOOK_EXT_FUNC
 
@@ -1322,23 +1322,23 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateApiLayerInstance(
 }
 
 /* PS >
- * [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.OpenXR")
+ * [System.Diagnostics.Tracing.EventSource]::new("VisorVR.OpenXR")
  * a4308f76-39c8-5a50-4ede-32d104a8a78d
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.OpenXR",
+  "VisorVR.OpenXR",
   (0xa4308f76, 0x39c8, 0x5a50, 0x4e, 0xde, 0x32, 0xd1, 0x04, 0xa8, 0xa7, 0x8d));
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 BOOL WINAPI DllMain(HINSTANCE, const DWORD dwReason, LPVOID /*lpReserved*/) {
   switch (dwReason) {
     case DLL_PROCESS_ATTACH:
       TraceLoggingRegister(gTraceProvider);
       DPrintSettings::Set({
-        .prefix = "OpenKneeboard-OpenXR",
+        .prefix = "VisorVR-OpenXR",
       });
       dprint(
         "{} {}, {}",
@@ -1369,8 +1369,8 @@ VisorVR_xrNegotiateLoaderApiLayerInterface(
 
   apiLayerRequest->layerInterfaceVersion = XR_CURRENT_LOADER_API_LAYER_VERSION;
   apiLayerRequest->layerApiVersion = XR_CURRENT_API_VERSION;
-  apiLayerRequest->getInstanceProcAddr = &OpenKneeboard::xrGetInstanceProcAddr;
+  apiLayerRequest->getInstanceProcAddr = &VisorVR::xrGetInstanceProcAddr;
   apiLayerRequest->createApiLayerInstance =
-    &OpenKneeboard::xrCreateApiLayerInstance;
+    &VisorVR::xrCreateApiLayerInstance;
   return XR_SUCCESS;
 }

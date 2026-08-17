@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/semver.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/semver.hpp>
 
 #include <regex>
 
 #include <semver.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 std::string ToSemVerString(std::string_view raw) {
   // Remove leading v
   std::string ret {(raw.front() == 'v') ? raw.substr(1) : raw};
@@ -56,4 +56,4 @@ ThreeWayCompareResult CompareVersions(std::string_view a, std::string_view b) {
   return CompareSemVer(ToSemVerString(a), ToSemVerString(b));
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -4,27 +4,27 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/AppSettings.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
+#include <VisorVR/AppSettings.hpp>
+#include <VisorVR/Filesystem.hpp>
 
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   AutoUpdateSettings::Testing,
   mBaseURI,
   mFakeCurrentVersion,
   mFakeUpdateVersion,
   mAlwaysCheck)
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   AutoUpdateSettings,
   mDisabledUntil,
   mSkipVersion,
   mChannel,
   mTesting)
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   AppSettings::Deprecated::DualKneeboardSettings,
   mEnabled)
 
@@ -75,10 +75,10 @@ void to_json_postprocess<AppSettings>(
 }
 
 // mWindowRect is handled by `*_json_postprocess` functions above
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   AppSettings,
   mAutoUpdate,
   mLastRunVersion,
   mAlwaysShowDeveloperTools)
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

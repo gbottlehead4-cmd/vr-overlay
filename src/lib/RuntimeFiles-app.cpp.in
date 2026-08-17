@@ -1,34 +1,34 @@
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-namespace OpenKneeboard::RuntimeFiles {
+namespace VisorVR::RuntimeFiles {
 const std::string_view QUICK_START_PDF("Quick Start.pdf");
 
 const std::string_view CHROMIUM(
-  "$<$<TARGET_EXISTS:OpenKneeboard-Chromium>:libexec/cef/$<TARGET_FILE_NAME:OpenKneeboard-Chromium>>");
+  "$<$<TARGET_EXISTS:VisorVR-Chromium>:libexec/cef/$<TARGET_FILE_NAME:VisorVR-Chromium>>");
 
 const std::string_view DCSWORLD_HOOK_DLL(
-  "$<PATH:RELATIVE_PATH,$<TARGET_FILE:OpenKneeboard-lua-api>,$<TARGET_FILE_DIR:OpenKneeboard-App-WinUI3>>");
+  "$<PATH:RELATIVE_PATH,$<TARGET_FILE:VisorVR-lua-api>,$<TARGET_FILE_DIR:VisorVR-App-WinUI3>>");
 
 const std::string_view DCSWORLD_HOOK_LUA(
-  "$<PATH:RELATIVE_PATH,$<GENEX_EVAL:$<TARGET_PROPERTY:dcs-lua-ext,OUTPUT_FILE>>,$<TARGET_FILE_DIR:OpenKneeboard-App-WinUI3>>");
+  "$<PATH:RELATIVE_PATH,$<GENEX_EVAL:$<TARGET_PROPERTY:dcs-lua-ext,OUTPUT_FILE>>,$<TARGET_FILE_DIR:VisorVR-App-WinUI3>>");
 
-const std::string_view OPENXR_64BIT_JSON("OpenKneeboard-OpenXR.json");
+const std::string_view OPENXR_64BIT_JSON("VisorVR-OpenXR.json");
 const std::string_view OPENXR_64BIT_DLL(
-  "$<TARGET_FILE_NAME:OpenKneeboard-OpenXR>");
+  "$<TARGET_FILE_NAME:VisorVR-OpenXR>");
 
-const std::string_view OPENXR_32BIT_JSON("OpenKneeboard-OpenXR32.json");
+const std::string_view OPENXR_32BIT_JSON("VisorVR-OpenXR32.json");
 const std::string_view OPENXR_32BIT_DLL(
-  "$<PATH:GET_FILENAME,$<TARGET_PROPERTY:OpenKneeboard-OpenXR32,IMPORTED_LOCATION>>");
+  "$<PATH:GET_FILENAME,$<TARGET_PROPERTY:VisorVR-OpenXR32,IMPORTED_LOCATION>>");
 
 
 const std::string_view OPENXR_REGISTER_LAYER_HELPER(
-  "$<TARGET_FILE_NAME:OpenKneeboard-OpenXR-Helper>");
+  "$<TARGET_FILE_NAME:VisorVR-OpenXR-Helper>");
 
 #ifdef _WIN64
 // clang-format off
 const std::string_view WINDOW_CAPTURE_HOOK_32BIT_HELPER(
-  "$<PATH:GET_FILENAME,$<TARGET_PROPERTY:OpenKneeboard-WindowCaptureHook-Helper32,IMPORTED_LOCATION>>");
+  "$<PATH:GET_FILENAME,$<TARGET_PROPERTY:VisorVR-WindowCaptureHook-Helper32,IMPORTED_LOCATION>>");
 // clang-format on
 #endif
 
-}// namespace OpenKneeboard::RuntimeFiles
+}// namespace VisorVR::RuntimeFiles

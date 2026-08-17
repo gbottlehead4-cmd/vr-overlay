@@ -8,12 +8,12 @@
 
 #include "viewer-settings.hpp"
 
-#include <OpenKneeboard/SHM.hpp>
+#include <VisorVR/SHM.hpp>
 
 #include <filesystem>
 #include <string>
 
-namespace OpenKneeboard::Viewer {
+namespace VisorVR::Viewer {
 
 class Renderer {
  public:
@@ -43,4 +43,4 @@ class Renderer {
     uint64_t fenceValueIn) = 0;
 };
 
-}// namespace OpenKneeboard::Viewer
+}// namespace VisorVR::Viewer

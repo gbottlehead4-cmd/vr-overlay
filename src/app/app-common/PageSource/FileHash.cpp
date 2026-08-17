@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/FileHash.hpp>
+#include <VisorVR/FileHash.hpp>
 
 #include <algorithm>
 #include <fstream>
 #include <vector>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 std::expected<uint64_t, std::error_code> PartialFileHash(
   const std::filesystem::path& path) noexcept {
@@ -51,4 +51,4 @@ std::expected<uint64_t, std::error_code> PartialFileHash(
   return hash;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

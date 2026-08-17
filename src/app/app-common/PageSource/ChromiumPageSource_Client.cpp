@@ -8,13 +8,13 @@
 
 #include "ChromiumPageSource_RenderHandler.hpp"
 
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/TabletInfo.hpp>
-#include <OpenKneeboard/TabletInputAdapter.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/TabletInfo.hpp>
+#include <VisorVR/TabletInputAdapter.hpp>
 
-#include <OpenKneeboard/json/Geometry2D.hpp>
+#include <VisorVR/json/Geometry2D.hpp>
 
-#include <OpenKneeboard/json.hpp>
+#include <VisorVR/json.hpp>
 
 #include <FredEmmott/magic_json_serialize_enum.hpp>
 #include <include/cef_parser.h>
@@ -22,7 +22,7 @@
 
 using felly::numeric_cast;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 namespace {
 struct ExperimentalFeatureView {
   std::string_view mName;
@@ -53,9 +53,9 @@ constexpr bool operator==(
   const ExperimentalFeature& b) {
   return a.mVersion == b.mVersion && a.mName == b.mName;
 }
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
-template <std::convertible_to<OpenKneeboard::ExperimentalFeatureView> T>
+template <std::convertible_to<VisorVR::ExperimentalFeatureView> T>
 struct std::formatter<T, char> : std::formatter<std::string, char> {
   auto format(const T& feature, auto& formatContext) const {
     return std::formatter<std::string, char>::format(
@@ -64,9 +64,9 @@ struct std::formatter<T, char> : std::formatter<std::string, char> {
   }
 };
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
-OPENKNEEBOARD_DEFINE_JSON(ExperimentalFeature, mName, mVersion);
+VISORVR_DEFINE_JSON(ExperimentalFeature, mName, mVersion);
 
 void to_json(nlohmann::json& j, const ChromiumPageSource::APIPage& v) {
   j.update({
@@ -195,7 +195,7 @@ ChromiumPageSource::Client::~Client() {
 }
 
 void ChromiumPageSource::Client::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::Client::OnBeforeClose()");
   const FatalOnUncaughtExceptions exceptionBoundary;
   auto host = browser->GetHost();
@@ -319,10 +319,10 @@ bool ChromiumPageSource::Client::OnProcessMessageReceived(
   CefRefPtr<CefProcessMessage> message) {
   const FatalOnUncaughtExceptions exceptionBoundary;
   const auto name = message->GetName().ToString();
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::Client::OnProcessMessageReceived()",
     TraceLoggingValue(name.c_str(), "MessageName"));
-  if (name == "okb/onContextReleased") {
+  if (name == "vvr/onContextReleased") {
     mCurrentPage = {};
     mEnabledExperimentalFeatures = {};
     return true;
@@ -365,11 +365,11 @@ bool ChromiumPageSource::Client::OnBeforePopup(
     target_url.ToString(),
     target_frame_name.ToString());
 
-  auto message = CefProcessMessage::Create("okbEvent/console.warn");
+  auto message = CefProcessMessage::Create("vvrEvent/console.warn");
   message->GetArgumentList()->SetString(
     0,
     std::format(
-      "OpenKneeboard does not support popups; requested popup: {}",
+      "VisorVR does not support popups; requested popup: {}",
       target_url.ToString()));
   frame->SendProcessMessage(PID_RENDERER, message);
 
@@ -402,7 +402,7 @@ void ChromiumPageSource::Client::SendJSAsyncResult(
     dprint.Warning("JS API error: {}", result.error());
   }
 
-  auto message = CefProcessMessage::Create("okb/asyncResult");
+  auto message = CefProcessMessage::Create("vvr/asyncResult");
   auto args = message->GetArgumentList();
   args->SetInt(0, callID);
   args->SetString(1, data.dump());
@@ -410,7 +410,7 @@ void ChromiumPageSource::Client::SendJSAsyncResult(
 }
 
 void ChromiumPageSource::Client::EnableJSAPI(const std::string_view name) {
-  auto message = CefProcessMessage::Create("okbEvent/enableAPI");
+  auto message = CefProcessMessage::Create("vvrEvent/enableAPI");
   auto args = message->GetArgumentList();
   args->SetString(0, CefString(name.data(), name.size()));
   mBrowser->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
@@ -425,7 +425,7 @@ void ChromiumPageSource::Client::OnTitleChange(
 }
 
 void ChromiumPageSource::Client::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::Client::OnAfterCreated()");
   const FatalOnUncaughtExceptions exceptionBoundary;
   browser->GetHost()->AddDevToolsMessageObserver(this);
@@ -442,7 +442,7 @@ std::optional<int> ChromiumPageSource::Client::GetBrowserID() const {
 }
 
 void ChromiumPageSource::Client::PostCursorEvent(const CursorEvent& ev) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::Client::PostCursorEvent()");
   mLastCursorEventAt = std::chrono::steady_clock::now();
   if (!this->GetBrowser()) {
@@ -670,7 +670,7 @@ task<JSAPIResult> ChromiumPageSource::Client::GetPages() {
     co_return nlohmann::json {{"havePages", true}, {"pages", state->mPages}};
   }
   auto primaryClient = get<ScrollableState>(pageSource->mState).mClient;
-  OPENKNEEBOARD_ASSERT(primaryClient->GetBrowserID() == this->GetBrowserID());
+  VISORVR_ASSERT(primaryClient->GetBrowserID() == this->GetBrowserID());
   pageSource->mState = PageBasedState {primaryClient};
   co_return nlohmann::json {{"havePages", false}};
 }
@@ -706,7 +706,7 @@ task<JSAPIResult> ChromiumPageSource::Client::SetPages(
         continue;
       }
 
-      auto message = CefProcessMessage::Create("okbEvent/apiEvent");
+      auto message = CefProcessMessage::Create("vvrEvent/apiEvent");
       auto args = message->GetArgumentList();
       args->SetString(0, "pagesChanged");
       args->SetString(1, messageBody);
@@ -741,7 +741,7 @@ task<JSAPIResult> ChromiumPageSource::Client::RequestPageChange(
       > std::chrono::milliseconds(100)) {
     co_return jsapi_error(
       "Web Dashboards can only call `RequestPageChange()` shortly after a "
-      "cursor event; to remove this limit, create an OpenKneeboard plugin.");
+      "cursor event; to remove this limit, create an VisorVR plugin.");
   }
 
   const auto guid = data.at("guid").get<winrt::guid>();
@@ -796,7 +796,7 @@ void ChromiumPageSource::Client::SetCurrentPage(
   auto page = *it;
   lock.unlock();
 
-  auto message = CefProcessMessage::Create("okbEvent/apiEvent");
+  auto message = CefProcessMessage::Create("vvrEvent/apiEvent");
   auto args = message->GetArgumentList();
   args->SetString(0, "pageChanged");
   args->SetString(1, nlohmann::json {{"page", page}}.dump());
@@ -831,11 +831,11 @@ task<JSAPIResult> ChromiumPageSource::Client::SendMessageToPeers(
     if (browser->GetIdentifier() == myID) {
       continue;
     }
-    auto message = CefProcessMessage::Create("okbEvent/apiEvent");
+    auto message = CefProcessMessage::Create("vvrEvent/apiEvent");
     auto args = message->GetArgumentList();
     args->SetString(0, "peerMessage");
     args->SetString(1, messageBody);
-    OPENKNEEBOARD_ASSERT(message->IsValid());
+    VISORVR_ASSERT(message->IsValid());
     browser->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
   }
   co_return {};
@@ -846,7 +846,7 @@ void ChromiumPageSource::Client::SetViewID(KneeboardViewID id) { mViewID = id; }
 void ChromiumPageSource::Client::PostCustomAction(
   std::string_view actionID,
   const nlohmann::json& arg) {
-  auto message = CefProcessMessage::Create("okbEvent/apiEvent");
+  auto message = CefProcessMessage::Create("vvrEvent/apiEvent");
   auto args = message->GetArgumentList();
   args->SetString(0, "plugin/tab/customAction");
   args->SetString(
@@ -917,4 +917,4 @@ task<JSAPIResult> ChromiumPageSource::Client::GetGraphicsTabletInfo() {
   };
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

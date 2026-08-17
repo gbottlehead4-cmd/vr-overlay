@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ReloadTabAction.hpp>
-#include <OpenKneeboard/TabNextPageAction.hpp>
-#include <OpenKneeboard/TabPreviousPageAction.hpp>
-#include <OpenKneeboard/ToggleBookmarkAction.hpp>
-#include <OpenKneeboard/UserActionHandler.hpp>
+#include <VisorVR/ReloadTabAction.hpp>
+#include <VisorVR/TabNextPageAction.hpp>
+#include <VisorVR/TabPreviousPageAction.hpp>
+#include <VisorVR/ToggleBookmarkAction.hpp>
+#include <VisorVR/UserActionHandler.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 UserActionHandler::~UserActionHandler() = default;
 
@@ -32,4 +32,4 @@ std::unique_ptr<UserActionHandler> UserActionHandler::Create(
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

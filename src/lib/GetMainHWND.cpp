@@ -4,17 +4,17 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/GetMainHWND.hpp>
+#include <VisorVR/GetMainHWND.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/winrt/base.h>
 
 #include <format>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static struct {
   std::optional<MainWindowInfo> mInfo {};
@@ -31,7 +31,7 @@ std::optional<MainWindowInfo> GetMainWindowInfo() {
   const scope_exit updateCacheTime([&]() { gCache.mCacheTime = now; });
 
   auto name =
-    std::format(L"Local\\{}.hwnd", OpenKneeboard::ProjectReverseDomainW);
+    std::format(L"Local\\{}.hwnd", VisorVR::ProjectReverseDomainW);
   winrt::handle hwndFile {OpenFileMapping(PAGE_READWRITE, FALSE, name.c_str())};
   if (!hwndFile) {
     return {};
@@ -75,4 +75,4 @@ std::optional<HWND> GetMainHWND() {
   return {};
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

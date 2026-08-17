@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/UILayerBase.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/UILayerBase.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 UILayerBase::~UILayerBase() = default;
 
@@ -45,4 +45,4 @@ void UILayerBase::PostNextCursorEvent(
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -1,4 +1,4 @@
-namespace OpenKneeboardApp
+namespace VisorVRApp
 {
     // Generic container if you need something subclassable to put in a UI
     // element, e.g. as a combo box item

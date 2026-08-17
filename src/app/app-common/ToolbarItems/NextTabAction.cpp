@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/AppSettings.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/NextTabAction.hpp>
+#include <VisorVR/AppSettings.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/NextTabAction.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 NextTabAction::NextTabAction(
   KneeboardState* kneeboardState,
@@ -48,4 +48,4 @@ task<void> NextTabAction::Execute() {
   co_return;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

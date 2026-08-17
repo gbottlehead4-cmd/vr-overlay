@@ -8,7 +8,7 @@
 
 #include "FilePicker.h"
 
-#include <OpenKneeboard/task.hpp>
+#include <VisorVR/task.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -17,7 +17,7 @@
 
 #include <filesystem>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 task<void> CheckAllDCSHooks(winrt::Microsoft::UI::Xaml::XamlRoot root);
 
@@ -41,4 +41,4 @@ task<std::optional<std::filesystem::path>> ChooseDCSSavedGamesFolder(
   winrt::Microsoft::UI::Xaml::XamlRoot xamlRoot,
   DCSSavedGamesSelectionTrigger trigger);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/SHM/D3D11.hpp>
+#include <VisorVR/SHM/D3D11.hpp>
 
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
 
-namespace OpenKneeboard::SHM::D3D11 {
+namespace VisorVR::SHM::D3D11 {
 
 namespace {
 [[nodiscard]]
@@ -31,7 +31,7 @@ Reader::Reader(const ConsumerKind kind, ID3D11Device* const device)
 Reader::~Reader() = default;
 
 Frame Reader::Map(SHM::Frame raw) {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::Reader::Map");
+  VISORVR_TraceLoggingScope("D3D11::Reader::Map");
 
   auto& com = mFrames.at(raw.mIndex);
   if (com.mTextureHandle != raw.mTexture) {
@@ -75,7 +75,7 @@ std::expected<Frame, Frame::Error> Reader::MaybeGetMapped() {
 }
 
 void Reader::OnSessionChanged() {
-  OPENKNEEBOARD_TraceLoggingScope("D3D11::Reader::OnSessionChanged");
+  VISORVR_TraceLoggingScope("D3D11::Reader::OnSessionChanged");
   mFrames = {};
 }
-}// namespace OpenKneeboard::SHM::D3D11
+}// namespace VisorVR::SHM::D3D11

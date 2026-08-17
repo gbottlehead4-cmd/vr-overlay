@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -18,7 +18,7 @@
 #include <iostream>
 #include <optional>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
@@ -54,7 +54,7 @@ static std::wstring GetDPrintResourceName(std::wstring_view key) {
   // v2: explicit size added
   // v3: compatibility for 32-bit sender and 64-bit receiver
   return std::format(
-    L"{}.dprint.v3.{}", OpenKneeboard::ProjectReverseDomainW, key);
+    L"{}.dprint.v3.{}", VisorVR::ProjectReverseDomainW, key);
 }
 
 #define IPC_RESOURCE_NAME_FUNC(resource) \
@@ -86,7 +86,7 @@ static void WriteIPCMessage(std::wstring_view message) {
   winrt::handle bufferReadyEvent {
     OpenEventW(SYNCHRONIZE, false, GetDPrintBufferReadyEventName().data())};
   if (!bufferReadyEvent) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   winrt::handle dataReadyEvent {OpenEventW(
@@ -94,7 +94,7 @@ static void WriteIPCMessage(std::wstring_view message) {
     false,
     GetDPrintDataReadyEventName().data())};
   if (!dataReadyEvent) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -110,14 +110,14 @@ static void WriteIPCMessage(std::wstring_view message) {
     sizeof(DPrintMessage),
     GetDPrintMappingName().data());
   if (!mapping) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
   void* shm =
     MapViewOfFile(mapping.get(), FILE_MAP_WRITE, 0, 0, sizeof(DPrintMessage));
   if (!shm) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -240,11 +240,11 @@ DPrintReceiver::DPrintReceiver() {
   mMutex =
     Win32::or_default::CreateMutex(nullptr, true, GetDPrintMutexName().data());
   if (mMutex && GetLastError() == ERROR_ALREADY_EXISTS) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   if (!mMutex) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -256,20 +256,20 @@ DPrintReceiver::DPrintReceiver() {
     sizeof(DPrintMessage),
     GetDPrintMappingName().data());
   if (!mMapping) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mBufferReadyEvent = Win32::or_default::CreateEvent(
     nullptr, false, false, GetDPrintBufferReadyEventName().data());
   if (!mBufferReadyEvent) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
   mDataReadyEvent = Win32::or_default::CreateEvent(
     nullptr, false, false, GetDPrintDataReadyEventName().data());
   if (!mDataReadyEvent) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -280,7 +280,7 @@ DPrintReceiver::DPrintReceiver() {
     0,
     sizeof(DPrintMessage)));
   if (!mSHM) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -329,11 +329,11 @@ void DPrintReceiver::Run(std::stop_token stopToken) {
     }
 
     if (result != WAIT_OBJECT_0) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
     }
 
     this->OnMessage(*mSHM);
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

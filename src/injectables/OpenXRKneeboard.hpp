@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <OpenKneeboard/VRKneeboard.hpp>
+#include <VisorVR/VRKneeboard.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
 #include <shims/openxr/openxr.h>
 
@@ -23,7 +23,7 @@
 template <class CharT>
 struct std::formatter<XrResult, CharT> : std::formatter<int, CharT> {};
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 struct OpenXRRuntimeID {
   XrVersion mVersion;
@@ -85,4 +85,4 @@ class OpenXRKneeboard : public VRKneeboard {
   Pose GetHMDPose(XrTime displayTime);
   static XrPosef GetXrPosef(const Pose& pose);
 };
-}// namespace OpenKneeboard
+}// namespace VisorVR

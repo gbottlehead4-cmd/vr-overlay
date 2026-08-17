@@ -5,19 +5,19 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/RenderDoc.hpp>
-#include <OpenKneeboard/SHM/Vulkan.hpp>
-#include <OpenKneeboard/Vulkan.hpp>
+#include <VisorVR/RenderDoc.hpp>
+#include <VisorVR/SHM/Vulkan.hpp>
+#include <VisorVR/Vulkan.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/tracing.hpp>
 
-namespace OpenKneeboard::SHM::Vulkan {
+namespace VisorVR::SHM::Vulkan {
 
 namespace {
 [[nodiscard]]
 uint64_t GetGPULuid(
-  OpenKneeboard::Vulkan::Dispatch* const vk,
+  VisorVR::Vulkan::Dispatch* const vk,
   const VkPhysicalDevice physicalDevice) {
   VkPhysicalDeviceIDProperties idProps {
     .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR,
@@ -34,11 +34,11 @@ uint64_t GetGPULuid(
 }
 }// namespace
 
-using OpenKneeboard::Vulkan::check_vkresult;
+using VisorVR::Vulkan::check_vkresult;
 
 Reader::Reader(
   const ConsumerKind kind,
-  OpenKneeboard::Vulkan::Dispatch* dispatch,
+  VisorVR::Vulkan::Dispatch* dispatch,
   const VkInstance instance,
   const VkDevice device,
   const VkPhysicalDevice physicalDevice,
@@ -65,7 +65,7 @@ std::expected<Frame, Frame::Error> Reader::MaybeGetMapped() {
 }
 
 Frame Reader::Map(SHM::Frame raw) {
-  OPENKNEEBOARD_TraceLoggingScope("Vulkan::Reader::Map");
+  VISORVR_TraceLoggingScope("Vulkan::Reader::Map");
   auto& vk = mFrames.at(raw.mIndex);
   if (vk.mImageHandle != raw.mTexture) {
     vk.mImageHandle = raw.mTexture;
@@ -130,7 +130,7 @@ Frame Reader::Map(SHM::Frame raw) {
       vk.mImageHandle,
       &handleProperties));
 
-    const auto memoryType = OpenKneeboard::Vulkan::FindMemoryType(
+    const auto memoryType = VisorVR::Vulkan::FindMemoryType(
       mVK,
       mPhysicalDevice,
       handleProperties.memoryTypeBits,
@@ -225,12 +225,12 @@ Frame Reader::Map(SHM::Frame raw) {
 }
 
 void Reader::OnSessionChanged() {
-  OPENKNEEBOARD_TraceLoggingScope("Vulkan::Reader::OnSessionChanged");
+  VISORVR_TraceLoggingScope("Vulkan::Reader::OnSessionChanged");
   this->DropResources();
 }
 
 void Reader::DropResources() {
-  OPENKNEEBOARD_TraceLoggingScope("Vulkan::Reader::DropResources");
+  VISORVR_TraceLoggingScope("Vulkan::Reader::DropResources");
   mVK->QueueWaitIdle(mQueue);
   mFrames = {};
 }
@@ -272,4 +272,4 @@ DeviceCreateInfo::DeviceCreateInfo(const VkDeviceCreateInfo& base)
   }
 }
 
-}// namespace OpenKneeboard::SHM::Vulkan
+}// namespace VisorVR::SHM::Vulkan

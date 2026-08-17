@@ -4,26 +4,26 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CachedLayer.hpp>
-#include <OpenKneeboard/CursorClickableRegions.hpp>
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/DoodleRenderer.hpp>
-#include <OpenKneeboard/FileHash.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/FilesystemWatcher.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
-#include <OpenKneeboard/NavigationTab.hpp>
-#include <OpenKneeboard/PDFFilePageSource.hpp>
-#include <OpenKneeboard/PDFNavigation.hpp>
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/CachedLayer.hpp>
+#include <VisorVR/CursorClickableRegions.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/DoodleRenderer.hpp>
+#include <VisorVR/FileHash.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/FilesystemWatcher.hpp>
+#include <VisorVR/LaunchURI.hpp>
+#include <VisorVR/NavigationTab.hpp>
+#include <VisorVR/PDFFilePageSource.hpp>
+#include <VisorVR/PDFNavigation.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/final_release_deleter.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/final_release_deleter.hpp>
+#include <VisorVR/format/filesystem.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <shims/nlohmann/json.hpp>
 #include <shims/winrt/base.h>
@@ -54,7 +54,7 @@ using namespace winrt::Windows::Data::Pdf;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 // Convenience wrapper to make it easy to wrap all locks in `DPrintLifetime`
 static constexpr auto wrap_lock(
   auto&& lock,
@@ -107,7 +107,7 @@ struct PDFFilePageSource::DocumentResources final {
    * 5. Double-free if the condition that led to the deletion is still
    *    present, or make pure virtual calls, or...
    */
-  static OpenKneeboard::fire_and_forget final_release(
+  static VisorVR::fire_and_forget final_release(
     std::unique_ptr<DocumentResources> self) {
     co_await wil::resume_foreground(self->mDispatcherQueue);
     self->mPDFDocument = nullptr;
@@ -211,7 +211,7 @@ task<void> PDFFilePageSource::ReloadRenderer(
       // Another workaround for
       // https://github.com/microsoft/WindowsAppSDK/issues/3506
       if (doc->mPDFDocument) {
-        ([](auto dq, auto deleteLater) -> OpenKneeboard::fire_and_forget {
+        ([](auto dq, auto deleteLater) -> VisorVR::fire_and_forget {
           co_await wil::resume_foreground(dq);
           std::ignore = deleteLater;
         })(mUIThreadDispatcherQueue, std::move(doc->mPDFDocument));
@@ -283,7 +283,7 @@ task<void> PDFFilePageSource::ReloadNavigation(
       {
         weak,
         [](auto self, KneeboardViewID ctx, PDFNavigation::Link link)
-          -> OpenKneeboard::fire_and_forget {
+          -> VisorVR::fire_and_forget {
           const auto& dest = link.mDestination;
           switch (dest.mType) {
             case PDFNavigation::DestinationType::Page:
@@ -385,15 +385,15 @@ task<void> PDFFilePageSource::Reload() try {
   }
 } catch (const std::exception& e) {
   dprint.Warning("Exception reloading PDFFilePageSource: {}", e.what());
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
 } catch (const winrt::hresult_error& e) {
   dprint.Warning(
     "HRESULT Exception reloading PDFFilePageSource: {}",
     winrt::to_string(e.message()));
-  OPENKNEEBOARD_BREAK;
+  VISORVR_BREAK;
 }
 
-OpenKneeboard::fire_and_forget PDFFilePageSource::final_release(
+VisorVR::fire_and_forget PDFFilePageSource::final_release(
   std::unique_ptr<PDFFilePageSource> self) {
   co_await self->mUIThread;
   self->mThreadGuard.CheckThread();
@@ -458,7 +458,7 @@ void PDFFilePageSource::RenderPageContent(
   RenderTarget* rt,
   PageID id,
   const PixelRect& rect) noexcept {
-  OPENKNEEBOARD_TraceLoggingScope("PDFFilePageSource::RenderPageContent()");
+  VISORVR_TraceLoggingScope("PDFFilePageSource::RenderPageContent()");
   // Keep alive
   auto doc = this->mDocumentResources;
   if (!doc) {
@@ -617,7 +617,7 @@ task<void>
 PDFFilePageSource::RenderPage(RenderContext rc, PageID pageID, PixelRect rect) {
   auto rt = rc.GetRenderTarget();
   const auto rtid = rt->GetID();
-  OPENKNEEBOARD_TraceLoggingScope("PDFFilePageSource::RenderPage()");
+  VISORVR_TraceLoggingScope("PDFFilePageSource::RenderPage()");
   if (!mDocumentResources->mCache.contains(rtid)) {
     mDocumentResources->mCache[rtid] = std::make_unique<CachedLayer>(mDXR);
   }
@@ -688,4 +688,4 @@ std::optional<PageID> PDFFilePageSource::GetPageIDFromPersistentID(
   return pageIDs[pageIndex];
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

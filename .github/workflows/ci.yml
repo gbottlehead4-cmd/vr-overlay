@@ -114,24 +114,24 @@ jobs:
           Add-Content $Env:GITHUB_OUTPUT "VERSION=${version}"
           echo "::endgroup::"
       - name: Attach debug symbols
-        if: ${{ matrix.config != 'Debug' && github.repository == 'OpenKneeboard/OpenKneeboard' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.config != 'Debug' && github.repository == 'VisorVR/VisorVR' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
         uses: actions/upload-artifact@v7
         with:
-          name: OpenKneeboard-GHA${{github.run_number}}-DebugSymbols
+          name: VisorVR-GHA${{github.run_number}}-DebugSymbols
           path: build/out/${{matrix.config}}/pdb
       - name: Build installer generator
         if: ${{matrix.config != 'Debug' }}
         shell: pwsh
-        working-directory: source/OpenKneeboard-Installer
+        working-directory: source/VisorVR-Installer
         run: |
           dotnet publish `
             --configuration Release `
             --output "${{github.workspace}}/build/out/${{matrix.config}}/installer-generator"
       - name: Attach bundle
-        if: ${{ matrix.config != 'Debug' && github.repository == 'OpenKneeboard/OpenKneeboard' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.config != 'Debug' && github.repository == 'VisorVR/VisorVR' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
         uses: actions/upload-artifact@v7
         with:
-          name: OpenKneeboard-GHA${{github.run_number}}
+          name: VisorVR-GHA${{github.run_number}}
           path: |
             build/out/${{matrix.config}}
             !build/out/${{matrix.config}}/pdb
@@ -146,7 +146,7 @@ jobs:
         shell: pwsh
         working-directory: build/out/${{matrix.config}}
         run: |
-          installer-generator/OpenKneeboard-Installer.exe `
+          installer-generator/VisorVR-Installer.exe `
             "$(Get-Location)" `
             --stamp-file ${{github.workspace}}/installer.stamp
           $InstallerPath = Get-Content ${{github.workspace}}/installer.stamp
@@ -154,7 +154,7 @@ jobs:
           Add-Content $env:GITHUB_OUTPUT "installer-path=${InstallerPath}"
           Add-Content $env:GITHUB_OUTPUT "installer-name=${InstallerName}"
       - name: Upload unsigned installer
-        if: ${{ matrix.config != 'Debug' && github.repository == 'OpenKneeboard/OpenKneeboard' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.config != 'Debug' && github.repository == 'VisorVR/VisorVR' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
         uses: actions/upload-artifact@v7
         with:
           name: ${{steps.build-installer.outputs.installer-name}}

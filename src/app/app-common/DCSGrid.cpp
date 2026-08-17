@@ -5,9 +5,9 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DCSGrid.hpp>
+#include <VisorVR/DCSGrid.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <GeographicLib/UTMUPS.hpp>
 
@@ -17,7 +17,7 @@ const auto& UTM() {
   return value;
 }
 }// namespace
-namespace OpenKneeboard {
+namespace VisorVR {
 
 static_assert(std::is_same_v<GeographicLib::Math::real, GeoReal>);
 
@@ -47,4 +47,4 @@ std::tuple<GeoReal, GeoReal> DCSGrid::LatLongFromXY(GeoReal dcsX, GeoReal dcsY)
   return {retLat, retLong};
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

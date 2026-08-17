@@ -12,19 +12,19 @@
 
 #include "Globals.h"
 
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/LaunchURI.hpp>
 
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <cmath>
 #include <numbers>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Data;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 
 IndependentVRViewSettingsControl::IndependentVRViewSettingsControl() {
   this->InitializeComponent();
@@ -38,7 +38,7 @@ IndependentVRViewSettingsControl::IndependentVRViewSettingsControl() {
       auto self = weak.get();
       if (!self) [[unlikely]] {
         // Should have been unregistered in destructor
-        OPENKNEEBOARD_BREAK;
+        VISORVR_BREAK;
         return;
       }
       self->mHaveRecentered = true;
@@ -53,7 +53,7 @@ IndependentVRViewSettingsControl::~IndependentVRViewSettingsControl() {
   this->RemoveAllEventListeners();
 }
 
-OpenKneeboard::fire_and_forget
+VisorVR::fire_and_forget
 IndependentVRViewSettingsControl::RestoreDefaults(
   IInspectable,
   RoutedEventArgs) noexcept {
@@ -91,7 +91,7 @@ IndependentViewVRSettings IndependentVRViewSettingsControl::GetViewConfig() {
   return it->mVR.GetIndependentSettings();
 }
 
-OpenKneeboard::fire_and_forget IndependentVRViewSettingsControl::SetViewConfig(
+VisorVR::fire_and_forget IndependentVRViewSettingsControl::SetViewConfig(
   IndependentViewVRSettings config) {
   auto viewsConfig = mKneeboard->GetViewsSettings();
   auto& views = viewsConfig.mViews;
@@ -103,13 +103,13 @@ OpenKneeboard::fire_and_forget IndependentVRViewSettingsControl::SetViewConfig(
   co_await mKneeboard->SetViewsSettings(viewsConfig);
 }
 
-OpenKneeboard::fire_and_forget IndependentVRViewSettingsControl::RecenterNow(
+VisorVR::fire_and_forget IndependentVRViewSettingsControl::RecenterNow(
   IInspectable,
   RoutedEventArgs) {
   co_await mKneeboard->PostUserAction(UserAction::RECENTER_VR);
 }
 
-OpenKneeboard::fire_and_forget IndependentVRViewSettingsControl::GoToBindings(
+VisorVR::fire_and_forget IndependentVRViewSettingsControl::GoToBindings(
   const IInspectable&,
   const RoutedEventArgs&) {
   co_await LaunchURI(SpecialURIs::SettingsInput());
@@ -335,4 +335,4 @@ void IndependentVRViewSettingsControl::ViewID(const winrt::guid& v) {
   mViewID = v;
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

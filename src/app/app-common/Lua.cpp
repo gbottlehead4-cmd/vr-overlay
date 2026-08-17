@@ -4,16 +4,16 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/Lua.hpp>
+#include <VisorVR/Lua.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <algorithm>
 #include <format>
 
-namespace OpenKneeboard::detail {
+namespace VisorVR::detail {
 
 class LuaStateImpl final {
  public:
@@ -83,7 +83,7 @@ class LuaStackCheck final {
     const auto newSize = lua_gettop(*mLua);
     if (mStackSize != newSize) {
       dprint("Lua stack size changed from {} to {}", mStackSize, newSize);
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       std::terminate();
     }
   }
@@ -99,9 +99,9 @@ class LuaStackCheck final {
   int mStackSize;
 };
 
-}// namespace OpenKneeboard::detail
+}// namespace VisorVR::detail
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 using LuaRefImpl = detail::LuaRefImpl;
 using LuaStateImpl = detail::LuaStateImpl;
@@ -348,4 +348,4 @@ LuaRef::const_iterator& LuaRef::const_iterator::operator++() {
   return *this;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

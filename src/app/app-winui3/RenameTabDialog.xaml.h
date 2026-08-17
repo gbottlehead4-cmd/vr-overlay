@@ -16,9 +16,9 @@ using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::UI::Xaml::Media::Imaging;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct RenameTabDialog : RenameTabDialogT<RenameTabDialog>,
-                         OpenKneeboard::WithPropertyChangedEvent {
+                         VisorVR::WithPropertyChangedEvent {
   RenameTabDialog();
   ~RenameTabDialog();
 
@@ -32,9 +32,9 @@ struct RenameTabDialog : RenameTabDialogT<RenameTabDialog>,
   winrt::hstring mPrompt;
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct RenameTabDialog
   : RenameTabDialogT<RenameTabDialog, implementation::RenameTabDialog> {};
 
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

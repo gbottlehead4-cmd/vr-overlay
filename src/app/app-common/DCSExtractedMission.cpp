@@ -5,10 +5,10 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DCSExtractedMission.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
+#include <VisorVR/DCSExtractedMission.hpp>
+#include <VisorVR/Filesystem.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <felly/guarded_data.hpp>
 #include <felly/unique_any.hpp>
@@ -19,7 +19,7 @@
 
 #include <zip.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DCSExtractedMission::DCSExtractedMission() = default;
 
@@ -139,4 +139,4 @@ std::shared_ptr<DCSExtractedMission> DCSExtractedMission::Get(
   return *cache;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

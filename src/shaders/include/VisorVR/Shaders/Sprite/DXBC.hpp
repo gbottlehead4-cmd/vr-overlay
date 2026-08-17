@@ -1,0 +1,28 @@
+// OpenKneeboard
+//
+// Copyright (c) 2025 Fred Emmott <fred@fredemmott.com>
+//
+// This program is open source; see the LICENSE file in the root of the
+// OpenKneeboard repository.
+#pragma once
+
+#include <string>
+
+namespace VisorVR::Shaders::Sprite::DXBC::Detail {
+
+#include <VisorVR/Shaders/gen/VisorVR-Sprite-DXBC-PS.hpp>
+#include <VisorVR/Shaders/gen/VisorVR-Sprite-DXBC-VS.hpp>
+
+}// namespace VisorVR::Shaders::Sprite::DXBC::Detail
+
+namespace VisorVR::Shaders::Sprite::DXBC {
+
+constexpr std::basic_string_view<unsigned char> PS {
+  Detail::g_SpritePixelShader,
+  std::size(Detail::g_SpritePixelShader)};
+
+constexpr std::basic_string_view<unsigned char> VS {
+  Detail::g_SpriteVertexShader,
+  std::size(Detail::g_SpriteVertexShader)};
+
+}// namespace VisorVR::Shaders::Sprite::DXBC

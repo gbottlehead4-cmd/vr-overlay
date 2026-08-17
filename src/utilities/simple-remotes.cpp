@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #include "simple-remotes.hpp"
 
-namespace OpenKneeboard::SimpleRemotes {
+namespace VisorVR::SimpleRemotes {
 
 int main(const UserAction action, const Args& args) {
   static const std::string ActionString {magic_enum::enum_name(action)};
@@ -31,4 +31,4 @@ int main(const UserAction action, const Args& args) {
   }
 }
 
-}// namespace OpenKneeboard::SimpleRemotes
+}// namespace VisorVR::SimpleRemotes

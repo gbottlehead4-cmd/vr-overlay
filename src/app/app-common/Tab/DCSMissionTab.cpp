@@ -4,15 +4,15 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/DCSExtractedMission.hpp>
-#include <OpenKneeboard/DCSMissionTab.hpp>
-#include <OpenKneeboard/FolderPageSource.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/DCSExtractedMission.hpp>
+#include <VisorVR/DCSMissionTab.hpp>
+#include <VisorVR/FolderPageSource.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/dprint.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 DCSMissionTab::DCSMissionTab(
   const audited_ptr<DXResources>& dxr,
@@ -96,7 +96,7 @@ std::optional<std::string> DCSMissionTab::GetPersistentIDForPage(PageID) const {
   return std::nullopt;
 }
 
-OpenKneeboard::fire_and_forget DCSMissionTab::OnAPIEvent(
+VisorVR::fire_and_forget DCSMissionTab::OnAPIEvent(
   APIEvent event,
   [[maybe_unused]] std::filesystem::path installPath,
   [[maybe_unused]] std::filesystem::path savedGamePath) {
@@ -126,4 +126,4 @@ OpenKneeboard::fire_and_forget DCSMissionTab::OnAPIEvent(
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

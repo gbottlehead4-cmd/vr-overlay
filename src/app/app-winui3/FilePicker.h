@@ -14,7 +14,7 @@
 #include <filesystem>
 #include <string>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 /** (Almost) reimplement File/Folder pickers.
  *
@@ -60,4 +60,4 @@ class FilePicker final {
   std::vector<FileType> mFileTypes;
 };
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

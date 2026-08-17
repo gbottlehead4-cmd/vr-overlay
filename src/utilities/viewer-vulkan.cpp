@@ -9,20 +9,20 @@
 
 #include "DDS.hpp"
 
-#include <OpenKneeboard/RenderDoc.hpp>
-#include <OpenKneeboard/Vulkan.hpp>
+#include <VisorVR/RenderDoc.hpp>
+#include <VisorVR/Vulkan.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
 
 #include <felly/numeric_cast.hpp>
 
 #include <fstream>
 
 using felly::numeric_cast;
-using OpenKneeboard::Vulkan::check_vkresult;
+using VisorVR::Vulkan::check_vkresult;
 
-namespace OpenKneeboard::Viewer {
+namespace VisorVR::Viewer {
 
 static constexpr std::array RequiredInstanceExtensions {
   VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
@@ -52,7 +52,7 @@ static constexpr std::array RequiredInstanceExtensions {
     severity = "verbose";
   } else {
     severity = "MAGICNO";
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
   }
 
   dprint(
@@ -83,7 +83,7 @@ VulkanRenderer::VulkanRenderer(uint64_t luid) {
 
   const VkApplicationInfo applicationInfo {
     .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-    .pApplicationName = "OpenKneeboard-Viewer",
+    .pApplicationName = "VisorVR-Viewer",
     .applicationVersion = 1,
     .apiVersion = VK_API_VERSION_1_0,
   };
@@ -133,13 +133,13 @@ VulkanRenderer::VulkanRenderer(uint64_t luid) {
   if (
     vkCreateInstance(&instanceCreateInfo, nullptr, &instance)
     == VK_ERROR_LAYER_NOT_PRESENT) {
-    OPENKNEEBOARD_ASSERT(
+    VISORVR_ASSERT(
       requiredLayers.back()
       == std::string_view {"VK_LAYER_KHRONOS_validation"});
     instanceCreateInfo.enabledLayerCount--;
-    OPENKNEEBOARD_ASSERT(instanceCreateInfo.pNext == &debugCreateInfo);
+    VISORVR_ASSERT(instanceCreateInfo.pNext == &debugCreateInfo);
     instanceCreateInfo.pNext = nullptr;
-    OPENKNEEBOARD_ASSERT(
+    VISORVR_ASSERT(
       RequiredInstanceExtensions.back()
       == std::string_view {VK_EXT_DEBUG_UTILS_EXTENSION_NAME});
     instanceCreateInfo.enabledExtensionCount--;
@@ -159,7 +159,7 @@ VulkanRenderer::VulkanRenderer(uint64_t luid) {
   }
   mVKInstance = {instance, {vkDestroyInstance, nullptr}};
 
-  mVK = std::make_unique<OpenKneeboard::Vulkan::Dispatch>(
+  mVK = std::make_unique<VisorVR::Vulkan::Dispatch>(
     mVKInstance.get(), vkGetInstanceProcAddr);
 #ifdef DEBUG
   mVKDebugMessenger = mVK->make_unique<VkDebugUtilsMessengerEXT>(
@@ -331,10 +331,10 @@ void VulkanRenderer::SaveTextureToFile(
   VkSemaphore waitSemaphore,
   uint64_t waitSemaphoreValue,
   const std::filesystem::path& path) {
-  OPENKNEEBOARD_TraceLoggingScopedActivity(activity, "SaveTextureToFile()");
+  VISORVR_TraceLoggingScopedActivity(activity, "SaveTextureToFile()");
   VkFence fences[] {mCompletionFence.get()};
   {
-    OPENKNEEBOARD_TraceLoggingScope("FenceIn");
+    VISORVR_TraceLoggingScope("FenceIn");
     mVK->WaitForFences(mDevice.get(), std::size(fences), fences, 1, ~(0ui64));
     mVK->ResetFences(mDevice.get(), std::size(fences), fences);
   }
@@ -362,7 +362,7 @@ void VulkanRenderer::SaveTextureToFile(
   mVK->GetImageMemoryRequirements(
     mDevice.get(), dest.get(), &memoryRequirements);
 
-  const auto memoryType = OpenKneeboard::Vulkan::FindMemoryType(
+  const auto memoryType = VisorVR::Vulkan::FindMemoryType(
     mVK.get(),
     mVKPhysicalDevice,
     memoryRequirements.memoryTypeBits,
@@ -533,17 +533,17 @@ void VulkanRenderer::SaveTextureToFile(
 
   check_vkresult(mVK->QueueSubmit(mQueue, 1, &submitInfo, fences[0]));
   {
-    OPENKNEEBOARD_TraceLoggingScope("FenceOut");
+    VISORVR_TraceLoggingScope("FenceOut");
     check_vkresult(mVK->WaitForFences(
       mDevice.get(), std::size(fences), fences, true, ~(0ui64)));
   }
 
-  OPENKNEEBOARD_TraceLoggingScope("Export");
+  VISORVR_TraceLoggingScope("Export");
   auto mapping = mVK->MemoryMapping<uint8_t>(
     mDevice.get(), destMemory.get(), 0, VK_WHOLE_SIZE, 0);
 
   {
-    OPENKNEEBOARD_TraceLoggingScope("InvalidateMapping");
+    VISORVR_TraceLoggingScope("InvalidateMapping");
     VkMappedMemoryRange range {
       .sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
       .memory = destMemory.get(),
@@ -557,7 +557,7 @@ void VulkanRenderer::SaveTextureToFile(
   mVK->GetImageSubresourceLayout(
     mDevice.get(), dest.get(), &subresource, &layout);
 
-  OPENKNEEBOARD_ASSERT(dxgiFormat == DXGI_FORMAT_B8G8R8A8_UNORM);
+  VISORVR_ASSERT(dxgiFormat == DXGI_FORMAT_B8G8R8A8_UNORM);
   const DDS::Header header {
     .dwFlags =
       [] {
@@ -779,7 +779,7 @@ void VulkanRenderer::InitializeDest(
     handle,
     &handleProperties));
 
-  const auto memoryType = OpenKneeboard::Vulkan::FindMemoryType(
+  const auto memoryType = VisorVR::Vulkan::FindMemoryType(
     mVK.get(),
     mVKPhysicalDevice,
     handleProperties.memoryTypeBits,
@@ -872,4 +872,4 @@ void VulkanRenderer::InitializeSemaphore(HANDLE handle) {
     mVK->ImportSemaphoreWin32HandleKHR(mDevice.get(), &importInfo));
 }
 
-}// namespace OpenKneeboard::Viewer
+}// namespace VisorVR::Viewer

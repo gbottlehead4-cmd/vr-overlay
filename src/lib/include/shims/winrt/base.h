@@ -30,9 +30,9 @@
 #endif
 #pragma warning(pop)
 
-#include <OpenKneeboard/fatal.hpp>
-#include <OpenKneeboard/format/source_location.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/fatal.hpp>
+#include <VisorVR/format/source_location.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.System.h>
@@ -45,7 +45,7 @@
 #include <functional>
 #endif
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 #if __has_include(<winrt/Microsoft.UI.Dispatching.h>)
 using DispatcherQueue = winrt::Microsoft::UI::Dispatching::DispatcherQueue;
@@ -74,7 +74,7 @@ inline auto random_guid() {
   return ret;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 template <class CharT>
 struct std::formatter<winrt::hstring, CharT>
@@ -154,7 +154,7 @@ struct std::formatter<winrt::hresult, CharT>
     std::basic_string<CharT> converted;
     if (!message) {
       converted = std::format("{:#010x}", static_cast<uint32_t>(hresult.value));
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
     } else {
       converted = std::format(
         "{:#010x} (\"{}\")", static_cast<uint32_t>(hresult.value), message);

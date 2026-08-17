@@ -12,16 +12,16 @@
 
 #include "Globals.h"
 
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/LaunchURI.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/LaunchURI.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/semver.hpp>
-#include <OpenKneeboard/utf8.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/semver.hpp>
+#include <VisorVR/utf8.hpp>
+#include <VisorVR/version.hpp>
 
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Windows.Storage.Streams.h>
@@ -41,9 +41,9 @@ using namespace winrt::Windows::Web::Http;
 using namespace winrt::Windows::Foundation;
 using namespace winrt;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
-static OpenKneeboard::fire_and_forget ShowResultDialog(
+static VisorVR::fire_and_forget ShowResultDialog(
   std::string_view message,
   winrt::apartment_context uiThread,
   XamlRoot xamlRoot);
@@ -101,6 +101,18 @@ task<UpdateResult> CheckForUpdates(
     settings.mChannel = AutoUpdateSettings::PreviewChannel;
   }
 
+  // VisorVR has no update feed of its own yet. Never fall back to upstream's:
+  // that feed serves OpenKneeboard's installer, which would "update" VisorVR
+  // into a different product. `mTesting.mBaseURI` still works for local tests.
+  if (testing.mBaseURI.empty()) {
+    dprint("No VisorVR update feed configured; skipping update check");
+    if (checkType == UpdateCheckType::Manual) {
+      ShowResultDialog(
+        _("VisorVR does not have an update feed yet."), uiThread, xamlRoot);
+    }
+    co_return UpdateResult::NotInstallingUpdate;
+  }
+
   HttpClient http;
   auto headers = http.DefaultRequestHeaders();
   headers.UserAgent().Append(
@@ -117,9 +129,7 @@ task<UpdateResult> CheckForUpdates(
     winrt::Windows::Web::Http::Headers::HttpMediaTypeWithQualityHeaderValue(
       hstring {L"application/vnd.github.v3+json"}));
 
-  const auto baseUri = testing.mBaseURI.empty()
-    ? "https://autoupdate.openkneeboard.com"
-    : testing.mBaseURI;
+  const auto baseUri = testing.mBaseURI;
 
   const auto uri = std::format("{}/{}-msi.json", baseUri, settings.mChannel);
   dprint("Starting update check: {}", uri);
@@ -173,7 +183,7 @@ task<UpdateResult> CheckForUpdates(
 
   scope_exit oncePerDay(
     [](auto now, auto settings, auto appSettings)
-      -> OpenKneeboard::fire_and_forget {
+      -> VisorVR::fire_and_forget {
       settings.mDisabledUntil = now + (60 * 60 * 24);
       appSettings.mAutoUpdate = settings;
       auto kneeboard = gKneeboard.lock();
@@ -249,7 +259,7 @@ task<UpdateResult> CheckForUpdates(
   {
     HyperlinkButton releaseNotesLink;
     releaseNotesLink.Content(box_value(
-      to_hstring(std::format(_("OpenKneeboard {} is available!"), newName))));
+      to_hstring(std::format(_("VisorVR {} is available!"), newName))));
     releaseNotesLink.NavigateUri(
       Uri {to_hstring(latestRelease.at("html_url").get<std::string_view>())});
     releaseNotesLink.HorizontalAlignment(HorizontalAlignment::Center);
@@ -280,7 +290,7 @@ task<UpdateResult> CheckForUpdates(
 
     ContentDialog dialog;
     dialog.XamlRoot(xamlRoot);
-    dialog.Title(box_value(to_hstring(_(L"Update OpenKneeboard"))));
+    dialog.Title(box_value(to_hstring(_(L"Update VisorVR"))));
     dialog.Content(layout);
     if (isPrerelease) {
       dialog.PrimaryButtonText(_(L"Install Test Version"));
@@ -408,7 +418,7 @@ task<UpdateResult> CheckForUpdates(
     }
 
     // Settings saved by scope guard
-    co_await OpenKneeboard::LaunchURI(to_utf8(destination));
+    co_await VisorVR::LaunchURI(to_utf8(destination));
     Application::Current().Exit();
     co_return UpdateResult::InstallingUpdate;
   }
@@ -421,7 +431,7 @@ task<UpdateResult> CheckForUpdates(
   co_return UpdateResult::NotInstallingUpdate;
 }
 
-static OpenKneeboard::fire_and_forget ShowResultDialog(
+static VisorVR::fire_and_forget ShowResultDialog(
   std::string_view message,
   winrt::apartment_context uiThread,
   XamlRoot xamlRoot) {
@@ -429,11 +439,11 @@ static OpenKneeboard::fire_and_forget ShowResultDialog(
 
   ContentDialog dialog;
   dialog.XamlRoot(xamlRoot);
-  dialog.Title(box_value(to_hstring(_(L"Update OpenKneeboard"))));
+  dialog.Title(box_value(to_hstring(_(L"Update VisorVR"))));
   dialog.Content(box_value(to_hstring(message)));
   dialog.CloseButtonText(_(L"OK"));
   dialog.DefaultButton(ContentDialogButton::Close);
   co_await dialog.ShowAsync();
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

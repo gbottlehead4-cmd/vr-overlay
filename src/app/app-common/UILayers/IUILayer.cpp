@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/IUILayer.hpp>
+#include <VisorVR/IUILayer.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 IUILayer::IUILayer() = default;
 
 IUILayer::~IUILayer() = default;
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

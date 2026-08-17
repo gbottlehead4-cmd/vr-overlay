@@ -29,13 +29,13 @@ endif ()
 
 INSTALL(
   TARGETS lua
-  EXPORT openkneeboard-lua-config
+  EXPORT visorvr-lua-config
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
-install(EXPORT openkneeboard-lua-config DESTINATION share/openkneeboard-lua)
+install(EXPORT visorvr-lua-config DESTINATION share/visorvr-lua)
 
 INSTALL(
   FILES

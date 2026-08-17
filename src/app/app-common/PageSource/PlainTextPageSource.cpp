@@ -5,14 +5,14 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/D2DErrorRenderer.hpp>
-#include <OpenKneeboard/DXResources.hpp>
-#include <OpenKneeboard/PlainTextPageSource.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/D2DErrorRenderer.hpp>
+#include <VisorVR/DXResources.hpp>
+#include <VisorVR/PlainTextPageSource.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <Unknwn.h>
 
@@ -26,7 +26,7 @@
 #include <dwrite.h>
 #include <icu.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
@@ -203,7 +203,7 @@ void PopulateSourceParagraph(
   if (
     paragraph.mSourceWithoutDelimiter.mLength
     < paragraph.mSourceWithDelimiter.mLength) {
-    OPENKNEEBOARD_ASSERT(
+    VISORVR_ASSERT(
       paragraph.mSourceWithoutDelimiter.mOffset
       == paragraph.mSourceWithDelimiter.mOffset);
     const auto offset = paragraph.mSourceWithoutDelimiter.mOffset
@@ -646,7 +646,7 @@ void PlainTextPageSource::AppendContent(const std::string_view append) {
     felly::overload {
       [=](std::monostate) { return previousSize; },
       [=](const std::size_t previousOffset) {
-        OPENKNEEBOARD_ASSERT(previousOffset <= previousSize);
+        VISORVR_ASSERT(previousOffset <= previousSize);
         return previousOffset;
       },
       [](unknown_offset_t) { return unknown_offset; },
@@ -703,7 +703,7 @@ void PlainTextPageSource::UpdateLayout() {
   }
 
   ///// 2. Split the input into groups, paragraphs, and lines /////
-  OPENKNEEBOARD_ASSERT(mRows > 1 && mColumns > 1);
+  VISORVR_ASSERT(mRows > 1 && mColumns > 1);
   const auto repaintAtEnd =
     scope_exit {[this] { evContentChangedEvent.Emit(); }};
   Source source {};
@@ -822,4 +822,4 @@ void PlainTextPageSource::UpdateLayout() {
   }
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

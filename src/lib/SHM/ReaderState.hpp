@@ -6,20 +6,20 @@
 // OpenKneeboard repository.
 #pragma once
 
-#include <OpenKneeboard/StateMachine.hpp>
+#include <VisorVR/StateMachine.hpp>
 
-#include <OpenKneeboard/array.hpp>
+#include <VisorVR/array.hpp>
 
-namespace OpenKneeboard::SHM {
+namespace VisorVR::SHM {
 
-#define OPENKNEEBOARD_SHM_READER_STATES \
+#define VISORVR_SHM_READER_STATES \
   IT(Unlocked) \
   IT(TryLock) \
   IT(Locked)
 
 enum class ReaderState {
 #define IT(x) x,
-  OPENKNEEBOARD_SHM_READER_STATES
+  VISORVR_SHM_READER_STATES
 #undef IT
 };
 
@@ -31,4 +31,4 @@ using ReaderStateMachine = StateMachine<
 
 static_assert(lockable_state_machine<SHM::ReaderStateMachine>);
 
-}// namespace OpenKneeboard::SHM
+}// namespace VisorVR::SHM

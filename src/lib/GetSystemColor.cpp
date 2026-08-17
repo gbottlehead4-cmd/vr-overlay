@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/GetSystemColor.hpp>
+#include <VisorVR/GetSystemColor.hpp>
 
 #include <Windows.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 D2D1_COLOR_F GetSystemColor(int index) {
   auto color = ::GetSysColor(index);
@@ -20,4 +20,4 @@ D2D1_COLOR_F GetSystemColor(int index) {
   };
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

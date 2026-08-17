@@ -7,12 +7,12 @@
 #include "ChromiumPageSource_Client.hpp"
 #include "ChromiumPageSource_RenderHandler.hpp"
 
-#include <OpenKneeboard/ChromiumPageSource.hpp>
-#include <OpenKneeboard/DoodleRenderer.hpp>
+#include <VisorVR/ChromiumPageSource.hpp>
+#include <VisorVR/DoodleRenderer.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/version.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/version.hpp>
 
 #include <Shlwapi.h>
 
@@ -20,7 +20,7 @@
 
 #include <wininet.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ChromiumPageSource::~ChromiumPageSource() {
   if (auto state = std::get_if<ScrollableState>(&mState)) {
@@ -33,7 +33,7 @@ ChromiumPageSource::~ChromiumPageSource() {
   }
   auto state = std::get_if<PageBasedState>(&mState);
   if (!state) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   for (auto& client: std::views::values(state->mClients)) {
@@ -123,7 +123,7 @@ void ChromiumPageSource::PostCursorEvent(
   KneeboardViewID view,
   const CursorEvent& ev,
   PageID pageID) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::PostCursorEvent()",
     TraceLoggingValue(pageID.GetTemporaryValue(), "PageID"));
 
@@ -138,14 +138,14 @@ void ChromiumPageSource::PostCursorEvent(
     client->PostCursorEvent(ev);
     return;
   }
-  OPENKNEEBOARD_ASSERT(mode == DoodlesOnly);
+  VISORVR_ASSERT(mode == DoodlesOnly);
   if (!mDoodles) [[unlikely]] {
     mDoodles = std::make_unique<DoodleRenderer>(mDXResources, mKneeboard);
     AddEventListener(mDoodles->evNeedsRepaintEvent, this->evNeedsRepaintEvent);
   }
   const auto size = this->GetPreferredSize(pageID);
   if (!size) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mDoodles->PostCursorEvent(view, ev, pageID, size->mPixelSize);
@@ -153,7 +153,7 @@ void ChromiumPageSource::PostCursorEvent(
 
 task<void>
 ChromiumPageSource::RenderPage(RenderContext rc, PageID id, PixelRect rect) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderPage()",
     TraceLoggingValue(id.GetTemporaryValue(), "PageID"));
 
@@ -197,7 +197,7 @@ bool ChromiumPageSource::CanClearUserInput() const {
 
 void ChromiumPageSource::ClearUserInput(PageID pageID) {
   if (!mDoodles) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mDoodles->ClearPage(pageID);
@@ -205,14 +205,14 @@ void ChromiumPageSource::ClearUserInput(PageID pageID) {
 
 void ChromiumPageSource::ClearUserInput() {
   if (!mDoodles) {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
   mDoodles->Clear();
 }
 
 PageIndex ChromiumPageSource::GetPageCount() const {
-  OPENKNEEBOARD_TraceLoggingScope("ChromiumPageSource::GetPageCount()");
+  VISORVR_TraceLoggingScope("ChromiumPageSource::GetPageCount()");
 
   std::shared_lock lock(mStateMutex);
 
@@ -229,7 +229,7 @@ PageIndex ChromiumPageSource::GetPageCount() const {
 }
 
 std::vector<PageID> ChromiumPageSource::GetPageIDs() const {
-  OPENKNEEBOARD_TraceLoggingScope("ChromiumPageSource::GetPageIDs()");
+  VISORVR_TraceLoggingScope("ChromiumPageSource::GetPageIDs()");
   std::shared_lock lock(mStateMutex);
   if (auto state = get_if<ScrollableState>(&mState)) {
     return {state->mClient->GetCurrentPage()};
@@ -245,7 +245,7 @@ std::vector<PageID> ChromiumPageSource::GetPageIDs() const {
 }
 
 std::optional<PreferredSize> ChromiumPageSource::GetPreferredSize(PageID page) {
-  OPENKNEEBOARD_TraceLoggingScope("ChromiumPageSource::GetPreferredSize()");
+  VISORVR_TraceLoggingScope("ChromiumPageSource::GetPreferredSize()");
   if (this->GetPageCount() == 0) {
     return std::nullopt;
   }
@@ -325,7 +325,7 @@ void ChromiumPageSource::PostCustomAction(
   KneeboardViewID view,
   std::string_view actionID,
   const nlohmann::json& arg) {
-  OPENKNEEBOARD_TraceLoggingScope("ChromiumPageSource::GetPreferredSize()");
+  VISORVR_TraceLoggingScope("ChromiumPageSource::GetPreferredSize()");
   this->GetOrCreateClient(view)->PostCustomAction(actionID, arg);
 }
 
@@ -338,7 +338,7 @@ fire_and_forget ChromiumPageSource::OpenDeveloperToolsWindow(
 std::optional<std::string> ChromiumPageSource::GetPersistentIDForPage(
   PageID) const {
   // We might support this in the future if we add a JS API - see
-  // https://github.com/OpenKneeboard/OpenKneeboard/issues/900
+  // https://github.com/VisorVR/VisorVR/issues/900
   return std::nullopt;
 }
 
@@ -347,4 +347,4 @@ std::optional<PageID> ChromiumPageSource::GetPageIDFromPersistentID(
   return std::nullopt;
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

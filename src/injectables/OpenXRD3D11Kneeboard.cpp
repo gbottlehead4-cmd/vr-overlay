@@ -9,12 +9,12 @@
 
 #include "OpenXRNext.hpp"
 
-#include <OpenKneeboard/D3D11.hpp>
+#include <VisorVR/D3D11.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -27,7 +27,7 @@
 
 using namespace DirectX::SimpleMath;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 OpenXRD3D11Kneeboard::OpenXRD3D11Kneeboard(
   XrInstance instance,
@@ -38,7 +38,7 @@ OpenXRD3D11Kneeboard::OpenXRD3D11Kneeboard(
   const XrGraphicsBindingD3D11KHR& binding)
   : OpenXRKneeboard(instance, systemID, session, runtimeID, next) {
   dprint("{}", __FUNCTION__);
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D11Kneeboard()");
+  VISORVR_TraceLoggingScope("OpenXRD3D11Kneeboard()");
 
   mDevice.copy_from(binding.device);
   winrt::com_ptr<ID3D11DeviceContext> ctx;
@@ -52,7 +52,7 @@ OpenXRD3D11Kneeboard::OpenXRD3D11Kneeboard(
 }
 
 OpenXRD3D11Kneeboard::~OpenXRD3D11Kneeboard() {
-  OPENKNEEBOARD_TraceLoggingScope("~OpenXRD3D11Kneeboard()");
+  VISORVR_TraceLoggingScope("~OpenXRD3D11Kneeboard()");
 }
 
 OpenXRD3D11Kneeboard::DXGIFormats OpenXRD3D11Kneeboard::GetDXGIFormats(
@@ -97,7 +97,7 @@ XrSwapchain OpenXRD3D11Kneeboard::CreateSwapchain(
   XrSession session,
   const PixelSize& size) {
   dprint("{}", __FUNCTION__);
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D11Kneeboard::CreateSwapchain()");
+  VISORVR_TraceLoggingScope("OpenXRD3D11Kneeboard::CreateSwapchain()");
 
   auto oxr = this->GetOpenXR();
 
@@ -155,7 +155,7 @@ XrSwapchain OpenXRD3D11Kneeboard::CreateSwapchain(
 
   if (images.at(0).type != XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR) {
     dprint("Swap chain is not a D3D11 swapchain");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     oxr->xrDestroySwapchain(swapchain);
     return nullptr;
   }
@@ -166,7 +166,7 @@ XrSwapchain OpenXRD3D11Kneeboard::CreateSwapchain(
     auto& image = images.at(i);
 #ifdef DEBUG
     if (image.type != XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR) {
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
     }
 #endif
     buffers.push_back(
@@ -192,7 +192,7 @@ void OpenXRD3D11Kneeboard::RenderLayers(
   uint32_t swapchainTextureIndex,
   SHM::Frame frame,
   const std::span<SHM::LayerSprite>& layers) {
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D11Kneeboard::RenderLayers()");
+  VISORVR_TraceLoggingScope("OpenXRD3D11Kneeboard::RenderLayers()");
 
   D3D11::ScopedDeviceContextStateChange savedState(
     mImmediateContext, &mRenderState);
@@ -209,7 +209,7 @@ void OpenXRD3D11Kneeboard::FillCursorTile(
   XrSwapchain swapchain,
   uint32_t swapchainTextureIndex,
   const PixelRect& tile) {
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRD3D11Kneeboard::FillCursorTile()");
+  VISORVR_TraceLoggingScope("OpenXRD3D11Kneeboard::FillCursorTile()");
   if (!mSwapchainResources.contains(swapchain)) {
     return;
   }
@@ -235,4 +235,4 @@ void OpenXRD3D11Kneeboard::FillCursorTile(
 
 SHM::Reader& OpenXRD3D11Kneeboard::GetSHM() { return *mSHM; }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

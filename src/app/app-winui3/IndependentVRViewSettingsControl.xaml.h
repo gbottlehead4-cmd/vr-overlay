@@ -12,34 +12,34 @@
 
 #include "WithPropertyChangedEvent.h"
 
-#include <OpenKneeboard/Events.hpp>
-#include <OpenKneeboard/ViewsSettings.hpp>
+#include <VisorVR/Events.hpp>
+#include <VisorVR/ViewsSettings.hpp>
 
 using namespace winrt::Microsoft::UI::Xaml;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 class KneeboardState;
 }
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct IndependentVRViewSettingsControl
   : IndependentVRViewSettingsControlT<IndependentVRViewSettingsControl>,
-    OpenKneeboard::WithPropertyChangedEvent,
-    OpenKneeboard::EventReceiver {
+    VisorVR::WithPropertyChangedEvent,
+    VisorVR::EventReceiver {
   IndependentVRViewSettingsControl();
   ~IndependentVRViewSettingsControl();
 
-  OpenKneeboard::fire_and_forget RestoreDefaults(
+  VisorVR::fire_and_forget RestoreDefaults(
     Windows::Foundation::IInspectable,
     RoutedEventArgs) noexcept;
 
   winrt::guid ViewID();
   void ViewID(const winrt::guid&);
 
-  OpenKneeboard::fire_and_forget RecenterNow(
+  VisorVR::fire_and_forget RecenterNow(
     Windows::Foundation::IInspectable,
     RoutedEventArgs);
-  OpenKneeboard::fire_and_forget GoToBindings(
+  VisorVR::fire_and_forget GoToBindings(
     const IInspectable&,
     const RoutedEventArgs&);
 
@@ -80,19 +80,19 @@ struct IndependentVRViewSettingsControl
   void GazeOpacity(uint8_t);
 
  private:
-  OpenKneeboard::audited_ptr<OpenKneeboard::KneeboardState> mKneeboard;
+  VisorVR::audited_ptr<VisorVR::KneeboardState> mKneeboard;
 
-  OpenKneeboard::IndependentViewVRSettings GetViewConfig();
-  OpenKneeboard::fire_and_forget SetViewConfig(
-    OpenKneeboard::IndependentViewVRSettings);
+  VisorVR::IndependentViewVRSettings GetViewConfig();
+  VisorVR::fire_and_forget SetViewConfig(
+    VisorVR::IndependentViewVRSettings);
 
   winrt::guid mViewID;
   bool mHaveRecentered {false};
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct IndependentVRViewSettingsControl
   : IndependentVRViewSettingsControlT<
       IndependentVRViewSettingsControl,
       implementation::IndependentVRViewSettingsControl> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

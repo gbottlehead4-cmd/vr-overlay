@@ -4,12 +4,12 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/WindowCaptureTab.hpp>
+#include <VisorVR/WindowCaptureTab.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/task/resume_after.hpp>
-#include <OpenKneeboard/weak_refs.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/task/resume_after.hpp>
+#include <VisorVR/weak_refs.hpp>
 
 #include <Psapi.h>
 #include <Shlwapi.h>
@@ -18,7 +18,7 @@
 
 #include <dwmapi.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 using WindowSpecification = WindowCaptureTab::WindowSpecification;
 using MatchSpecification = WindowCaptureTab::MatchSpecification;
@@ -60,10 +60,10 @@ struct WinEventHook {
 
 }// namespace
 
-OPENKNEEBOARD_DECLARE_JSON(MatchSpecification);
+VISORVR_DECLARE_JSON(MatchSpecification);
 
-OPENKNEEBOARD_DECLARE_JSON(HWNDPageSource::Options);
-OPENKNEEBOARD_DECLARE_JSON(WindowCaptureTab::Settings);
+VISORVR_DECLARE_JSON(HWNDPageSource::Options);
+VISORVR_DECLARE_JSON(WindowCaptureTab::Settings);
 
 std::shared_ptr<WindowCaptureTab> WindowCaptureTab::Create(
   const audited_ptr<DXResources>& dxr,
@@ -223,7 +223,7 @@ task<bool> WindowCaptureTab::TryToStartCapture(HWND hwnd) {
   co_return true;
 }
 
-OpenKneeboard::fire_and_forget WindowCaptureTab::TryToStartCapture() {
+VisorVR::fire_and_forget WindowCaptureTab::TryToStartCapture() {
   auto weak = weak_from_this();
   co_await winrt::resume_background();
   auto self = weak.lock();
@@ -246,7 +246,7 @@ OpenKneeboard::fire_and_forget WindowCaptureTab::TryToStartCapture() {
 
 WindowCaptureTab::~WindowCaptureTab() { this->RemoveAllEventListeners(); }
 
-OpenKneeboard::fire_and_forget WindowCaptureTab::OnWindowClosed() {
+VisorVR::fire_and_forget WindowCaptureTab::OnWindowClosed() {
   auto weak = weak_from_this();
   co_await mUIThread;
   auto self = weak.lock();
@@ -494,7 +494,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {HWNDPageSource::CaptureArea::FullWindow, "FullWindow"},
     {HWNDPageSource::CaptureArea::ClientArea, "ClientArea"},
   })
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   HWNDPageSource::Options,
   mCaptureArea,
   mCaptureCursor)
@@ -523,7 +523,7 @@ void from_json_postprocess<MatchSpecification>(
   m.mExecutableLastSeenPath = m.mExecutablePathPattern;
 }
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   MatchSpecification,
   mExecutablePathPattern,
   mExecutableLastSeenPath,
@@ -533,7 +533,7 @@ OPENKNEEBOARD_DEFINE_SPARSE_JSON(
   mMatchWindowClass,
   mMatchExecutable)
 
-OPENKNEEBOARD_DEFINE_SPARSE_JSON(
+VISORVR_DEFINE_SPARSE_JSON(
   WindowCaptureTab::Settings,
   mSpec,
   mSendInput,
@@ -573,4 +573,4 @@ void WinEventHook::HookProc(
 }
 }// namespace
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -15,7 +15,7 @@
 
 using namespace winrt::Microsoft::UI::Xaml;
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct InputDeviceUIData : InputDeviceUIDataT<InputDeviceUIData> {
   InputDeviceUIData() = default;
 
@@ -32,7 +32,7 @@ struct InputDeviceUIData : InputDeviceUIDataT<InputDeviceUIData> {
 struct TabletInputDeviceUIData
   : TabletInputDeviceUIDataT<
       TabletInputDeviceUIData,
-      OpenKneeboardApp::implementation::InputDeviceUIData> {
+      VisorVRApp::implementation::InputDeviceUIData> {
   TabletInputDeviceUIData() = default;
 
   uint8_t Orientation();
@@ -59,8 +59,8 @@ struct InputDeviceUIDataTemplateSelector
   DataTemplate mTabletDevice;
 };
 
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct InputDeviceUIData
   : InputDeviceUIDataT<InputDeviceUIData, implementation::InputDeviceUIData> {};
 struct TabletInputDeviceUIData : TabletInputDeviceUIDataT<
@@ -71,4 +71,4 @@ struct InputDeviceUIDataTemplateSelector
       InputDeviceUIDataTemplateSelector,
       implementation::InputDeviceUIDataTemplateSelector> {};
 
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

@@ -8,14 +8,14 @@
 
 #include "viewer.hpp"
 
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/SHM/D3D11.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/SHM/D3D11.hpp>
 
 #include <shims/winrt/base.h>
 
 #include <d3d11.h>
 
-namespace OpenKneeboard::Viewer {
+namespace VisorVR::Viewer {
 
 class D3D11Renderer final : public Renderer {
  public:
@@ -47,7 +47,7 @@ class D3D11Renderer final : public Renderer {
   winrt::com_ptr<ID3D11Device1> mD3D11Device;
   winrt::com_ptr<ID3D11DeviceContext> mD3D11ImmediateContext;
 
-  std::unique_ptr<OpenKneeboard::D3D11::SpriteBatch> mSpriteBatch;
+  std::unique_ptr<VisorVR::D3D11::SpriteBatch> mSpriteBatch;
 
   PixelSize mDestDimensions;
   HANDLE mDestHandle {};
@@ -55,4 +55,4 @@ class D3D11Renderer final : public Renderer {
   winrt::com_ptr<ID3D11RenderTargetView> mDestRenderTargetView;
 };
 
-}// namespace OpenKneeboard::Viewer
+}// namespace VisorVR::Viewer

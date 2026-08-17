@@ -1,0 +1,14 @@
+{
+  "file_format_version": "1.0.0",
+  "api_layer": {
+    "name": "${PROJECT_OPENXR_API_LAYER_NAME}",
+    "library_path": ".\\$<TARGET_FILE_NAME:VisorVR-OpenXR>",
+    "api_version": "1.0",
+    "implementation_version": "${OPENXR_API_LAYER_IMPLEMENTATION_VERSION}",
+    "description": "${PROJECT_OPENXR_API_LAYER_DESCRIPTION}",
+    "functions": {
+      "xrNegotiateLoaderApiLayerInterface": "VisorVR_xrNegotiateLoaderApiLayerInterface"
+    },
+    "disable_environment": "DISABLE_${PROJECT_OPENXR_API_LAYER_NAME}"
+  }
+}

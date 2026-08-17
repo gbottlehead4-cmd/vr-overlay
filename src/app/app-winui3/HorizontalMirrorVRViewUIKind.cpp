@@ -10,9 +10,9 @@
 #include "HorizontalMirrorVRViewUIKind.g.cpp"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 winrt::guid HorizontalMirrorVRViewUIKind::MirrorOf() { return mMirrorOf; }
 void HorizontalMirrorVRViewUIKind::MirrorOf(winrt::guid const& value) {
   mMirrorOf = value;
 }
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

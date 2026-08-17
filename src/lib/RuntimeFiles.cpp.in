@@ -1,6 +1,6 @@
-#include <OpenKneeboard/RuntimeFiles.hpp>
+#include <VisorVR/RuntimeFiles.hpp>
 
-namespace OpenKneeboard::RuntimeFiles {
+namespace VisorVR::RuntimeFiles {
 const std::string_view WINDOW_CAPTURE_HOOK_DLL(
-  "$<TARGET_FILE_NAME:OpenKneeboard-WindowCaptureHook>");
-}// namespace OpenKneeboard::RuntimeFiles
+  "$<TARGET_FILE_NAME:VisorVR-WindowCaptureHook>");
+}// namespace VisorVR::RuntimeFiles

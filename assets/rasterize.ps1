@@ -9,7 +9,7 @@ foreach ($size in $iconSizes) {
   magick convert `
     -background none `
     -density $(($nativeDpi * $size) / $nativeIconHeight) `
-    "$(Get-Location)\OpenKneeboard_Logos_Icon_Color.svg" `
+    "$(Get-Location)\VisorVR_Logos_Icon_Color.svg" `
     -trim `
     -gravity center `
     -extent "${size}x${size}" `
@@ -33,7 +33,7 @@ magick `
   -fill '#eee' `
   -draw "rectangle 0,0, ${gutterWidth},${dialogHeight}" `
   '(' `
-  "OpenKneeboard_Logos_Flat.svg" `
+  "VisorVR_Logos_Flat.svg" `
   -gravity Center `
   -trim -resize $overlayWidth `
   ')' `
@@ -53,7 +53,7 @@ magick `
   -background none `
   -size ${bannerWidth}x${bannerHeight} canvas:white `
   '(' `
-  "OpenKneeboard_Logos_Icon_Flat.svg" `
+  "VisorVR_Logos_Icon_Flat.svg" `
   -gravity Center `
   -trim -resize x$iconSize `
   ')' `

@@ -4,8 +4,8 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CEF/JSSources.hpp>
-#include <OpenKneeboard/ChromiumWorker.hpp>
+#include <VisorVR/CEF/JSSources.hpp>
+#include <VisorVR/ChromiumWorker.hpp>
 
 #include <Windows.h>
 
@@ -15,7 +15,7 @@
 
 #include <unordered_map>
 
-namespace OpenKneeboard::CEF {
+namespace VisorVR::CEF {
 
 namespace {
 
@@ -68,7 +68,7 @@ class BrowserApp final : public CefApp,
 
   void OnWebKitInitialized() override {
     CefRegisterExtension(
-      "OpenKneeboard/Native", GetOpenKneeboardNativeJS(), this);
+      "VisorVR/Native", GetOpenKneeboardNativeJS(), this);
   }
 
   void OnContextCreated(
@@ -104,7 +104,7 @@ class BrowserApp final : public CefApp,
 
     if (!data.mExposeOpenKneeboardAPIs) {
       context->Eval(
-        "console.warn('OpenKneeboard JS APIs are disabled by user settings');",
+        "console.warn('VisorVR JS APIs are disabled by user settings');",
         {},
         1,
         ret,
@@ -115,13 +115,13 @@ class BrowserApp final : public CefApp,
 
     context->Eval(
       GetOpenKneeboardAPIJS(),
-      "https://openkneeboard.local/OpenKneeboardAPI.js",
+      "https://visorvr.local/OpenKneeboardAPI.js",
       1,
       ret,
       exception);
     context->Eval(
       "new OpenKneeboardAPI()",
-      "https://openkneeboard.local/OpenKneeboardInit.js",
+      "https://visorvr.local/VisorVRInit.js",
       1,
       ret,
       exception);
@@ -132,7 +132,7 @@ class BrowserApp final : public CefApp,
     if (data.mIntegrateWithSimHub) {
       context->Eval(
         GetSimHubJS(),
-        "https://openkneeboard.local/simhub.js",
+        "https://visorvr.local/simhub.js",
         1,
         ret,
         exception);
@@ -155,7 +155,7 @@ class BrowserApp final : public CefApp,
     }
     data.mJS = {};
     frame->SendProcessMessage(
-      PID_BROWSER, CefProcessMessage::Create("okb/onContextReleased"));
+      PID_BROWSER, CefProcessMessage::Create("vvr/onContextReleased"));
   }
 
   bool OnProcessMessageReceived(
@@ -164,7 +164,7 @@ class BrowserApp final : public CefApp,
     CefProcessId sourceProcess,
     CefRefPtr<CefProcessMessage> message) override {
     const auto name = message->GetName().ToString();
-    if (name == "okb/asyncResult") {
+    if (name == "vvr/asyncResult") {
       auto& state = mBrowserData.at(browser->GetIdentifier()).mJS;
       const auto args = message->GetArgumentList();
       const auto id = args->GetInt(0);
@@ -183,7 +183,7 @@ class BrowserApp final : public CefApp,
       return true;
     }
 
-    constexpr std::string_view EventPrefix = "okbEvent/";
+    constexpr std::string_view EventPrefix = "vvrEvent/";
     if (name.starts_with(EventPrefix)) {
       const auto eventName = name.substr(EventPrefix.length());
 
@@ -299,16 +299,16 @@ class BrowserApp final : public CefApp,
   std::unordered_map<int, BrowserData> mBrowserData;
 };
 
-}// namespace OpenKneeboard::CEF
+}// namespace VisorVR::CEF
 
-namespace OpenKneeboard {
+namespace VisorVR {
 int ChromiumWorkerMain(HINSTANCE instance, void* sandbox) {
   const CefMainArgs mainArgs(instance);
-  const CefRefPtr<CefApp> app {new OpenKneeboard::CEF::BrowserApp()};
+  const CefRefPtr<CefApp> app {new VisorVR::CEF::BrowserApp()};
 
   return CefExecuteProcess(mainArgs, app.get(), sandbox);
 }
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 /** Prefer discrete GPU.
  *

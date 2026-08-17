@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/json.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/json.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -47,8 +47,8 @@ static bool OpenMailslotHandle() {
   }
   sLastAttempt = now;
 
-  MailslotHandle() = OpenKneeboard::Win32::or_default::CreateFile(
-    OpenKneeboard::APIEvent::GetMailslotPath(),
+  MailslotHandle() = VisorVR::Win32::or_default::CreateFile(
+    VisorVR::APIEvent::GetMailslotPath(),
     GENERIC_WRITE,
     FILE_SHARE_READ,
     nullptr,
@@ -59,7 +59,7 @@ static bool OpenMailslotHandle() {
   return static_cast<bool>(MailslotHandle());
 }
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 #define CHECK_PACKET(condition) \
   if (!(condition)) { \
@@ -157,16 +157,16 @@ const wchar_t* APIEvent::GetMailslotPath() {
   static std::wstring sPath;
   if (sPath.empty()) {
     sPath = std::format(
-      L"\\\\.\\mailslot\\{}.events.v1.3", OpenKneeboard::ProjectReverseDomainW);
+      L"\\\\.\\mailslot\\{}.events.v1.3", VisorVR::ProjectReverseDomainW);
   }
   return sPath.c_str();
 }
 
-OPENKNEEBOARD_DEFINE_JSON(SetTabByIDEvent, mID, mPageNumber, mKneeboard);
-OPENKNEEBOARD_DEFINE_JSON(SetTabByNameEvent, mName, mPageNumber, mKneeboard);
-OPENKNEEBOARD_DEFINE_JSON(SetTabByIndexEvent, mIndex, mPageNumber, mKneeboard);
-OPENKNEEBOARD_DEFINE_JSON(SetProfileByGUIDEvent, mGUID);
-OPENKNEEBOARD_DEFINE_JSON(SetProfileByNameEvent, mName);
+VISORVR_DEFINE_JSON(SetTabByIDEvent, mID, mPageNumber, mKneeboard);
+VISORVR_DEFINE_JSON(SetTabByNameEvent, mName, mPageNumber, mKneeboard);
+VISORVR_DEFINE_JSON(SetTabByIndexEvent, mIndex, mPageNumber, mKneeboard);
+VISORVR_DEFINE_JSON(SetProfileByGUIDEvent, mGUID);
+VISORVR_DEFINE_JSON(SetProfileByNameEvent, mName);
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
   SetBrightnessEvent::Mode,
@@ -174,11 +174,11 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {SetBrightnessEvent::Mode::Absolute, "Absolute"},
     {SetBrightnessEvent::Mode::Relative, "Relative"},
   });
-OPENKNEEBOARD_DEFINE_JSON(SetBrightnessEvent, mBrightness, mMode);
+VISORVR_DEFINE_JSON(SetBrightnessEvent, mBrightness, mMode);
 
-OPENKNEEBOARD_DEFINE_JSON(PluginTabCustomActionEvent, mActionID, mExtraData);
+VISORVR_DEFINE_JSON(PluginTabCustomActionEvent, mActionID, mExtraData);
 
-OPENKNEEBOARD_DEFINE_JSON(
+VISORVR_DEFINE_JSON(
   SetViewVRPoseEvent,
   mLayerID,
   mX,
@@ -190,4 +190,4 @@ OPENKNEEBOARD_DEFINE_JSON(
   mWidth,
   mHeight);
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

@@ -8,18 +8,18 @@
 
 #include "App.xaml.g.h"
 
-#include <OpenKneeboard/task.hpp>
+#include <VisorVR/task.hpp>
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct App : AppT<App> {
   App();
 
-  OpenKneeboard::fire_and_forget OnLaunched(
+  VisorVR::fire_and_forget OnLaunched(
     Microsoft::UI::Xaml::LaunchActivatedEventArgs) noexcept;
 
-  ::OpenKneeboard::task<void> CleanupAndExitAsync();
+  ::VisorVR::task<void> CleanupAndExitAsync();
 
  private:
   winrt::Microsoft::UI::Xaml::Window mWindow {nullptr};
 };
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

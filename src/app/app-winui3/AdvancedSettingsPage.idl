@@ -1,4 +1,4 @@
-namespace OpenKneeboardApp
+namespace VisorVRApp
 {
     [default_interface]
     runtimeclass AdvancedSettingsPage: Microsoft.UI.Xaml.Controls.Page,

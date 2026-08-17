@@ -1,396 +1,396 @@
-ok_add_library(OpenKneeboard-Lib-Headers INTERFACE)
-target_include_directories(OpenKneeboard-Lib-Headers INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+ok_add_library(VisorVR-Lib-Headers INTERFACE)
+target_include_directories(VisorVR-Lib-Headers INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/OpenKneeboard/config.in.hpp"
-  "${CMAKE_CURRENT_BINARY_DIR}/include/OpenKneeboard/config.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/VisorVR/config.in.hpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/VisorVR/config.hpp"
   @ONLY
 )
 file(
   GENERATE
   OUTPUT
-  "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/include/OpenKneeboard/detail/config.hpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/include/VisorVR/detail/config.hpp"
   CONTENT "\
-namespace OpenKneeboard::detail::Config {
+namespace VisorVR::detail::Config {
   constexpr auto BuildType = \"$<CONFIG>\";
 }"
 )
-ok_add_library(OpenKneeboard-config INTERFACE)
+ok_add_library(VisorVR-config INTERFACE)
 target_include_directories(
-  OpenKneeboard-config
+  VisorVR-config
   INTERFACE
   "${CMAKE_CURRENT_BINARY_DIR}/include"
   "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/include"
 )
-target_link_libraries(OpenKneeboard-config INTERFACE OpenKneeboard-Lib-Headers)
+target_link_libraries(VisorVR-config INTERFACE VisorVR-Lib-Headers)
 
 include(Geometry2D.cmake)
 
-ok_add_library(OpenKneeboard-ThreadGuard STATIC ThreadGuard.cpp)
-target_link_libraries(OpenKneeboard-ThreadGuard PUBLIC OpenKneeboard-Lib-Headers)
-target_link_libraries(OpenKneeboard-ThreadGuard PRIVATE OpenKneeboard-dprint)
+ok_add_library(VisorVR-ThreadGuard STATIC ThreadGuard.cpp)
+target_link_libraries(VisorVR-ThreadGuard PUBLIC VisorVR-Lib-Headers)
+target_link_libraries(VisorVR-ThreadGuard PRIVATE VisorVR-dprint)
 
 ok_add_library(
-  OpenKneeboard-fatal
+  VisorVR-fatal
   STATIC
   fatal.cpp
   HEADERS
-  include/OpenKneeboard/fatal.hpp
+  include/VisorVR/fatal.hpp
   INCLUDE_DIRECTORIES
   include
 )
 target_link_libraries(
-  OpenKneeboard-fatal
+  VisorVR-fatal
   PUBLIC
-  OpenKneeboard-config
+  VisorVR-config
   PRIVATE
-  OpenKneeboard-Elevation
-  OpenKneeboard-dprint
-  OpenKneeboard-shims
-  OpenKneeboard-Filesystem
-  OpenKneeboard-version
+  VisorVR-Elevation
+  VisorVR-dprint
+  VisorVR-shims
+  VisorVR-Filesystem
+  VisorVR-version
   ThirdParty::CppWinRT
   ThirdParty::WIL
   ThirdParty::detours
   ThirdParty::felly
 )
 
-ok_add_library(OpenKneeboard-GetMainHWND STATIC GetMainHWND.cpp)
+ok_add_library(VisorVR-GetMainHWND STATIC GetMainHWND.cpp)
 target_link_libraries(
-  OpenKneeboard-GetMainHWND
+  VisorVR-GetMainHWND
   PUBLIC
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-win32
+  VisorVR-Lib-Headers
+  VisorVR-win32
 )
 target_link_libraries(
-  OpenKneeboard-GetMainHWND
+  VisorVR-GetMainHWND
   PRIVATE
-  OpenKneeboard-config
-  OpenKneeboard-shims
+  VisorVR-config
+  VisorVR-shims
 )
 
-ok_add_library(OpenKneeboard-GetSystemColor STATIC GetSystemColor.cpp)
+ok_add_library(VisorVR-GetSystemColor STATIC GetSystemColor.cpp)
 target_link_libraries(
-  OpenKneeboard-GetSystemColor
+  VisorVR-GetSystemColor
   PUBLIC
-  OpenKneeboard-Lib-Headers)
+  VisorVR-Lib-Headers)
 
-ok_add_library(OpenKneeboard-handles INTERFACE)
+ok_add_library(VisorVR-handles INTERFACE)
 target_link_libraries(
-  OpenKneeboard-handles
+  VisorVR-handles
   INTERFACE
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
 )
 
-ok_add_library(OpenKneeboard-Elevation STATIC Elevation.cpp)
+ok_add_library(VisorVR-Elevation STATIC Elevation.cpp)
 target_link_libraries(
-  OpenKneeboard-Elevation
+  VisorVR-Elevation
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
 )
 target_link_libraries(
-  OpenKneeboard-Elevation
+  VisorVR-Elevation
   PRIVATE
-  OpenKneeboard-config
-  OpenKneeboard-dprint
-  OpenKneeboard-scope_exit
+  VisorVR-config
+  VisorVR-dprint
+  VisorVR-scope_exit
   ThirdParty::CppWinRT
   System::Shell32
 )
 
-ok_add_library(OpenKneeboard-UTF8 STATIC utf8.cpp)
+ok_add_library(VisorVR-UTF8 STATIC utf8.cpp)
 target_link_libraries(
-  OpenKneeboard-UTF8
+  VisorVR-UTF8
   PUBLIC
   ThirdParty::JSON
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   PRIVATE
-  OpenKneeboard-fatal
+  VisorVR-fatal
 )
 
-ok_add_library(OpenKneeboard-DebugTimer STATIC DebugTimer.cpp)
+ok_add_library(VisorVR-DebugTimer STATIC DebugTimer.cpp)
 target_link_libraries(
-  OpenKneeboard-DebugTimer
+  VisorVR-DebugTimer
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
 )
 target_link_libraries(
-  OpenKneeboard-DebugTimer
+  VisorVR-DebugTimer
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
 )
 
-ok_add_library(OpenKneeboard-tracing STATIC tracing.cpp)
+ok_add_library(VisorVR-tracing STATIC tracing.cpp)
 target_link_libraries(
-  OpenKneeboard-tracing
+  VisorVR-tracing
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
   ThirdParty::CppWinRT
 )
 target_link_libraries(
-  OpenKneeboard-tracing
+  VisorVR-tracing
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
 )
 
 ok_add_library(
-  OpenKneeboard-D3D11
+  VisorVR-D3D11
   STATIC
   D3D11.cpp
   D3D11/SpriteBatch.cpp
 )
 target_link_libraries(
-  OpenKneeboard-D3D11
+  VisorVR-D3D11
   PUBLIC
   System::D3d11
-  OpenKneeboard-shims
+  VisorVR-shims
   ThirdParty::DirectXTK
   ThirdParty::CppWinRT
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-Sprite-DXBC
+  VisorVR-Lib-Headers
+  VisorVR-Sprite-DXBC
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
   System::Dxguid
 )
 
 ok_add_library(
-  OpenKneeboard-D3D12
+  VisorVR-D3D12
   STATIC
   D3D12/SpriteBatch.cpp
 )
 target_link_libraries(
-  OpenKneeboard-D3D12
+  VisorVR-D3D12
   PUBLIC
   System::D3d12
-  OpenKneeboard-shims
+  VisorVR-shims
   ThirdParty::DirectXTK12
   ThirdParty::CppWinRT
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-SpriteBatch-DXIL
+  VisorVR-Lib-Headers
+  VisorVR-SpriteBatch-DXIL
   PRIVATE
-  OpenKneeboard-dprint
-  OpenKneeboard-RenderDoc
+  VisorVR-dprint
+  VisorVR-RenderDoc
   System::Dxguid
 )
 
 ok_add_library(
-  OpenKneeboard-Vulkan
+  VisorVR-Vulkan
   STATIC
   Vulkan.cpp
   Vulkan/SpriteBatch.cpp)
 target_link_libraries(
-  OpenKneeboard-Vulkan
+  VisorVR-Vulkan
   PUBLIC
-  OpenKneeboard-dprint
+  VisorVR-dprint
   ThirdParty::VulkanHeaders
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-SpriteBatch-SPIRV
+  VisorVR-Lib-Headers
+  VisorVR-SpriteBatch-SPIRV
 )
 
-ok_add_library(OpenKneeboard-DXResources STATIC DXResources.cpp)
+ok_add_library(VisorVR-DXResources STATIC DXResources.cpp)
 target_link_libraries(
-  OpenKneeboard-DXResources
+  VisorVR-DXResources
   PUBLIC
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-D3D11
+  VisorVR-Lib-Headers
+  VisorVR-D3D11
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
   System::Gdi32
 )
 
 set(RUNTIME_FILES_CPP "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RuntimeFiles.cpp")
 file(GENERATE OUTPUT "${RUNTIME_FILES_CPP}" INPUT RuntimeFiles.cpp.in)
 ok_add_library(
-  OpenKneeboard-RuntimeFiles
+  VisorVR-RuntimeFiles
   STATIC
   "${RUNTIME_FILES_CPP}"
   RuntimeFilesGetInstallationDirectory.cpp
 )
 target_link_libraries(
-  OpenKneeboard-RuntimeFiles
+  VisorVR-RuntimeFiles
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   PRIVATE
-  OpenKneeboard-dprint
-  OpenKneeboard-Filesystem
+  VisorVR-dprint
+  VisorVR-Filesystem
 )
 if (ENABLE_APP)
   set(RUNTIME_FILES_APP_CPP "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RuntimeFiles-app.cpp")
   file(GENERATE OUTPUT "${RUNTIME_FILES_APP_CPP}" INPUT RuntimeFiles-app.cpp.in)
-  target_sources(OpenKneeboard-RuntimeFiles PRIVATE "${RUNTIME_FILES_APP_CPP}")
+  target_sources(VisorVR-RuntimeFiles PRIVATE "${RUNTIME_FILES_APP_CPP}")
 endif ()
 
 ok_add_library(
-  OpenKneeboard-SHM
+  VisorVR-SHM
   STATIC
   SHM.cpp
   SHM/ActiveConsumers.cpp
 )
 target_link_libraries(
-  OpenKneeboard-SHM
+  VisorVR-SHM
   PUBLIC
-  OpenKneeboard-dprint
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-StateMachine
+  VisorVR-dprint
+  VisorVR-Lib-Headers
+  VisorVR-StateMachine
   PRIVATE
-  OpenKneeboard-Elevation
-  OpenKneeboard-config
-  OpenKneeboard-fatal
-  OpenKneeboard-shims
-  OpenKneeboard-version
-  OpenKneeboard-win32
+  VisorVR-Elevation
+  VisorVR-config
+  VisorVR-fatal
+  VisorVR-shims
+  VisorVR-version
+  VisorVR-win32
   Boost::container
 )
 
 ok_add_library(
-  OpenKneeboard-SHM-Client-D3D11
+  VisorVR-SHM-Client-D3D11
   STATIC
   SHM/D3D11.cpp
   D3D11/Renderer.cpp
 )
 target_link_libraries(
-  OpenKneeboard-SHM-Client-D3D11
+  VisorVR-SHM-Client-D3D11
   PUBLIC
-  OpenKneeboard-shims
-  OpenKneeboard-SHM
+  VisorVR-shims
+  VisorVR-SHM
   System::D3d11
   ThirdParty::CppWinRT
   ThirdParty::DirectXTK
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
 )
 
 ok_add_library(
-  OpenKneeboard-SHM-Client-D3D12
+  VisorVR-SHM-Client-D3D12
   STATIC
   SHM/D3D12.cpp
   D3D12/Renderer.cpp
 )
 target_link_libraries(
-  OpenKneeboard-SHM-Client-D3D12
+  VisorVR-SHM-Client-D3D12
   PUBLIC
-  OpenKneeboard-shims
-  OpenKneeboard-SHM
-  OpenKneeboard-D3D12
+  VisorVR-shims
+  VisorVR-SHM
+  VisorVR-D3D12
   System::D3d12
   ThirdParty::CppWinRT
   ThirdParty::DirectXTK12
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
 )
 
 ok_add_library(
-  OpenKneeboard-SHM-Client-Vulkan
+  VisorVR-SHM-Client-Vulkan
   STATIC
   SHM/Vulkan.cpp
 )
 target_link_libraries(
-  OpenKneeboard-SHM-Client-Vulkan
+  VisorVR-SHM-Client-Vulkan
   PUBLIC
-  OpenKneeboard-SHM
-  OpenKneeboard-Vulkan
-  OpenKneeboard-shims
+  VisorVR-SHM
+  VisorVR-Vulkan
+  VisorVR-shims
   ThirdParty::CppWinRT
   ThirdParty::VulkanHeaders
 )
 
 ok_add_library(
-  OpenKneeboard-dprint
+  VisorVR-dprint
   STATIC
   dprint.cpp
   HEADERS
-  include/OpenKneeboard/dprint.hpp
+  include/VisorVR/dprint.hpp
   INCLUDE_DIRECTORIES
   include
 )
 
 target_link_libraries(
-  OpenKneeboard-dprint
+  VisorVR-dprint
   PUBLIC
-  OpenKneeboard-config
-  OpenKneeboard-fatal
-  OpenKneeboard-scope_exit
+  VisorVR-config
+  VisorVR-fatal
+  VisorVR-scope_exit
   ThirdParty::bindline
 )
-target_link_libraries(OpenKneeboard-dprint
+target_link_libraries(VisorVR-dprint
   PRIVATE
-  OpenKneeboard-scope_exit
+  VisorVR-scope_exit
 )
 
-ok_add_library(OpenKneeboard-consolelib STATIC ConsoleLoopCondition.cpp)
+ok_add_library(VisorVR-consolelib STATIC ConsoleLoopCondition.cpp)
 target_link_libraries(
-  OpenKneeboard-consolelib
+  VisorVR-consolelib
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   PRIVATE
-  OpenKneeboard-fatal
-  OpenKneeboard-win32
+  VisorVR-fatal
+  VisorVR-win32
 )
 
-ok_add_library(OpenKneeboard-APIEvent STATIC APIEvent.cpp)
-target_link_libraries(OpenKneeboard-APIEvent
+ok_add_library(VisorVR-APIEvent STATIC APIEvent.cpp)
+target_link_libraries(VisorVR-APIEvent
   PUBLIC
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-UTF8
-  OpenKneeboard-json
+  VisorVR-Lib-Headers
+  VisorVR-UTF8
+  VisorVR-json
   PRIVATE
-  OpenKneeboard-config
-  OpenKneeboard-dprint
+  VisorVR-config
+  VisorVR-dprint
 )
 
-ok_add_library(OpenKneeboard-D2DErrorRenderer STATIC D2DErrorRenderer.cpp)
+ok_add_library(VisorVR-D2DErrorRenderer STATIC D2DErrorRenderer.cpp)
 target_link_libraries(
-  OpenKneeboard-D2DErrorRenderer
+  VisorVR-D2DErrorRenderer
   PUBLIC
-  OpenKneeboard-DXResources
-  OpenKneeboard-UTF8
-  OpenKneeboard-config
+  VisorVR-DXResources
+  VisorVR-UTF8
+  VisorVR-config
   System::D2d1
   System::Dwrite
-  OpenKneeboard-Lib-Headers)
+  VisorVR-Lib-Headers)
 
-ok_add_library(OpenKneeboard-RayIntersectsRect STATIC RayIntersectsRect.cpp)
+ok_add_library(VisorVR-RayIntersectsRect STATIC RayIntersectsRect.cpp)
 target_link_libraries(
-  OpenKneeboard-RayIntersectsRect
+  VisorVR-RayIntersectsRect
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   ThirdParty::DirectXTK)
 target_link_libraries(
-  OpenKneeboard-RayIntersectsRect
+  VisorVR-RayIntersectsRect
   PRIVATE
-  OpenKneeboard-dprint)
+  VisorVR-dprint)
 
-ok_add_library(OpenKneeboard-StateMachine INTERFACE)
+ok_add_library(VisorVR-StateMachine INTERFACE)
 target_link_libraries(
-  OpenKneeboard-StateMachine
+  VisorVR-StateMachine
   INTERFACE
-  OpenKneeboard-Lib-Headers
-  OpenKneeboard-dprint
+  VisorVR-Lib-Headers
+  VisorVR-dprint
   ThirdParty::magic_enum
 )
 
-ok_add_library(OpenKneeboard-scope_exit INTERFACE)
+ok_add_library(VisorVR-scope_exit INTERFACE)
 target_link_libraries(
-  OpenKneeboard-scope_exit
+  VisorVR-scope_exit
   INTERFACE
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   ThirdParty::felly
 )
 
-ok_add_library(OpenKneeboard-VRKneeboard STATIC VRKneeboard.cpp)
+ok_add_library(VisorVR-VRKneeboard STATIC VRKneeboard.cpp)
 target_link_libraries(
-  OpenKneeboard-VRKneeboard
+  VisorVR-VRKneeboard
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   ThirdParty::DirectXTK
-  OpenKneeboard-RayIntersectsRect
-  OpenKneeboard-SHM
+  VisorVR-RayIntersectsRect
+  VisorVR-SHM
 )
 
-set(VERSION_CPP_FILE "${CMAKE_CURRENT_BINARY_DIR}/include/OpenKneeboard/version.hpp")
+set(VERSION_CPP_FILE "${CMAKE_CURRENT_BINARY_DIR}/include/VisorVR/version.hpp")
 add_custom_target(
-  OpenKneeboard-version-sources
+  VisorVR-version-sources
   COMMAND
   ${CMAKE_COMMAND}
   -DVERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
@@ -399,7 +399,7 @@ add_custom_target(
   -DVERSION_BUILD=${CMAKE_PROJECT_VERSION_TWEAK}
   -DRELEASE_NAME=${RELEASE_NAME}
   -DOPENXR_API_LAYER_IMPLEMENTATION_VERSION=${OPENXR_API_LAYER_IMPLEMENTATION_VERSION}
-  "-DINPUT_CPP_FILE=${CMAKE_CURRENT_SOURCE_DIR}/include/OpenKneeboard/version.in.hpp"
+  "-DINPUT_CPP_FILE=${CMAKE_CURRENT_SOURCE_DIR}/include/VisorVR/version.in.hpp"
   "-DOUTPUT_CPP_FILE=${VERSION_CPP_FILE}"
   "-P${CMAKE_CURRENT_SOURCE_DIR}/../version.cmake"
   DEPENDS
@@ -410,144 +410,144 @@ add_custom_target(
   WORKING_DIRECTORY
   "${CMAKE_SOURCE_DIR}"
 )
-ok_add_library(OpenKneeboard-version INTERFACE)
+ok_add_library(VisorVR-version INTERFACE)
 target_include_directories(
-  OpenKneeboard-version
+  VisorVR-version
   INTERFACE
   "${CMAKE_CURRENT_BINARY_DIR}/include"
 )
-add_dependencies(OpenKneeboard-version OpenKneeboard-version-sources)
+add_dependencies(VisorVR-version VisorVR-version-sources)
 ok_add_library(
-  OpenKneeboard-semver
+  VisorVR-semver
   STATIC
   semver.cpp
   HEADERS
-  include/OpenKneeboard/semver.hpp
+  include/VisorVR/semver.hpp
   INCLUDE_DIRECTORIES
   include
 )
 target_link_libraries(
-  OpenKneeboard-semver
+  VisorVR-semver
   PRIVATE
-  OpenKneeboard-dprint
+  VisorVR-dprint
   ThirdParty::SemVer
 )
 
-ok_add_library(OpenKneeboard-shims INTERFACE)
+ok_add_library(VisorVR-shims INTERFACE)
 target_include_directories(
-  OpenKneeboard-shims
+  VisorVR-shims
   INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 target_link_libraries(
-  OpenKneeboard-shims
+  VisorVR-shims
   INTERFACE
-  OpenKneeboard-dprint
-  OpenKneeboard-fatal
+  VisorVR-dprint
+  VisorVR-fatal
 )
 
-ok_add_library(OpenKneeboard-json STATIC json.cpp)
+ok_add_library(VisorVR-json STATIC json.cpp)
 target_link_libraries(
-  OpenKneeboard-json
+  VisorVR-json
   PUBLIC
-  OpenKneeboard-dprint
+  VisorVR-dprint
   ThirdParty::JSON
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
 )
 
-ok_add_library(OpenKneeboard-Filesystem STATIC Filesystem.cpp)
+ok_add_library(VisorVR-Filesystem STATIC Filesystem.cpp)
 target_link_libraries(
-  OpenKneeboard-Filesystem
+  VisorVR-Filesystem
   PUBLIC
-  OpenKneeboard-shims
-  OpenKneeboard-config
-  OpenKneeboard-Lib-Headers
+  VisorVR-shims
+  VisorVR-config
+  VisorVR-Lib-Headers
   PRIVATE
-  OpenKneeboard-StateMachine
-  OpenKneeboard-UTF8
-  OpenKneeboard-dprint
-  OpenKneeboard-fatal
+  VisorVR-StateMachine
+  VisorVR-UTF8
+  VisorVR-dprint
+  VisorVR-fatal
   System::Shlwapi
   ThirdParty::CppWinRT
   ThirdParty::WIL
 )
 
-ok_add_library(OpenKneeboard-WindowCaptureControl STATIC WindowCaptureControl.cpp)
+ok_add_library(VisorVR-WindowCaptureControl STATIC WindowCaptureControl.cpp)
 target_link_libraries(
-  OpenKneeboard-WindowCaptureControl
+  VisorVR-WindowCaptureControl
   PRIVATE
-  OpenKneeboard-RuntimeFiles
-  OpenKneeboard-dprint
-  OpenKneeboard-shims
+  VisorVR-RuntimeFiles
+  VisorVR-dprint
+  VisorVR-shims
 )
 target_link_libraries(
-  OpenKneeboard-WindowCaptureControl
+  VisorVR-WindowCaptureControl
   PUBLIC
-  OpenKneeboard-handles
-  OpenKneeboard-Lib-Headers
+  VisorVR-handles
+  VisorVR-Lib-Headers
 )
 
 ok_add_library(
-  OpenKneeboard-RenderDoc
+  VisorVR-RenderDoc
   STATIC
   RenderDoc.cpp
 )
 target_link_libraries(
-  OpenKneeboard-RenderDoc
+  VisorVR-RenderDoc
   PUBLIC
-  OpenKneeboard-Lib-Headers
+  VisorVR-Lib-Headers
   PRIVATE
-  OpenKneeboard-fatal
+  VisorVR-fatal
   ThirdParty::RenderDoc
 )
 ok_add_library(
-  OpenKneeboard-EnumerateProcesses
+  VisorVR-EnumerateProcesses
   STATIC
   EnumerateProcesses.cpp
   HEADERS
-  include/OpenKneeboard/EnumerateProcesses.hpp
+  include/VisorVR/EnumerateProcesses.hpp
   INCLUDE_DIRECTORIES
   include
 )
 target_link_libraries(
-  OpenKneeboard-EnumerateProcesses
+  VisorVR-EnumerateProcesses
   PRIVATE
-  OpenKneeboard-dprint
-  OpenKneeboard-tracing
+  VisorVR-dprint
+  VisorVR-tracing
 )
 
 ok_add_library(
-  OpenKneeboard-win32
+  VisorVR-win32
   INTERFACE
   HEADERS
-  include/OpenKneeboard/Win32.hpp
+  include/VisorVR/Win32.hpp
   INCLUDE_DIRECTORIES
   include
 )
 target_link_libraries(
-  OpenKneeboard-win32
+  VisorVR-win32
   INTERFACE
-  OpenKneeboard-fatal
-  OpenKneeboard-shims
+  VisorVR-fatal
+  VisorVR-shims
   ThirdParty::bindline
   ThirdParty::CppWinRT
 )
 
-add_library(OpenKneeboard-task INTERFACE)
+add_library(VisorVR-task INTERFACE)
 target_link_libraries(
-  OpenKneeboard-task
+  VisorVR-task
   INTERFACE
-  OpenKneeboard-StateMachine
-  OpenKneeboard-dprint
-  OpenKneeboard-fatal
-  OpenKneeboard-shims
+  VisorVR-StateMachine
+  VisorVR-dprint
+  VisorVR-fatal
+  VisorVR-shims
   ThirdParty::CppWinRT
   ThirdParty::magic_enum
 )
 
 ok_add_library(
-  OpenKneeboard-UserAction
+  VisorVR-UserAction
   INTERFACE
-  HEADERS include/OpenKneeboard/UserAction.hpp
+  HEADERS include/VisorVR/UserAction.hpp
   INCLUDE_DIRECTORIES include
 )

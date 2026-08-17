@@ -10,7 +10,7 @@
 #include "MultiplierValueConverter.g.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct MultiplierValueConverter
   : MultiplierValueConverterT<MultiplierValueConverter> {
   MultiplierValueConverter() = default;
@@ -26,10 +26,10 @@ struct MultiplierValueConverter
     winrt::Windows::Foundation::IInspectable const& parameter,
     hstring const& language);
 };
-}// namespace winrt::OpenKneeboardApp::implementation
-namespace winrt::OpenKneeboardApp::factory_implementation {
+}// namespace winrt::VisorVRApp::implementation
+namespace winrt::VisorVRApp::factory_implementation {
 struct MultiplierValueConverter : MultiplierValueConverterT<
                                     MultiplierValueConverter,
                                     implementation::MultiplierValueConverter> {
 };
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

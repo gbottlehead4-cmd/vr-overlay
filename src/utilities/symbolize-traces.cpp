@@ -69,12 +69,12 @@ struct Frame {
   int mOffset {};
 };
 
-static std::optional<Frame> match_okb_line(const std::string& line) {
+static std::optional<Frame> match_vvr_line(const std::string& line) {
   // Can be a module or function offset
   //
-  // 0> OpenKneeboardApp+0x85B5
-  // 5> OpenKneeboardApp!VSDesignerDllMain+0x5A394
-  // Blame frame: :0:0 - OpenKneeboardApp!VSDesignerDllMain+0x226F2
+  // 0> VisorVRApp+0x85B5
+  // 5> VisorVRApp!VSDesignerDllMain+0x5A394
+  // Blame frame: :0:0 - VisorVRApp!VSDesignerDllMain+0x226F2
   const std::regex entry_regex {
     "^(\\d+>|Blame frame: [^ ]+ -|Caller:) (\\w+)(!(\\w+))?\\+0x([A-Z0-9]+)$"};
   std::smatch entry_match;
@@ -91,10 +91,10 @@ static std::optional<Frame> match_okb_line(const std::string& line) {
 }
 
 static std::optional<Frame> match_dcs_line(const std::string& line) {
-  // 0x000000000015f7a2 (OpenKneeboard-OpenXR64):
-  // OpenKneeboard_xrNegotiateLoaderApiLayerInterface + 0x15CFB5
+  // 0x000000000015f7a2 (VisorVR-OpenXR64):
+  // VisorVR_xrNegotiateLoaderApiLayerInterface + 0x15CFB5
   const std::regex entry_regex {
-    "^0x[0-9a-f]+ \\((OpenKneeboard.+)\\): (\\w+) \\+ 0x([0-9A-F]+)$",
+    "^0x[0-9a-f]+ \\((VisorVR.+)\\): (\\w+) \\+ 0x([0-9A-F]+)$",
     std::regex_constants::ECMAScript};
   std::smatch entry_match;
   if (!std::regex_match(line, entry_match, entry_regex)) {
@@ -117,7 +117,7 @@ static std::optional<Frame> match_dcs_line(const std::string& line) {
 }
 
 static std::optional<Frame> match_line(const std::string& line) {
-  if (const auto match = match_okb_line(line)) {
+  if (const auto match = match_vvr_line(line)) {
     return match;
   }
   if (const auto match = match_dcs_line(line)) {

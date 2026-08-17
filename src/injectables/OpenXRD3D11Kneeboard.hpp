@@ -8,15 +8,15 @@
 
 #include "OpenXRKneeboard.hpp"
 
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/D3D11/Renderer.hpp>
-#include <OpenKneeboard/SHM/D3D11.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/D3D11/Renderer.hpp>
+#include <VisorVR/SHM/D3D11.hpp>
 
-#include <OpenKneeboard/config.hpp>
+#include <VisorVR/config.hpp>
 
 struct XrGraphicsBindingD3D11KHR;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 class OpenXRD3D11Kneeboard final : public OpenXRKneeboard {
  public:
@@ -66,4 +66,4 @@ class OpenXRD3D11Kneeboard final : public OpenXRKneeboard {
   std::unordered_map<XrSwapchain, SwapchainResources> mSwapchainResources;
 };
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

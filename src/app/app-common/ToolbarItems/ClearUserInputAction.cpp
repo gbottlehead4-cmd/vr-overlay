@@ -4,13 +4,13 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ClearUserInputAction.hpp>
-#include <OpenKneeboard/IPageSourceWithCursorEvents.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/TabsList.hpp>
+#include <VisorVR/ClearUserInputAction.hpp>
+#include <VisorVR/IPageSourceWithCursorEvents.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/TabsList.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 ClearUserInputAction::ClearUserInputAction(
   KneeboardState* kbs,
@@ -154,4 +154,4 @@ std::string_view ClearUserInputAction::GetCancelButtonLabel() const {
   return _("Cancel");
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

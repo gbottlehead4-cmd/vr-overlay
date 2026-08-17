@@ -12,11 +12,11 @@
 #include "UIDataItem.h"
 // clang-format on
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 struct HorizontalMirrorVRViewUIKind
   : HorizontalMirrorVRViewUIKindT<
       HorizontalMirrorVRViewUIKind,
-      OpenKneeboardApp::implementation::UIDataItem> {
+      VisorVRApp::implementation::UIDataItem> {
   HorizontalMirrorVRViewUIKind() = default;
 
   winrt::guid MirrorOf();
@@ -25,11 +25,11 @@ struct HorizontalMirrorVRViewUIKind
  private:
   winrt::guid mMirrorOf;
 };
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation
 
-namespace winrt::OpenKneeboardApp::factory_implementation {
+namespace winrt::VisorVRApp::factory_implementation {
 struct HorizontalMirrorVRViewUIKind
   : HorizontalMirrorVRViewUIKindT<
       HorizontalMirrorVRViewUIKind,
       implementation::HorizontalMirrorVRViewUIKind> {};
-}// namespace winrt::OpenKneeboardApp::factory_implementation
+}// namespace winrt::VisorVRApp::factory_implementation

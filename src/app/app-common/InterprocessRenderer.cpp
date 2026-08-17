@@ -4,24 +4,24 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/CreateTabActions.hpp>
-#include <OpenKneeboard/CursorClickableRegions.hpp>
-#include <OpenKneeboard/CursorEvent.hpp>
-#include <OpenKneeboard/CursorRenderer.hpp>
-#include <OpenKneeboard/D3D11.hpp>
-#include <OpenKneeboard/GetSystemColor.hpp>
-#include <OpenKneeboard/ITab.hpp>
-#include <OpenKneeboard/InterprocessRenderer.hpp>
-#include <OpenKneeboard/KneeboardState.hpp>
-#include <OpenKneeboard/KneeboardView.hpp>
-#include <OpenKneeboard/Spriting.hpp>
-#include <OpenKneeboard/TabView.hpp>
-#include <OpenKneeboard/ToolbarAction.hpp>
+#include <VisorVR/CreateTabActions.hpp>
+#include <VisorVR/CursorClickableRegions.hpp>
+#include <VisorVR/CursorEvent.hpp>
+#include <VisorVR/CursorRenderer.hpp>
+#include <VisorVR/D3D11.hpp>
+#include <VisorVR/GetSystemColor.hpp>
+#include <VisorVR/ITab.hpp>
+#include <VisorVR/InterprocessRenderer.hpp>
+#include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/KneeboardView.hpp>
+#include <VisorVR/Spriting.hpp>
+#include <VisorVR/TabView.hpp>
+#include <VisorVR/ToolbarAction.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/hresult.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/hresult.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <atomic>
 #include <mutex>
@@ -36,7 +36,7 @@
 #include <hidusage.h>
 #include <wincodec.h>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 // P1b: relative mouse capture for the in-VR edit mode.
 //
@@ -72,7 +72,7 @@ class RawMouseCapture final {
   }
 
  private:
-  static constexpr wchar_t kClassName[] = L"OpenKneeboard_RawMouseCapture";
+  static constexpr wchar_t kClassName[] = L"VisorVR_RawMouseCapture";
 
   std::atomic<int64_t> mAccumX {0};
   std::atomic<int64_t> mAccumY {0};
@@ -184,7 +184,7 @@ void InterprocessRenderer::SubmitFrame(
     return;
   }
 
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity, "InterprocessRenderer::SubmitFrame()");
 
   auto ctx = mDXR->mD3D11ImmediateContext.get();
@@ -209,17 +209,17 @@ void InterprocessRenderer::SubmitFrame(
 
   auto fence = destResources->mFence.get();
   {
-    OPENKNEEBOARD_TraceLoggingScope(
+    VISORVR_TraceLoggingScope(
       "CopyFromCanvas",
       TraceLoggingValue(ipcTextureInfo.mTextureIndex, "TextureIndex"),
       TraceLoggingValue(ipcTextureInfo.mFenceOut, "FenceOut"));
     {
-      OPENKNEEBOARD_TraceLoggingScope("CopyFromCanvas/CopySubresourceRegion");
+      VISORVR_TraceLoggingScope("CopyFromCanvas/CopySubresourceRegion");
       ctx->CopySubresourceRegion(
         destResources->mTexture.get(), 0, 0, 0, 0, srcTexture, 0, &srcBox);
     }
     {
-      OPENKNEEBOARD_TraceLoggingScope("CopyFromCanvas/FenceOut");
+      VISORVR_TraceLoggingScope("CopyFromCanvas/FenceOut");
       check_hresult(ctx->Signal(fence, ipcTextureInfo.mFenceOut));
     }
   }
@@ -301,7 +301,7 @@ void InterprocessRenderer::SubmitFrame(
   }
 
   {
-    OPENKNEEBOARD_TraceLoggingScope("SHMSubmitFrame");
+    VISORVR_TraceLoggingScope("SHMSubmitFrame");
     mSHM.SubmitFrame(
       ipcTextureInfo,
       config,
@@ -320,10 +320,10 @@ void InterprocessRenderer::InitializeCanvas(const PixelSize& size) {
     return;
   }
 
-  OPENKNEEBOARD_TraceLoggingScope("InterprocessRenderer::InitializeCanvas()");
+  VISORVR_TraceLoggingScope("InterprocessRenderer::InitializeCanvas()");
 
   if (size.IsEmpty()) [[unlikely]] {
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     return;
   }
 
@@ -364,7 +364,7 @@ void InterprocessRenderer::PostUserAction(UserAction action) {
       mVisible = false;
       break;
     default:
-      OPENKNEEBOARD_BREAK;
+      VISORVR_BREAK;
       return;
   }
 
@@ -385,7 +385,7 @@ InterprocessRenderer::GetIPCTextureResources(
     return &ret;
   }
 
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity,
     "InterprocessRenderer::GetIPCTextureResources:",
     TraceLoggingValue(textureIndex, "textureIndex"),
@@ -446,7 +446,7 @@ std::shared_ptr<InterprocessRenderer> InterprocessRenderer::Create(
   return ret;
 }
 
-OpenKneeboard::fire_and_forget InterprocessRenderer::final_release(
+VisorVR::fire_and_forget InterprocessRenderer::final_release(
   std::unique_ptr<InterprocessRenderer> it) {
   // Delete in the correct thread
   co_await it->mOwnerThread;
@@ -488,7 +488,7 @@ InterprocessRenderer::~InterprocessRenderer() {
 task<SHM::LayerConfig> InterprocessRenderer::RenderLayer(
   const ViewRenderInfo& layer,
   const PixelRect& bounds) noexcept {
-  OPENKNEEBOARD_TraceLoggingScope("InterprocessRenderer::RenderLayer");
+  VISORVR_TraceLoggingScope("InterprocessRenderer::RenderLayer");
   const auto view = layer.mView.get();
 
   SHM::LayerConfig ret {};
@@ -573,13 +573,13 @@ task<SHM::LayerConfig> InterprocessRenderer::RenderLayer(
 task<void> InterprocessRenderer::RenderNow() noexcept {
   if (mRendering.test_and_set()) {
     dprint("Two renders in the same instance");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     co_return;
   }
 
   const scope_exit markDone([this]() { mRendering.clear(); });
 
-  OPENKNEEBOARD_TraceLoggingScopedActivity(
+  VISORVR_TraceLoggingScopedActivity(
     activity, "InterprocessRenderer::RenderNow()");
 
   const auto renderInfos = mKneeboard->GetViewRenderInfo();
@@ -631,4 +631,4 @@ task<void> InterprocessRenderer::RenderNow() noexcept {
   this->SubmitFrame(shmLayers, inputLayerID);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

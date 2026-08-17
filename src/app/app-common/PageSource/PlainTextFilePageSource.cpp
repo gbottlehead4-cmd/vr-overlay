@@ -4,11 +4,11 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/FileHash.hpp>
-#include <OpenKneeboard/PlainTextFilePageSource.hpp>
-#include <OpenKneeboard/PlainTextPageSource.hpp>
+#include <VisorVR/FileHash.hpp>
+#include <VisorVR/PlainTextFilePageSource.hpp>
+#include <VisorVR/PlainTextPageSource.hpp>
 
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <shims/nlohmann/json.hpp>
 
@@ -16,7 +16,7 @@
 
 #include <fstream>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 PlainTextFilePageSource::PlainTextFilePageSource(
   const audited_ptr<DXResources>& dxr,
@@ -46,7 +46,7 @@ task<std::shared_ptr<PlainTextFilePageSource>> PlainTextFilePageSource::Create(
 std::filesystem::path PlainTextFilePageSource::GetPath() const { return mPath; }
 
 void PlainTextFilePageSource::SetPath(const std::filesystem::path& path) {
-  OPENKNEEBOARD_TraceLoggingScope(
+  VISORVR_TraceLoggingScope(
     "PlainTextFilePageSource::SetPath()",
     TraceLoggingValue(path.c_str(), "Path"));
   if (path == mPath) {
@@ -178,4 +178,4 @@ std::optional<PageID> PlainTextFilePageSource::GetPageIDFromPersistentID(
   return pageIDs[pageIndex];
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

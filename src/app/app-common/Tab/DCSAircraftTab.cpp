@@ -4,18 +4,18 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/APIEvent.hpp>
-#include <OpenKneeboard/DCSAircraftTab.hpp>
-#include <OpenKneeboard/DCSEvents.hpp>
-#include <OpenKneeboard/Filesystem.hpp>
-#include <OpenKneeboard/FolderPageSource.hpp>
+#include <VisorVR/APIEvent.hpp>
+#include <VisorVR/DCSAircraftTab.hpp>
+#include <VisorVR/DCSEvents.hpp>
+#include <VisorVR/Filesystem.hpp>
+#include <VisorVR/FolderPageSource.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/format/filesystem.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/format/filesystem.hpp>
 
 #include <fstream>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 namespace {
 
@@ -122,7 +122,7 @@ std::string DCSAircraftTab::GetDebugInformation() const {
   return mDebugInformation;
 }
 
-OpenKneeboard::fire_and_forget DCSAircraftTab::OnAPIEvent(
+VisorVR::fire_and_forget DCSAircraftTab::OnAPIEvent(
   APIEvent event,
   std::filesystem::path installPath,
   std::filesystem::path savedGamesPath) {
@@ -174,4 +174,4 @@ OpenKneeboard::fire_and_forget DCSAircraftTab::OnAPIEvent(
   co_await this->SetDelegates(delegates);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

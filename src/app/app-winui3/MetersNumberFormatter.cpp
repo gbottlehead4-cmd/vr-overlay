@@ -13,7 +13,7 @@
 #include <format>
 #include <string>
 
-namespace winrt::OpenKneeboardApp::implementation {
+namespace winrt::VisorVRApp::implementation {
 hstring MetersNumberFormatter::FormatInt(int64_t value) {
   return to_hstring(std::format("{}m", value));
 }
@@ -61,4 +61,4 @@ MetersNumberFormatter::ParseDouble(hstring const& text) {
   }
 }
 
-}// namespace winrt::OpenKneeboardApp::implementation
+}// namespace winrt::VisorVRApp::implementation

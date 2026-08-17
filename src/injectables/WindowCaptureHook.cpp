@@ -6,10 +6,10 @@
 // OpenKneeboard repository.
 #include "detours-ext.hpp"
 
-#include <OpenKneeboard/WindowCaptureControl.hpp>
+#include <VisorVR/WindowCaptureControl.hpp>
 
-#include <OpenKneeboard/config.hpp>
-#include <OpenKneeboard/dprint.hpp>
+#include <VisorVR/config.hpp>
+#include <VisorVR/dprint.hpp>
 
 #include <Windows.h>
 
@@ -19,7 +19,7 @@
 
 #include <windowsx.h>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
 namespace {
 struct InjectedPoint {
@@ -280,18 +280,18 @@ CallWndProc_WindowCaptureHook(int code, WPARAM wParam, LPARAM lParam) {
   return CallNextHookEx(NULL, code, wParam, lParam);
 }
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 /* PS >
- * [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.WindowCaptureHook")
+ * [System.Diagnostics.Tracing.EventSource]::new("VisorVR.WindowCaptureHook")
  * 2f381a1b-6486-55d8-ee5a-3cc04e8df79d
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.WindowCaptureHook",
+  "VisorVR.WindowCaptureHook",
   (0x2f381a1b, 0x6486, 0x55d8, 0xee, 0x5a, 0x3c, 0xc0, 0x4e, 0x8d, 0xf7, 0x9d));
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 static std::wstring GetProgramPath() {
   wchar_t buffer[1024];

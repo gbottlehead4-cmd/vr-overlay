@@ -4,29 +4,29 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/ConsoleLoopCondition.hpp>
-#include <OpenKneeboard/WindowCaptureControl.hpp>
+#include <VisorVR/ConsoleLoopCondition.hpp>
+#include <VisorVR/WindowCaptureControl.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
 
 #include <Windows.h>
 #include <shellapi.h>
 
 #include <cstdlib>
 
-using namespace OpenKneeboard;
+using namespace VisorVR;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 /* PS >
- * [System.Diagnostics.Tracing.EventSource]::new("OpenKneeboard.WindowCaptureHook.Helper")
+ * [System.Diagnostics.Tracing.EventSource]::new("VisorVR.WindowCaptureHook.Helper")
  * e8aa8bc1-a583-5d15-5ef0-8592c150f2be
  */
 TRACELOGGING_DEFINE_PROVIDER(
   gTraceProvider,
-  "OpenKneeboard.WindowCaptureHook.Helper",
+  "VisorVR.WindowCaptureHook.Helper",
   (0xe8aa8bc1, 0xa583, 0x5d15, 0x5e, 0xf0, 0x85, 0x92, 0xc1, 0x50, 0xf2, 0xbe));
-}// namespace OpenKneeboard
+}// namespace VisorVR
 
 // We only need a standard `main()` function, but using wWinMain prevents
 // a window/task bar entry from temporarily appearing

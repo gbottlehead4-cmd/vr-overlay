@@ -5,12 +5,12 @@
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
 
-#include <OpenKneeboard/DebugTimer.hpp>
-#include <OpenKneeboard/PDFNavigation.hpp>
-#include <OpenKneeboard/Win32.hpp>
+#include <VisorVR/DebugTimer.hpp>
+#include <VisorVR/PDFNavigation.hpp>
+#include <VisorVR/Win32.hpp>
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <shims/winrt/base.h>
 
@@ -26,7 +26,7 @@
 #include <qpdf/QPDFOutlineDocumentHelper.hh>
 #include <qpdf/QPDFPageDocumentHelper.hh>
 
-namespace OpenKneeboard::PDFNavigation {
+namespace VisorVR::PDFNavigation {
 
 using PageIndexMap = std::map<QPDFObjGen, PageIndex>;
 
@@ -335,4 +335,4 @@ std::vector<std::vector<Link>> PDF::GetLinks() {
   return ExtractLinks(*p->mOutlineDocumentHelper, p->mPages, p->mPageIndices);
 }
 
-}// namespace OpenKneeboard::PDFNavigation
+}// namespace VisorVR::PDFNavigation

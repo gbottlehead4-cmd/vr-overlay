@@ -1,18 +1,18 @@
 find_package(compressed-embed CONFIG REQUIRED)
 include(CompressedEmbed)
 add_compressed_embed_library(
-  OpenKneeboard-JS-Sources
-  NAMESPACE OpenKneeboard::CEF
+  VisorVR-JS-Sources
+  NAMESPACE VisorVR::CEF
   CLASSNAME JSSources
   OUTPUT_CPP "${CMAKE_CURRENT_BINARY_DIR}/JSSources.cpp"
-  OUTPUT_HPP "${CMAKE_CURRENT_BINARY_DIR}/include/OpenKneeboard/CEF/JSSources.hpp"
+  OUTPUT_HPP "${CMAKE_CURRENT_BINARY_DIR}/include/VisorVR/CEF/JSSources.hpp"
   INPUTS
   OpenKneeboardNative OpenKneeboardNative.js
   OpenKneeboardAPI OpenKneeboardAPI.js
   SimHub SimHub.js
 )
 target_include_directories(
-  OpenKneeboard-JS-Sources
+  VisorVR-JS-Sources
   INTERFACE
   "${CMAKE_CURRENT_BINARY_DIR}/include"
 )

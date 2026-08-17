@@ -4,14 +4,14 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/TabletInputDevice.hpp>
-#include <OpenKneeboard/UserInputButtonBinding.hpp>
+#include <VisorVR/TabletInputDevice.hpp>
+#include <VisorVR/UserInputButtonBinding.hpp>
 
-#include <OpenKneeboard/utf8.hpp>
+#include <VisorVR/utf8.hpp>
 
 #include <format>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 TabletInputDevice::TabletInputDevice(
   const std::string& name,
@@ -65,4 +65,4 @@ void TabletInputDevice::SetOrientation(TabletOrientation value) {
   evOrientationChangedEvent.Emit(value);
 }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

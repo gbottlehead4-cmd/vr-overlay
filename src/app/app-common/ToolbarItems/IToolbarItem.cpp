@@ -4,10 +4,10 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <OpenKneeboard/IToolbarItem.hpp>
+#include <VisorVR/IToolbarItem.hpp>
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 IToolbarItem::~IToolbarItem() = default;
 
-}// namespace OpenKneeboard
+}// namespace VisorVR

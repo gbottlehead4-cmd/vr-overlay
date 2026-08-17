@@ -20,17 +20,17 @@ DerivePointerAlignment: false
 FixNamespaceComments: true
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '^<OpenKneeboard/config.h>'
+  - Regex: '^<VisorVR/config.h>'
     Priority: 1
   - Regex: '^".+'
     Priority: 2
-  - Regex: '^<OpenKneeboard/[A-Z_/].+.+'
+  - Regex: '^<VisorVR/[A-Z_/].+.+'
     CaseSensitive: true
     Priority: 10
-  - Regex: '^<OpenKneeboard/[a-z0-9_/]+\.h(pp)?>$'
+  - Regex: '^<VisorVR/[a-z0-9_/]+\.h(pp)?>$'
     CaseSensitive: true
     Priority: 12
-  - Regex: '^<OpenKneeboard/[a-z0-9_/]+\.h(pp)?>$'
+  - Regex: '^<VisorVR/[a-z0-9_/]+\.h(pp)?>$'
     CaseSensitive: false
     Priority: 11
   - Regex: '^<shims/.+'

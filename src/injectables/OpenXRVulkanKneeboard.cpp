@@ -9,9 +9,9 @@
 
 #include "OpenXRNext.hpp"
 
-#include <OpenKneeboard/dprint.hpp>
-#include <OpenKneeboard/scope_exit.hpp>
-#include <OpenKneeboard/tracing.hpp>
+#include <VisorVR/dprint.hpp>
+#include <VisorVR/scope_exit.hpp>
+#include <VisorVR/tracing.hpp>
 
 #include <shims/vulkan/vulkan.h>
 
@@ -21,9 +21,9 @@
 template <class CharT>
 struct std::formatter<VkResult, CharT> : std::formatter<int, CharT> {};
 
-using OpenKneeboard::Vulkan::check_vkresult;
+using VisorVR::Vulkan::check_vkresult;
 
-namespace OpenKneeboard {
+namespace VisorVR {
 
 OpenXRVulkanKneeboard::OpenXRVulkanKneeboard(
   XrInstance instance,
@@ -151,7 +151,7 @@ XrSwapchain OpenXRVulkanKneeboard::CreateSwapchain(
 
   if (images.at(0).type != XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR) {
     dprint("Swap chain is not a Vulkan swapchain");
-    OPENKNEEBOARD_BREAK;
+    VISORVR_BREAK;
     oxr->xrDestroySwapchain(swapchain);
     return nullptr;
   }
@@ -237,7 +237,7 @@ void OpenXRVulkanKneeboard::RenderLayers(
   uint32_t swapchainIndex,
   SHM::Frame rawFrame,
   const std::span<SHM::LayerSprite>& layers) {
-  OPENKNEEBOARD_TraceLoggingScope("OpenXRVulkanKneeboard::RenderLayers()");
+  VISORVR_TraceLoggingScope("OpenXRVulkanKneeboard::RenderLayers()");
 
   if (!(mSwapchainResources && mSwapchainResources->mSwapchain == swapchain))
     [[unlikely]] {
@@ -308,4 +308,4 @@ void OpenXRVulkanKneeboard::RenderLayers(
 
 SHM::Reader& OpenXRVulkanKneeboard::GetSHM() { return *mSHM; }
 
-}// namespace OpenKneeboard
+}// namespace VisorVR
