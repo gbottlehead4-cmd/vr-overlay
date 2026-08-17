@@ -527,15 +527,9 @@ VisorVR::fire_and_forget MainWindow::UpdateProfileSwitcherVisibility() {
       title += L" [Administrator]";
     }
 
-    if (!Version::IsStableRelease) {
-      if (Version::IsTaggedVersion) {
-        title += std::format(L" - PRERELEASE {}", to_hstring(Version::TagName));
-      } else if (Version::IsGithubActionsBuild) {
-        title += std::format(L" - UNRELEASED VERSION #GHA{}", Version::Build);
-      } else {
-        title += L" - LOCAL DEVELOPMENT BUILD";
-      }
-    }
+    // Build provenance belongs in Help -> Version and Build, not in the title
+    // bar every user reads: we ship these builds, so "LOCAL DEVELOPMENT BUILD"
+    // was what the released app called itself.
 
     Title(title);
     AppTitle().Text(title);
@@ -900,6 +894,11 @@ MainWindow::NavigationItems() noexcept {
   auto bookmark = bookmarks.begin();
   size_t bookmarkCount = 0;
 
+  const auto accentBrush = Application::Current()
+                             .Resources()
+                             .Lookup(box_value(L"AccentFillColorDefaultBrush"))
+                             .as<Media::Brush>();
+
   for (auto tab: mKneeboard->GetTabsList()->GetTabs()) {
     muxc::NavigationViewItem item;
     item.Content(box_value(to_hstring(tab->GetTitle())));
@@ -909,6 +908,8 @@ MainWindow::NavigationItems() noexcept {
     if (!glyph.empty()) {
       muxc::FontIcon icon;
       icon.Glyph(winrt::to_hstring(glyph));
+      // Panel icons carry the brand accent; the rest of the nav stays neutral.
+      icon.Foreground(accentBrush);
       item.Icon(icon);
     }
 
@@ -949,7 +950,7 @@ MainWindow::NavigationItems() noexcept {
     muxc::MenuFlyout contextFlyout;
     {
       muxc::MenuFlyoutItem renameItem;
-      renameItem.Text(_(L"Rename tab"));
+      renameItem.Text(_(L"Rename panel"));
 
       muxc::FontIcon icon;
       icon.Glyph(L"\uE8AC");
@@ -1039,6 +1040,11 @@ void MainWindow::OnNavigationItemInvoked(
 
   auto item = args.InvokedItemContainer().try_as<NavigationViewItem>();
   if (!item) {
+    return;
+  }
+
+  if (item == HelpNavItem()) {
+    Frame().Navigate(xaml_typename<HelpPage>());
     return;
   }
 

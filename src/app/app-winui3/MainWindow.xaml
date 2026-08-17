@@ -6,17 +6,19 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d">
+  <!-- The shell floats as a rounded panel on a darker backdrop, so the app
+       reads as one framed surface rather than as bare window chrome. -->
   <Grid
     ColumnDefinitions="*"
-    Background="#FF0F1013"
+    Background="#FF08090C"
     x:Name="RootGrid">
     <Grid.Resources>
-      <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+      <Thickness x:Key="NavigationViewContentMargin">0</Thickness>
     </Grid.Resources>
     <Grid
       x:Name="AppTitleBar"
       Grid.Column="0"
-      Background="#FF0F1013"
+      Background="Transparent"
       Height="{Binding ElementName=Navigation, Path=CompactPaneLength}"
       VerticalAlignment="Top"
       IsHitTestVisible="1"
@@ -25,16 +27,26 @@
         x:Name="AppTitle"
         Text="VisorVR"
         TextWrapping="NoWrap"
-        Style="{StaticResource CaptionTextBlockStyle}" 
+        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+        Style="{StaticResource CaptionTextBlockStyle}"
         VerticalAlignment="Center"
       />
     </Grid>
-    <NavigationView
+    <Border
+      x:Name="AppFrame"
       Grid.Column="0"
       Canvas.ZIndex="0"
+      Margin="10,44,10,10"
+      CornerRadius="12"
+      BorderThickness="1"
+      BorderBrush="#26FFFFFF"
+      Background="#FF0F1013">
+    <NavigationView
       PaneDisplayMode="Left"
       OpenPaneLength="240"
       IsSettingsVisible="True"
+      IsPaneToggleButtonVisible="False"
+      IsBackButtonVisible="Auto"
       IsTabStop="False"
       ItemInvoked="OnNavigationItemInvoked"
       IsTitleBarAutoPaddingEnabled="False"
@@ -49,6 +61,13 @@
         <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#FF1A1C23"/>
         <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#FF1A1C23"/>
         <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+        <!-- Selection reads as the brand indigo, not Windows grey. -->
+        <SolidColorBrush x:Key="NavigationViewItemBackgroundSelected" Color="#2E7C83FF"/>
+        <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPointerOver" Color="#3D7C83FF"/>
+        <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPressed" Color="#247C83FF"/>
+        <SolidColorBrush x:Key="NavigationViewItemForegroundSelected" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPointerOver" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPressed" Color="#FFFFFFFF"/>
       </NavigationView.Resources>
       <NavigationView.PaneHeader>
         <StackPanel
@@ -114,13 +133,17 @@
         </Button>
       </NavigationView.PaneCustomContent>
       <NavigationView.FooterMenuItems>
-        <NavigationViewItemSeparator/>
+        <NavigationViewItem
+          x:Name="HelpNavItem"
+          Content="Help"
+          Icon="Help"/>
       </NavigationView.FooterMenuItems>
       <Frame
         x:Name="Frame"
         Background="#FF15161C"
       />
     </NavigationView>
+    </Border>
     <local:AppWindowViewModeDialog x:Name="AppWindowViewModeDialog" />
   </Grid>
 </Window>
