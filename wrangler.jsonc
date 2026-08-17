@@ -18,12 +18,10 @@
   },
   "kv_namespaces": [
     {
-      // Create the namespace first - `npx wrangler kv namespace create COUNTER`,
-      // or Workers & Pages -> KV -> Create - then paste its id here. Until this
-      // is a real id the deploy fails, which is louder and easier to diagnose
-      // than a site that silently serves a broken counter.
+      // The `visorvr-site-counter` namespace. A namespace id is not a secret -
+      // it names a store that only this account's Workers can bind to.
       "binding": "COUNTER",
-      "id": "PASTE_KV_NAMESPACE_ID_HERE"
+      "id": "aa5ac9cf6974429a8dc1f310c3a2e43f"
     }
   ],
   "observability": {
