@@ -94,7 +94,9 @@
   nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
   .brand { font-weight: 700; letter-spacing: .2px; color: var(--text); display: flex; align-items: center; gap: 9px; }
   .brand span { color: var(--accent); }
-  .brand img { width: 24px; height: 24px; border-radius: 6px; display: block; }
+  /* The visor glyph, not the plated app icon: the plate's dark background
+     disappears into this nav and leaves an empty-looking box. */
+  .brand img { width: auto; height: 20px; display: block; }
   .nav-links a { color: var(--muted); margin-left: 22px; font-size: .95rem; }
   .nav-links a:hover { color: var(--text); text-decoration: none; }
   @media (max-width: 720px) { .nav-links a { display: none; } }
@@ -241,7 +243,7 @@
 
 <nav>
   <div class="wrap">
-    <div class="brand"><img src="favicon.svg" alt="" width="24" height="24">Visor<span>VR</span></div>
+    <div class="brand"><img src="mark.svg" alt="" width="46" height="20">Visor<span>VR</span></div>
     <div class="nav-links">
       <a href="#editing">In-VR editing</a>
       <a href="#panels">Panels</a>
