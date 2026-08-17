@@ -127,8 +127,11 @@ class InterprocessRenderer final
   bool mEditGrabToggle {false};
   bool mPrevLButton {false};
 
-  // Cached text format for the in-VR setup-mode control hints.
+  // Cached text format for the in-VR setup-mode control hints. The font size
+  // is derived from the panel being drawn, so the cache is only valid while
+  // that size is unchanged.
   winrt::com_ptr<IDWriteTextFormat> mEditHintFormat;
+  float mEditHintFontSize {};
 };
 
 }// namespace VisorVR

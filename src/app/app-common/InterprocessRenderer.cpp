@@ -23,6 +23,7 @@
 #include <VisorVR/scope_exit.hpp>
 #include <VisorVR/tracing.hpp>
 
+#include <algorithm>
 #include <atomic>
 #include <mutex>
 #include <ranges>
@@ -513,9 +514,23 @@ task<SHM::LayerConfig> InterprocessRenderer::RenderLayer(
     winrt::com_ptr<ID2D1SolidColorBrush> brush;
     d2d->CreateSolidColorBrush(
       D2D1::ColorF(0.0f, 0.8f, 1.0f, 0.95f), brush.put());
-    constexpr float strokeWidth = 12.0f;
     const auto o = bounds.mOffset;
     const auto s = layer.mFullSize;
+
+    // Everything here is drawn into the panel's own texture, and panels differ
+    // hugely in resolution: a spotter strip might be 800x160 where a dashboard
+    // is 2048x1536. Fixed pixel sizes therefore look completely different from
+    // one panel to the next - fat and overflowing on a small one, modest on a
+    // big one - so scale against a reference panel instead. Panel sharpness
+    // changes the texture size too, which would otherwise shrink these.
+    constexpr float refWidth = 1024.0f;
+    constexpr float refHeight = 768.0f;
+    const auto panelWidth = static_cast<float>(s.mWidth);
+    const auto panelHeight = static_cast<float>(s.mHeight);
+    const float scale = std::clamp(
+      std::min(panelWidth / refWidth, panelHeight / refHeight), 0.35f, 2.0f);
+
+    const float strokeWidth = 12.0f * scale;
     const D2D1_RECT_F frame {
       static_cast<float>(o.mX) + strokeWidth / 2,
       static_cast<float>(o.mY) + strokeWidth / 2,
@@ -526,43 +541,67 @@ task<SHM::LayerConfig> InterprocessRenderer::RenderLayer(
 
     // Control hints, drawn once on the input-active panel.
     if (layer.mIsActiveForInput) {
-      if (!mEditHintFormat) {
-        mDXR->mDWriteFactory->CreateTextFormat(
-          L"Segoe UI",
-          nullptr,
-          DWRITE_FONT_WEIGHT_SEMI_BOLD,
-          DWRITE_FONT_STYLE_NORMAL,
-          DWRITE_FONT_STRETCH_NORMAL,
-          32.0f,
-          L"en-us",
-          mEditHintFormat.put());
-      }
-      static constexpr wchar_t hint[] =
+      static constexpr wchar_t fullHint[] =
         L"SETUP MODE\n"
         L"Click:  grab / drop panel\n"
         L"Move mouse:  reposition\n"
         L"Scroll:  resize  (distance when grabbed)\n"
         L"Shift + move:  rotate / tilt\n"
         L"Setup button:  exit + save";
-      const float pad = 24.0f;
+      // Small panels - a spotter strip, a delta bar - have no room for six
+      // lines at a legible size. Covering the panel with unreadable text helps
+      // nobody, so they get the badge only; the controls are the same, and the
+      // user can read them off any larger panel.
+      static constexpr wchar_t shortHint[] = L"SETUP MODE";
+
+      const float pad = 24.0f * scale;
+      const float boxWidth = 620.0f * scale;
+      const float boxHeight = 320.0f * scale;
+      const bool fits = (boxWidth + 2 * pad <= panelWidth)
+        && (boxHeight + 2 * pad <= panelHeight);
+
+      const wchar_t* hint = fits ? fullHint : shortHint;
+      const auto hintLength = static_cast<UINT32>(
+        (fits ? std::size(fullHint) : std::size(shortHint)) - 1);
+
+      const float fontSize = fits
+        ? 32.0f * scale
+        // Fill the strip rather than scale to nothing: cap by height so the
+        // badge always fits, and by width so it does not run off the end.
+        : std::min(panelHeight * 0.42f, panelWidth / 7.0f);
+
+      if (!mEditHintFormat || mEditHintFontSize != fontSize) {
+        mEditHintFormat = nullptr;
+        if (SUCCEEDED(mDXR->mDWriteFactory->CreateTextFormat(
+              L"Segoe UI",
+              nullptr,
+              DWRITE_FONT_WEIGHT_SEMI_BOLD,
+              DWRITE_FONT_STYLE_NORMAL,
+              DWRITE_FONT_STRETCH_NORMAL,
+              fontSize,
+              L"en-us",
+              mEditHintFormat.put()))) {
+          mEditHintFontSize = fontSize;
+        }
+      }
+
       const D2D1_RECT_F box {
         static_cast<float>(o.mX) + pad,
         static_cast<float>(o.mY) + pad,
-        static_cast<float>(o.mX) + pad + 620.0f,
-        static_cast<float>(o.mY) + pad + 320.0f,
+        static_cast<float>(o.mX) + pad + (fits ? boxWidth : fontSize * 6.0f),
+        static_cast<float>(o.mY) + pad + (fits ? boxHeight : fontSize * 1.6f),
       };
       winrt::com_ptr<ID2D1SolidColorBrush> bg;
       d2d->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0, 0.55f), bg.put());
       d2d->FillRectangle(box, bg.get());
       if (mEditHintFormat) {
         const D2D1_RECT_F textRect {
-          box.left + 20.0f, box.top + 14.0f, box.right - 12.0f, box.bottom};
+          box.left + 20.0f * scale,
+          box.top + 14.0f * scale,
+          box.right - 12.0f * scale,
+          box.bottom};
         d2d->DrawTextW(
-          hint,
-          static_cast<UINT32>(std::size(hint) - 1),
-          mEditHintFormat.get(),
-          textRect,
-          brush.get());
+          hint, hintLength, mEditHintFormat.get(), textRect, brush.get());
       }
     }
   }
