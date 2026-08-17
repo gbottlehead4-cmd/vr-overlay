@@ -230,6 +230,73 @@
           <Grid ColumnDefinitions="Auto,*">
             <FontIcon
               Grid.Column="0"
+              Glyph="&#xE9D9;"
+              FontFamily="{StaticResource SymbolThemeFontFamily}"
+              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+              Margin="0,0,12,0"
+              VerticalAlignment="Center"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="Adding a SimHub dashboard, step by step"
+              Style="{StaticResource SubtitleTextBlockStyle}"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </Expander.Header>
+        <StackPanel Orientation="Vertical" Spacing="8">
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            A SimHub dashboard goes in a web panel, so what you need from SimHub
+            is its <Run FontWeight="SemiBold">web address</Run> — not the
+            dashboard's name, and not SimHub's own window. SimHub gives you that
+            address in one click:
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">1.</Run> In SimHub, open
+            <Run FontWeight="SemiBold">Dash Studio</Run> from the left sidebar.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">2.</Run> Choose the
+            <Run FontWeight="SemiBold">Overlays</Run> tab along the top.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">3.</Run> Click the overlay you want, so it
+            is selected.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">4.</Run> Click
+            <Run FontWeight="SemiBold">MORE</Run> on its right-hand side — the
+            button with three lines.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">5.</Run> Choose
+            <Run FontWeight="SemiBold">Copy OBS browser address to
+            clipboard</Run>, at the bottom of the menu. It is named for OBS, but
+            it is simply that overlay's web address and works anywhere.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">6.</Run> Back in VisorVR: Add panel →
+            Web page → paste it in.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">SimHub has to be running</Run> for the
+            panel to show anything — the address points at SimHub itself, so
+            when SimHub is closed the panel is blank. Leave it running alongside
+            the game as usual.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            You do not need to set the panel's size: a SimHub dashboard tells
+            VisorVR the size it was designed at, and the panel matches it. If
+            the text looks soft once it is in front of you, raise
+            <Run FontWeight="SemiBold">Sharpness</Run> rather than Size.
+          </TextBlock>
+        </StackPanel>
+      </Expander>
+      <Expander
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch">
+        <Expander.Header>
+          <Grid ColumnDefinitions="Auto,*">
+            <FontIcon
+              Grid.Column="0"
               Glyph="&#xE7F8;"
               FontFamily="{StaticResource SymbolThemeFontFamily}"
               Foreground="{ThemeResource AccentFillColorDefaultBrush}"

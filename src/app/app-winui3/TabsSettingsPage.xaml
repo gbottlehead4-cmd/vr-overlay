@@ -408,14 +408,22 @@
         <StackPanel
           Orientation="Vertical"
           Spacing="20">
-          <TextBlock Style="{ThemeResource BodyTextBlockStyle}">
-            Web dashboard tabs display a single screen - they are not a
-            general-purpose web browser. For a less limited browser, use your
-            normal browser with a Window Capture panel.
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            A web panel displays a single page - it is not a general-purpose
+            web browser. For a less limited browser, use your normal browser
+            with a Window Capture panel.
+          </TextBlock>
+          <TextBlock
+            Style="{ThemeResource BodyTextBlockStyle}"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            TextWrapping="Wrap">
+            Adding a SimHub dashboard? In SimHub: Dash Studio → Overlays →
+            select the overlay → MORE → "Copy OBS browser address to clipboard",
+            then paste it here. Help has the full steps.
           </TextBlock>
           <TextBox
             x:Name="AddBrowserAddress"
-            Header="Dashboard Address:"
+            Header="Address:"
             PlaceholderText="https://example.com"
             TextChanged="OnAddBrowserAddressTextChanged"/>
         </StackPanel>
