@@ -190,11 +190,38 @@
             TextWrapping="Wrap"
             Text="Tip: bind Toggle VR edit mode, Recenter and Show/hide to your wheel or HOTAS for hands-free access in VR."/>
         </StackPanel>
+        <Border
+          Visibility="{x:Bind HasRenderScale, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"
+          Background="#FF1B1D24"
+          BorderBrush="#18FFFFFF"
+          BorderThickness="1"
+          CornerRadius="12"
+          Padding="16">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Sharpness"/>
+            <Slider
+              Minimum="100"
+              Maximum="{x:Bind MaxRenderScalePercent, Mode=OneWay}"
+              StepFrequency="25"
+              TickFrequency="25"
+              TickPlacement="Outside"
+              Value="{x:Bind RenderScalePercent, Mode=TwoWay}"/>
+            <TextBlock
+              Text="{x:Bind RenderResolutionDescription, Mode=OneWay}"
+              FontSize="12"
+              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            <TextBlock
+              Text="Higher stays crisp when the panel is close, and costs more GPU. The page layout does not change."
+              FontSize="12"
+              TextWrapping="Wrap"
+              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+          </StackPanel>
+        </Border>
         <TextBlock
           Style="{ThemeResource CaptionTextBlockStyle}"
           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
           TextWrapping="Wrap"
-          Text="More options for this panel type are in Settings &#x2192; Tabs."/>
+          Text="More options for this panel type are in Settings &#x2192; Panels."/>
       </StackPanel>
     </DataTemplate>
   </Page.Resources>

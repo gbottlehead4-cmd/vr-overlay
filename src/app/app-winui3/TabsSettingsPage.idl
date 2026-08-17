@@ -19,6 +19,11 @@ namespace VisorVRApp {
   Single VRHeight;
   Single VRDistance;
   Int32 IconIndex;
+  // Render sharpness; only web panels have one, hence HasRenderScale.
+  Boolean HasRenderScale { get; };
+  Double RenderScalePercent;
+  Double MaxRenderScalePercent { get; };
+  String RenderResolutionDescription { get; };
 }
 
 [default_interface] runtimeclass DCSRadioLogTabUIData : TabUIData {
@@ -44,10 +49,6 @@ namespace VisorVRApp {
   Boolean AreOpenKneeboardAPIsEnabled;
   Boolean IsSimHubIntegrationEnabled;
   Boolean IsBackgroundTransparent;
-  // Pixel density the page is rasterized at, as a percentage.
-  Double RenderScalePercent;
-  Double MaxRenderScalePercent { get; };
-  String RenderResolutionDescription { get; };
 }
 
 [default_interface] runtimeclass TabUIDataTemplateSelector

@@ -126,11 +126,19 @@ struct TabUIData : TabUIDataT<TabUIData>,
   int32_t IconIndex() const;
   void IconIndex(int32_t);
 
+  bool HasRenderScale() const;
+  double RenderScalePercent() const;
+  VisorVR::fire_and_forget RenderScalePercent(double);
+  double MaxRenderScalePercent() const;
+  hstring RenderResolutionDescription() const;
+
  protected:
   std::weak_ptr<VisorVR::ITab> mTab;
 
  private:
   std::optional<winrt::guid> GetVRViewID() const;
+  /// Null unless this is a web panel; only those have a render scale.
+  std::shared_ptr<VisorVR::BrowserTab> GetBrowserTab() const;
 };
 
 struct BrowserTabUIData : BrowserTabUIDataT<
@@ -146,11 +154,6 @@ struct BrowserTabUIData : BrowserTabUIDataT<
 
   bool IsBackgroundTransparent() const;
   VisorVR::fire_and_forget IsBackgroundTransparent(bool);
-
-  double RenderScalePercent() const;
-  VisorVR::fire_and_forget RenderScalePercent(double);
-  double MaxRenderScalePercent() const;
-  winrt::hstring RenderResolutionDescription() const;
 
  private:
   std::shared_ptr<VisorVR::BrowserTab> GetTab() const;

@@ -1007,21 +1007,29 @@ VisorVR::fire_and_forget BrowserTabUIData::IsBackgroundTransparent(
   co_await GetTab()->SetBackgroundTransparent(value);
 }
 
-double BrowserTabUIData::RenderScalePercent() const {
-  return GetTab()->GetRenderScale() * 100;
+std::shared_ptr<BrowserTab> TabUIData::GetBrowserTab() const {
+  return std::dynamic_pointer_cast<BrowserTab>(mTab.lock());
 }
 
-VisorVR::fire_and_forget BrowserTabUIData::RenderScalePercent(
-  const double value) {
-  if (std::isnan(value)) {
+bool TabUIData::HasRenderScale() const { return GetBrowserTab() != nullptr; }
+
+double TabUIData::RenderScalePercent() const {
+  const auto tab = GetBrowserTab();
+  return tab ? tab->GetRenderScale() * 100 : 100;
+}
+
+VisorVR::fire_and_forget TabUIData::RenderScalePercent(const double value) {
+  const auto tab = GetBrowserTab();
+  // NumberBox/Slider can hand us NaN mid-edit.
+  if (!tab || std::isnan(value)) {
     co_return;
   }
   const auto scale = static_cast<float>(value / 100);
-  if (scale == GetTab()->GetRenderScale()) {
+  if (scale == tab->GetRenderScale()) {
     co_return;
   }
   const auto weak = get_weak();
-  co_await GetTab()->SetRenderScale(scale);
+  co_await tab->SetRenderScale(scale);
   // The resolution caption is derived from the scale, so it has to be told.
   if (const auto self = weak.get(); self && self->mPropertyChangedEvent) {
     self->mPropertyChangedEvent(
@@ -1029,14 +1037,19 @@ VisorVR::fire_and_forget BrowserTabUIData::RenderScalePercent(
   }
 }
 
-double BrowserTabUIData::MaxRenderScalePercent() const {
-  return GetTab()->GetMaxRenderScale() * 100;
+double TabUIData::MaxRenderScalePercent() const {
+  const auto tab = GetBrowserTab();
+  return tab ? tab->GetMaxRenderScale() * 100 : 100;
 }
 
-winrt::hstring BrowserTabUIData::RenderResolutionDescription() const {
-  const auto size = GetTab()->GetRenderPixelSize();
-  return winrt::hstring {std::format(
-    L"Rendered at {} × {} pixels", size.mWidth, size.mHeight)};
+hstring TabUIData::RenderResolutionDescription() const {
+  const auto tab = GetBrowserTab();
+  if (!tab) {
+    return {};
+  }
+  const auto size = tab->GetRenderPixelSize();
+  return hstring {
+    std::format(L"Rendered at {} × {} pixels", size.mWidth, size.mHeight)};
 }
 
 std::shared_ptr<BrowserTab> BrowserTabUIData::GetTab() const {
