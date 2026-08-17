@@ -15,6 +15,252 @@
         Style="{ThemeResource TitleTextBlockStyle}">
         Help and Support
       </TextBlock>
+      <!-- The answers live here, in the app, because a headset user with a
+           broken overlay cannot read a web page and may not have a second
+           screen. Every fix below is one the user can carry out unaided. -->
+      <Expander
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        IsExpanded="True">
+        <Expander.Header>
+          <Grid ColumnDefinitions="Auto,*">
+            <FontIcon
+              Grid.Column="0"
+              Glyph="&#xE7BA;"
+              FontFamily="{StaticResource SymbolThemeFontFamily}"
+              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+              Margin="0,0,12,0"
+              VerticalAlignment="Center"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="The overlay doesn't appear in my game"
+              Style="{StaticResource SubtitleTextBlockStyle}"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </Expander.Header>
+        <StackPanel Orientation="Vertical" Spacing="8">
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            Work down this list; it is ordered by how often each one is the cause.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            1. <Run FontWeight="SemiBold">Restart the game.</Run> VisorVR hooks
+            into it through an OpenXR layer that is only loaded when the game
+            starts. If VisorVR was not running when you launched the game, or
+            was updated since, the game will not see it until you restart it.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            2. <Run FontWeight="SemiBold">Check the layer is switched on</Run> —
+            Settings → Virtual Reality → "OpenXR support for 64-bit games".
+            VisorVR registers the layer for your Windows account each time it
+            starts, so this needs no administrator rights.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            3. <Run FontWeight="SemiBold">Check the panel is shown in VR</Run> —
+            select it in the sidebar and confirm "Show this panel in VR" is on.
+            A panel can be visible in this window and hidden in the headset.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            4. <Run FontWeight="SemiBold">Check it isn't behind you.</Run> Use
+            Edit in VR → Recenter to bring the panel back to where you are
+            looking. This is the usual answer when it worked yesterday.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            5. <Run FontWeight="SemiBold">Your game may not use OpenXR.</Run>
+            Some titles default to OpenVR/SteamVR or to a vendor runtime; check
+            the game's VR settings. See Compatibility below.
+          </TextBlock>
+        </StackPanel>
+      </Expander>
+      <Expander
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch">
+        <Expander.Header>
+          <Grid ColumnDefinitions="Auto,*">
+            <FontIcon
+              Grid.Column="0"
+              Glyph="&#xE8B9;"
+              FontFamily="{StaticResource SymbolThemeFontFamily}"
+              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+              Margin="0,0,12,0"
+              VerticalAlignment="Center"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="Placing and reading panels"
+              Style="{StaticResource SubtitleTextBlockStyle}"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </Expander.Header>
+        <StackPanel Orientation="Vertical" Spacing="8">
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">Move a panel:</Run> select it, then
+            Edit in VR. With the headset on, grab the panel with the mouse to
+            drag it, and follow the hints drawn on the panel for tilt and
+            distance. It is saved as you go and survives a restart.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">Can't see the panel once you're in the
+            headset?</Run> Press <Run FontWeight="SemiBold">Recenter</Run>,
+            next to Edit in VR. A panel keeps the position you last gave it, so
+            it can easily be behind you, above you, or inside the car — and
+            there is nothing to grab if you cannot see it. Recenter brings it
+            back in front of wherever you are looking now, and is the first
+            thing to try whenever a panel seems to have vanished.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            Bind <Run FontWeight="SemiBold">Recenter VR</Run> to a button as
+            well, so you can fix it mid-session without taking the headset off.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">The text is fuzzy:</Run> raise
+            Sharpness in the panel's settings. Size and Distance change how big
+            a panel looks, but not how much detail it holds — only Sharpness
+            does. It stops at 200% because past that the shared texture would
+            exceed what the GPU can address.
+          </TextBlock>
+        </StackPanel>
+      </Expander>
+      <Expander
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch">
+        <Expander.Header>
+          <Grid ColumnDefinitions="Auto,*">
+            <FontIcon
+              Grid.Column="0"
+              Glyph="&#xE7FC;"
+              FontFamily="{StaticResource SymbolThemeFontFamily}"
+              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+              Margin="0,0,12,0"
+              VerticalAlignment="Center"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="Buttons: running VisorVR without leaving the headset"
+              Style="{StaticResource SubtitleTextBlockStyle}"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </Expander.Header>
+        <StackPanel Orientation="Vertical" Spacing="8">
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            Once you are in the headset and driving or flying, the keyboard is
+            out of reach. Bind these to spare buttons on your wheel, HOTAS or
+            controller before your first session — it is the difference between
+            an overlay you use and one you fight.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            Go to <Run FontWeight="SemiBold">Settings → Input</Run>, pick your
+            device, then click a binding and press the button you want. The
+            "Set up controller buttons" button in any panel's settings goes to
+            the same place.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">Bind these three first:</Run>
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            • <Run FontWeight="SemiBold">Show/hide</Run> — takes the whole
+            overlay off your view and brings it back. The one binding worth
+            having even if you set up nothing else.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            • <Run FontWeight="SemiBold">Recenter VR</Run> — pulls your panels
+            back in front of you when they have ended up somewhere you cannot
+            see, without unbuckling to reach the mouse.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            • <Run FontWeight="SemiBold">Next panel</Run> / <Run
+            FontWeight="SemiBold">Previous panel</Run> — cycles which panel you
+            are looking at, so several panels can share one spot in front of
+            you instead of crowding the cockpit.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            Also worth binding: <Run FontWeight="SemiBold">Toggle VR edit
+            mode</Run>, to reposition a panel from inside the headset without
+            going back to this window; <Run FontWeight="SemiBold">Next
+            page</Run> / <Run FontWeight="SemiBold">Previous page</Run> for
+            panels holding multi-page documents; and <Run
+            FontWeight="SemiBold">Increase</Run> / <Run
+            FontWeight="SemiBold">Decrease brightness</Run> for night stints.
+          </TextBlock>
+        </StackPanel>
+      </Expander>
+      <Expander
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch">
+        <Expander.Header>
+          <Grid ColumnDefinitions="Auto,*">
+            <FontIcon
+              Grid.Column="0"
+              Glyph="&#xE774;"
+              FontFamily="{StaticResource SymbolThemeFontFamily}"
+              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+              Margin="0,0,12,0"
+              VerticalAlignment="Center"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="What to put in a panel"
+              Style="{StaticResource SubtitleTextBlockStyle}"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </Expander.Header>
+        <StackPanel Orientation="Vertical" Spacing="8">
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">A web page.</Run> Anything with a URL:
+            a timing screen, a chart, a checklist, a local page of your own.
+            SimHub dashboards are supported directly — a dashboard tells
+            VisorVR what size it wants to be, so the panel matches it.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">A window from your desktop.</Run> Useful
+            for an app with no web view. It keeps updating while the game has
+            the screen.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">A file or a folder.</Run> PDFs and
+            images, paged through with a bound button — charts, plates,
+            reference cards, a setup sheet.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            DCS World gets purpose-built panels — mission, briefing, aircraft
+            kneeboard, radio log and terrain — from Settings → Panels.
+          </TextBlock>
+        </StackPanel>
+      </Expander>
+      <Expander
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch">
+        <Expander.Header>
+          <Grid ColumnDefinitions="Auto,*">
+            <FontIcon
+              Grid.Column="0"
+              Glyph="&#xE7F8;"
+              FontFamily="{StaticResource SymbolThemeFontFamily}"
+              Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+              Margin="0,0,12,0"
+              VerticalAlignment="Center"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="Compatibility, files and privacy"
+              Style="{StaticResource SubtitleTextBlockStyle}"
+              VerticalAlignment="Center"/>
+          </Grid>
+        </Expander.Header>
+        <StackPanel Orientation="Vertical" Spacing="8">
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            VisorVR draws into 64-bit OpenXR games — iRacing, DCS World,
+            Microsoft Flight Simulator and most modern VR titles — whichever
+            headset runtime you use. It does not touch flat-screen games.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">Your settings and logs</Run> live in
+            %LOCALAPPDATA%\VisorVR. Nothing is sent anywhere: VisorVR has no
+            telemetry, no account and no update service. A panel pointed at a
+            web page reaches the internet exactly as a browser would.
+          </TextBlock>
+          <TextBlock Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap">
+            <Run FontWeight="SemiBold">Uninstalling:</Run> delete the folder
+            you unzipped, then that settings folder. VisorVR unregisters its
+            OpenXR layer when it shuts down normally.
+          </TextBlock>
+        </StackPanel>
+      </Expander>
       <StackPanel
         Orientation="Vertical"
         Spacing="4"
@@ -23,37 +269,27 @@
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
         CornerRadius="4"
         BorderThickness="1">
-        <HyperlinkButton x:Name="QuickStartLink">
-          Quick-start guide
-        </HyperlinkButton>
         <HyperlinkButton
           NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay#readme">
-          Documentation
+          Setup and documentation
         </HyperlinkButton>
         <HyperlinkButton
           NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/issues">
-          Troubleshooting guides
-        </HyperlinkButton>
-        <HyperlinkButton
-          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/discussions">
-          Discord
-        </HyperlinkButton>
-        <HyperlinkButton
-          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/issues">
-          Bug Reports and Feature Requests
+          Bug reports and feature requests
         </HyperlinkButton>
         <TextBlock
           Foreground="{ThemeResource TextFillColorSecondary}"
-          Style="{ThemeResource CaptionTextBlockStyle}">
-          I make VisorVR for my own use, and I share it in the hope others find it 
-          useful; I’m not able to commit to support, bug fixes, or feature development. While 
-          I try to be active, please do not @mention, email, or DM me for individual help - if
-          the troubleshooting guides don't solve a problem, use the #visorvr-help
-          channel in Discord instead.
+          Style="{ThemeResource CaptionTextBlockStyle}"
+          TextWrapping="Wrap">
+          I make VisorVR for my own use, and share it in the hope others find it
+          useful; I can't commit to support, bug fixes, or feature development.
+          If something is broken, open an issue and attach the debugging
+          information below — that is much more use to me than a description.
         </TextBlock>
         <TextBlock
           Foreground="{ThemeResource TextFillColorSecondary}"
-          Style="{ThemeResource CaptionTextBlockStyle}">
+          Style="{ThemeResource CaptionTextBlockStyle}"
+          TextWrapping="Wrap">
           This program is distributed in the hope that it will be useful,
           but WITHOUT ANY WARRANTY; without even the implied warranty of
           MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the

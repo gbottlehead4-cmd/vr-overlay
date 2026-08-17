@@ -92,13 +92,6 @@ HelpPage::HelpPage() {
 
   this->PopulateVersion();
   this->PopulateLicenses();
-
-  QuickStartLink().Click([]() -> VisorVR::fire_and_forget {
-    const auto quickStartPath =
-      RuntimeFiles::GetInstallationDirectory() / RuntimeFiles::QUICK_START_PDF;
-
-    co_await LaunchURI(to_utf8(quickStartPath));
-  } | drop_winrt_event_args());
 }
 
 HelpPage::~HelpPage() { this->RemoveAllEventListeners(); }
