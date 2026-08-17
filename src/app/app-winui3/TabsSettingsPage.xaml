@@ -400,9 +400,9 @@
       </Button>
       <ContentDialog
         x:Name="AddBrowserDialog"
-        Title="Add Web Dashboard"
+        Title="Add a web panel"
         DefaultButton="Primary"
-        PrimaryButtonText="Add Dashboard"
+        PrimaryButtonText="Add panel"
         CloseButtonText="Cancel"
         IsPrimaryButtonEnabled="False">
         <StackPanel

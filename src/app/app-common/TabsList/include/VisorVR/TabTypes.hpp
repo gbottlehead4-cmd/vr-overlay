@@ -24,11 +24,11 @@
 #include <concepts>
 
 #define VISORVR_TAB_TYPES \
-  IT(_("Files (one per tab)"), SingleFile) \
-  IT(_("Folder"), Folder) \
-  IT(_("Endless Notebook (from template file)"), EndlessNotebook) \
-  IT(_("Window Capture"), WindowCapture) \
-  IT(_("Web Dashboard"), Browser) \
+  IT(_("Web page or dashboard"), Browser) \
+  IT(_("Desktop window"), WindowCapture) \
+  IT(_("Documents (one panel each)"), SingleFile) \
+  IT(_("Folder of documents"), Folder) \
+  IT(_("Endless notebook (from a template)"), EndlessNotebook) \
   IT(_("DCS Aircraft Kneeboard"), DCSAircraft) \
   IT(_("DCS Mission Briefing"), DCSBriefing) \
   IT(_("DCS Mission Kneeboard"), DCSMission) \

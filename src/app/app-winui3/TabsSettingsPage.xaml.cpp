@@ -109,11 +109,53 @@ IVector<IInspectable> TabsSettingsPage::Tabs() noexcept {
 
 TabsSettingsPage::~TabsSettingsPage() { this->RemoveAllEventListeners(); }
 
+/** One line explaining each panel type, shown as a tooltip when adding one.
+ *
+ * "Endless notebook" and "Window capture" mean nothing to someone who has not
+ * used this app before, and the menu is the first thing a new user opens.
+ * Keyed by type name rather than by index, so reordering the list cannot
+ * silently pair a description with the wrong entry.
+ */
+static std::string_view AddTabDescription(std::string_view type) {
+  if (type == "Browser") {
+    return _("A web page: a SimHub dashboard, a timing screen, a chart, a "
+             "checklist. See Help for how to get a SimHub dashboard's address.");
+  }
+  if (type == "WindowCapture") {
+    return _("Mirrors a window from your desktop, for apps with no web page of "
+             "their own. It keeps updating while the game has the screen.");
+  }
+  if (type == "SingleFile") {
+    return _("PDFs and images. Pick several and each one becomes its own "
+             "panel.");
+  }
+  if (type == "Folder") {
+    return _("Every document in a folder, in one panel. Page through them with "
+             "a bound button.");
+  }
+  if (type == "EndlessNotebook") {
+    return _("One template page, repeated forever - turn the page and you get "
+             "a fresh copy to write on.");
+  }
+  return {};
+}
+
 void TabsSettingsPage::CreateAddTabMenu(
   const Button& button,
   FlyoutPlacementMode placement) {
   MenuFlyout flyout;
   auto tabTypes = flyout.Items();
+
+  // The five DCS panels were half of this menu, in front of every user who has
+  // never opened DCS. One entry, expanded on demand.
+  MenuFlyoutSubItem dcs;
+  dcs.Text(to_hstring(_("DCS World")));
+  {
+    FontIcon icon;
+    icon.Glyph(L"\ue709");// airplane
+    dcs.Icon(icon);
+  }
+
 #define IT(label, name) \
   { \
     MenuFlyoutItem item; \
@@ -126,10 +168,24 @@ void TabsSettingsPage::CreateAddTabMenu(
       fontIcon.Glyph(winrt::to_hstring(glyph)); \
       item.Icon(fontIcon); \
     } \
-    tabTypes.Append(item); \
+    const auto description = AddTabDescription(#name); \
+    if (!description.empty()) { \
+      ToolTipService::SetToolTip( \
+        item, box_value(to_hstring(description))); \
+    } \
+    if (std::string_view {#name}.starts_with("DCS")) { \
+      dcs.Items().Append(item); \
+    } else { \
+      tabTypes.Append(item); \
+    } \
   }
   VISORVR_TAB_TYPES
 #undef IT
+
+  if (dcs.Items().Size() > 0) {
+    tabTypes.Append(MenuFlyoutSeparator {});
+    tabTypes.Append(dcs);
+  }
   const auto pluginTabTypes = mKneeboard->GetPluginStore()->GetTabTypes();
   if (!pluginTabTypes.empty()) {
     tabTypes.Append(MenuFlyoutSeparator {});
