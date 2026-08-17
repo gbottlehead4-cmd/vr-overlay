@@ -260,7 +260,7 @@ static task<void> InstallPlugin(
             _("Plugin '{}' v{} is already installed."),
             plugin.mMetadata.mPluginName,
             plugin.mMetadata.mPluginReadableVersion))));
-      dialog.PrimaryButtonText(_(L"Tab Settings"));
+      dialog.PrimaryButtonText(_(L"Panel Settings"));
       dialog.CloseButtonText(_(L"OK"));
       dialog.DefaultButton(ContentDialogButton::Close);
 
@@ -399,7 +399,7 @@ static task<void> InstallPlugin(
           _("'{}' has been updated to v{}"),
           plugin.mMetadata.mPluginName,
           plugin.mMetadata.mPluginReadableVersion))));
-    dialog.PrimaryButtonText(_(L"Tab Settings"));
+    dialog.PrimaryButtonText(_(L"Panel Settings"));
     dialog.CloseButtonText(_(L"OK"));
     dialog.DefaultButton(ContentDialogButton::Close);
 
@@ -465,7 +465,7 @@ static task<void> InstallPlugin(
       });
     }
 
-    dialog.PrimaryButtonText(_(L"Add tabs"));
+    dialog.PrimaryButtonText(_(L"Add panels"));
     dialog.CloseButtonText(_(L"Close"));
     dialog.DefaultButton(ContentDialogButton::Primary);
 

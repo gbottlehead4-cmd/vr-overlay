@@ -34,8 +34,8 @@ InputBindingsControl::InputBindingsControl() noexcept {
 }
 
 void InputBindingsControl::PopulateUI() {
-  AppendUIRow(UserAction::PREVIOUS_TAB, _(L"Previous tab"));
-  AppendUIRow(UserAction::NEXT_TAB, _(L"Next tab"));
+  AppendUIRow(UserAction::PREVIOUS_TAB, _(L"Previous panel"));
+  AppendUIRow(UserAction::NEXT_TAB, _(L"Next panel"));
 
   AppendUIRow(UserAction::PREVIOUS_PAGE, _(L"Previous page"));
   AppendUIRow(UserAction::NEXT_PAGE, _(L"Next page"));

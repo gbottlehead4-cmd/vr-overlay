@@ -20,7 +20,7 @@ namespace winrt::VisorVRApp::implementation {
 
 RenameTabDialog::RenameTabDialog() {
   InitializeComponent();
-  mPrompt = _(L"What would you like to rename this tab to?");
+  mPrompt = _(L"What would you like to rename this panel to?");
 }
 
 RenameTabDialog::~RenameTabDialog() = default;
