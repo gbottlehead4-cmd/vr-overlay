@@ -22,6 +22,10 @@ on:
       - ".github/workflows/ci.yml"
   workflow_dispatch:
 permissions:
+  # Declaring any permission drops every unlisted one to none, so checkout
+  # needs this spelled out. Upstream gets away without it because their
+  # repository is public and checkout falls back to anonymous access.
+  contents: read
   packages: write
 env:
   USERNAME: ${{github.repository_owner}}
