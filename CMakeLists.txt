@@ -128,7 +128,7 @@ endif ()
 
 set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo)
 
-project(VisorVR VERSION 1.13.0.${VERSION_BUILD} LANGUAGES CXX C)
+project(VisorVR VERSION 1.13.1.${VERSION_BUILD} LANGUAGES CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(smol_binaries)
 
