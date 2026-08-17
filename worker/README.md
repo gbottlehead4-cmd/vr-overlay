@@ -46,7 +46,7 @@ npx wrangler deploy
 ## Notes
 
 - The name in `wrangler.jsonc` decides the URL
-  (`visorvr.gbottlehead4.workers.dev`). The site hardcodes that in its canonical
+  (`visorvr.gidrux.workers.dev`). The site hardcodes that in its canonical
   link, `og:url`, `sitemap.xml` and `robots.txt` — renaming means updating those
   four places too.
 - `site/` holds only static files. Nothing there is built or bundled, so there

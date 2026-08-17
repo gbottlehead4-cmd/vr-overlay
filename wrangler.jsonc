@@ -5,7 +5,7 @@
   // have been a Pages project: `site/` is served as static assets, and
   // worker/index.js handles the single dynamic route, /api/hits.
   //
-  // The name decides the URL: visorvr.gbottlehead4.workers.dev. The site
+  // The name decides the URL: visorvr.gidrux.workers.dev. The site
   // hardcodes that in its canonical link, og:url, sitemap and robots.txt, so
   // renaming this means updating those four places too.
   "$schema": "node_modules/wrangler/config-schema.json",

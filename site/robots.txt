@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://visorvr.gbottlehead4.workers.dev/sitemap.xml
+Sitemap: https://visorvr.gidrux.workers.dev/sitemap.xml
