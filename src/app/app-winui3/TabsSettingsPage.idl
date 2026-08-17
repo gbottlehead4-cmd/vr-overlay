@@ -44,6 +44,10 @@ namespace VisorVRApp {
   Boolean AreOpenKneeboardAPIsEnabled;
   Boolean IsSimHubIntegrationEnabled;
   Boolean IsBackgroundTransparent;
+  // Pixel density the page is rasterized at, as a percentage.
+  Double RenderScalePercent;
+  Double MaxRenderScalePercent { get; };
+  String RenderResolutionDescription { get; };
 }
 
 [default_interface] runtimeclass TabUIDataTemplateSelector

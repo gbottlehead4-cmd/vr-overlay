@@ -183,6 +183,25 @@
           Header="SimHub integration"
           OffContent="Disabled"
           OnContent="Automatically resize to fit SimHub dashboards"/>
+        <StackPanel Orientation="Vertical">
+          <Slider
+            Header="Sharpness"
+            Minimum="100"
+            Maximum="{x:Bind MaxRenderScalePercent, Mode=OneWay}"
+            StepFrequency="25"
+            TickFrequency="25"
+            TickPlacement="Outside"
+            Value="{x:Bind RenderScalePercent}"/>
+          <TextBlock
+            Text="{x:Bind RenderResolutionDescription, Mode=OneWay}"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Opacity="0.7"/>
+          <TextBlock
+            Text="Higher is sharper when the panel is close, and costs more GPU. The page layout does not change."
+            TextWrapping="WrapWholeWords"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Opacity="0.7"/>
+        </StackPanel>
       </StackPanel>
     </DataTemplate>
     <!-- DCS Radio Tab -->

@@ -10,6 +10,9 @@
 
 #include <VisorVR/dprint.hpp>
 
+#include <algorithm>
+#include <cmath>
+
 namespace VisorVR {
 
 BrowserTab::BrowserTab(
@@ -120,10 +123,40 @@ task<void> BrowserTab::SetBackgroundTransparent(bool transparent) {
   this->evSettingsChangedEvent.Emit();
 }
 
+float BrowserTab::GetRenderScale() const {
+  return mSettings.GetUsableRenderScale();
+}
+
+task<void> BrowserTab::SetRenderScale(const float scale) {
+  VISORVR_TraceLoggingCoro("BrowserTab::SetRenderScale()");
+  const auto clamped = std::clamp(scale, 1.0f, this->GetMaxRenderScale());
+  if (clamped == this->GetRenderScale()) {
+    co_return;
+  }
+  mSettings.mRenderScale = clamped;
+  // Reload() rebuilds the page source from mSettings; that's what picks the
+  // new device scale factor up.
+  co_await this->Reload();
+  this->evSettingsChangedEvent.Emit();
+}
+
+float BrowserTab::GetMaxRenderScale() const {
+  return MaxUsefulRenderScale(mSettings.mInitialSize);
+}
+
+PixelSize BrowserTab::GetRenderPixelSize() const {
+  const auto scale = this->GetRenderScale();
+  return {
+    static_cast<uint32_t>(std::lround(mSettings.mInitialSize.mWidth * scale)),
+    static_cast<uint32_t>(std::lround(mSettings.mInitialSize.mHeight * scale)),
+  };
+}
+
 VISORVR_DEFINE_SPARSE_JSON(
   BrowserTab::Settings,
   mURI,
   mInitialSize,
+  mRenderScale,
   mIntegrateWithSimHub,
   mTransparentBackground,
   mExposeOpenKneeboardAPIs)

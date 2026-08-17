@@ -29,6 +29,13 @@ class ChromiumPageSource::RenderHandler final : public CefRenderHandler {
 
   void GetViewRect(CefRefPtr<CefBrowser>, CefRect& rect) override;
 
+  /** Reports `mScale` as the display's device scale factor.
+   *
+   * CEF then rasterizes at `GetViewRect() * mScale` pixels while laying the
+   * page out at the unscaled size - i.e. exactly how a HiDPI monitor behaves.
+   */
+  bool GetScreenInfo(CefRefPtr<CefBrowser>, CefScreenInfo& info) override;
+
   void OnPaint(
     CefRefPtr<CefBrowser>,
     PaintElementType,
@@ -46,6 +53,9 @@ class ChromiumPageSource::RenderHandler final : public CefRenderHandler {
   PixelSize GetSize() const;
   void SetSize(const PixelSize& size);
 
+  float GetScale() const;
+  void SetScale(float scale);
+
   void RenderPage(RenderContext rc, const PixelRect& rect);
 
  private:
@@ -53,6 +63,7 @@ class ChromiumPageSource::RenderHandler final : public CefRenderHandler {
 
   std::weak_ptr<ChromiumPageSource> mPageSource;
   PixelSize mSize {};
+  float mScale {1.0f};
 };
 
 }// namespace VisorVR

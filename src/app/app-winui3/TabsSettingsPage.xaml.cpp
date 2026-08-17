@@ -1007,6 +1007,38 @@ VisorVR::fire_and_forget BrowserTabUIData::IsBackgroundTransparent(
   co_await GetTab()->SetBackgroundTransparent(value);
 }
 
+double BrowserTabUIData::RenderScalePercent() const {
+  return GetTab()->GetRenderScale() * 100;
+}
+
+VisorVR::fire_and_forget BrowserTabUIData::RenderScalePercent(
+  const double value) {
+  if (std::isnan(value)) {
+    co_return;
+  }
+  const auto scale = static_cast<float>(value / 100);
+  if (scale == GetTab()->GetRenderScale()) {
+    co_return;
+  }
+  const auto weak = get_weak();
+  co_await GetTab()->SetRenderScale(scale);
+  // The resolution caption is derived from the scale, so it has to be told.
+  if (const auto self = weak.get(); self && self->mPropertyChangedEvent) {
+    self->mPropertyChangedEvent(
+      *self, PropertyChangedEventArgs(L"RenderResolutionDescription"));
+  }
+}
+
+double BrowserTabUIData::MaxRenderScalePercent() const {
+  return GetTab()->GetMaxRenderScale() * 100;
+}
+
+winrt::hstring BrowserTabUIData::RenderResolutionDescription() const {
+  const auto size = GetTab()->GetRenderPixelSize();
+  return winrt::hstring {std::format(
+    L"Rendered at {} × {} pixels", size.mWidth, size.mHeight)};
+}
+
 std::shared_ptr<BrowserTab> BrowserTabUIData::GetTab() const {
   auto tab = mTab.lock();
   if (!tab) {

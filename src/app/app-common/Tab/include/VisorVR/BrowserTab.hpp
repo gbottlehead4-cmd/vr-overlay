@@ -54,6 +54,15 @@ class BrowserTab final : public TabBase,
   [[nodiscard]]
   task<void> SetBackgroundTransparent(bool);
 
+  /// Pixel density the page is rasterized at; see WebPageSourceSettings.
+  float GetRenderScale() const;
+  [[nodiscard]]
+  task<void> SetRenderScale(float);
+  /// Largest scale worth setting at this panel's size.
+  float GetMaxRenderScale() const;
+  /// Resulting texture size, for display in the UI.
+  PixelSize GetRenderPixelSize() const;
+
  private:
   BrowserTab(
     const audited_ptr<DXResources>&,

@@ -147,6 +147,11 @@ struct BrowserTabUIData : BrowserTabUIDataT<
   bool IsBackgroundTransparent() const;
   VisorVR::fire_and_forget IsBackgroundTransparent(bool);
 
+  double RenderScalePercent() const;
+  VisorVR::fire_and_forget RenderScalePercent(double);
+  double MaxRenderScalePercent() const;
+  winrt::hstring RenderResolutionDescription() const;
+
  private:
   std::shared_ptr<VisorVR::BrowserTab> GetTab() const;
 };

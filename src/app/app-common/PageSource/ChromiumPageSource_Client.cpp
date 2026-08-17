@@ -466,8 +466,11 @@ void ChromiumPageSource::Client::PostCursorEvent(const CursorEvent& ev) {
 
   mIsHovered = true;
   CefMouseEvent cme;
-  cme.x = static_cast<int>(std::lround(ev.mX));
-  cme.y = static_cast<int>(std::lround(ev.mY));
+  // `ev` is in content pixels, i.e. already multiplied up by the render scale;
+  // CEF wants view coordinates (DIPs), which are scale-independent.
+  const auto scale = mRenderHandler ? mRenderHandler->GetScale() : 1.0f;
+  cme.x = static_cast<int>(std::lround(ev.mX / scale));
+  cme.y = static_cast<int>(std::lround(ev.mY / scale));
 
   constexpr uint32_t LeftButton = (1 << 0);
   constexpr uint32_t RightButton = (1 << 1);

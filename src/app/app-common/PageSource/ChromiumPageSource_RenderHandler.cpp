@@ -18,6 +18,7 @@ ChromiumPageSource::RenderHandler::RenderHandler(
   VISORVR_TraceLoggingScope(
     "ChromiumPageSource::RenderHandler::RenderHandler()");
   mSize = pageSource->mSettings.mInitialSize;
+  mScale = pageSource->mSettings.GetUsableRenderScale();
   check_hresult(pageSource->mDXResources->mD3D11Device->CreateFence(
     0, D3D11_FENCE_FLAG_NONE, IID_PPV_ARGS(mFence.put())));
 }
@@ -31,6 +32,18 @@ void ChromiumPageSource::RenderHandler::GetViewRect(
     "ChromiumPageSource::RenderHandler::RenderHandler()");
   const FatalOnUncaughtExceptions exceptionBoundary;
   rect = {0, 0, mSize.Width<int>(), mSize.Height<int>()};
+}
+
+bool ChromiumPageSource::RenderHandler::GetScreenInfo(
+  CefRefPtr<CefBrowser>,
+  CefScreenInfo& info) {
+  VISORVR_TraceLoggingScope(
+    "ChromiumPageSource::RenderHandler::GetScreenInfo()");
+  const FatalOnUncaughtExceptions exceptionBoundary;
+  info.device_scale_factor = mScale;
+  // Leaving the rects empty makes CEF fall back to GetViewRect(); that's what
+  // we want here - the layout size is unscaled, only the rasterization isn't.
+  return true;
 }
 
 void ChromiumPageSource::RenderHandler::OnPaint(
@@ -184,9 +197,22 @@ void ChromiumPageSource::RenderHandler::OnAcceleratedPaint(
 
 void ChromiumPageSource::RenderHandler::SetSize(const PixelSize& size) {
   mSize = size;
+  // The ceiling on a useful scale depends on the size, so a page that resizes
+  // itself (SimHub autoresize, SetPreferredPixelSize) can invalidate it.
+  if (const auto pageSource = mPageSource.lock()) {
+    WebPageSourceSettings settings = pageSource->mSettings;
+    settings.mInitialSize = size;
+    mScale = settings.GetUsableRenderScale();
+  }
 }
 
 PixelSize ChromiumPageSource::RenderHandler::GetSize() const { return mSize; }
+
+void ChromiumPageSource::RenderHandler::SetScale(const float scale) {
+  mScale = scale;
+}
+
+float ChromiumPageSource::RenderHandler::GetScale() const { return mScale; }
 
 void ChromiumPageSource::RenderHandler::RenderPage(
   RenderContext rc,
