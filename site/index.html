@@ -741,7 +741,11 @@
   </div>
 </footer>
 
-<!-- Cloudflare Web Analytics — TODO: paste this site's own token after the Pages project exists -->
+<!-- Cloudflare Web Analytics. Cookieless, so no consent banner is required.
+     Its numbers will read lower than the footer counter: this script is
+     client-side and ad-blockers block it, while /api/hits runs in the Worker
+     and cannot be blocked. -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "df97657694c047daac1f8349d9cb5e9a"}'></script>
 
 <script>
   // Theme toggle button: flip theme, persist choice, update icon.
