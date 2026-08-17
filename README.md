@@ -76,7 +76,10 @@ hungry.
 VisorVR is free, and stays free. If it earns its place on your rig you can chip
 in at [ko-fi.com/gidrux](https://ko-fi.com/gidrux) — entirely optional.
 
-Bugs and questions: [Issues](https://github.com/gbottlehead4-cmd/vr-overlay/issues).
+Bugs and feature requests: [Issues](https://github.com/gbottlehead4-cmd/vr-overlay/issues)
+— they don't scroll away, so that's the better place for anything I need to act on.
+
+Questions and help from other users: [Discord](https://discord.gg/DqPkr6vh4N).
 
 ## License
 

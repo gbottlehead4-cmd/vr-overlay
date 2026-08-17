@@ -277,6 +277,10 @@
           NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/issues">
           Bug reports and feature requests
         </HyperlinkButton>
+        <HyperlinkButton
+          NavigateUri="https://discord.gg/DqPkr6vh4N">
+          Discord — ask other users
+        </HyperlinkButton>
         <TextBlock
           Foreground="{ThemeResource TextFillColorSecondary}"
           Style="{ThemeResource CaptionTextBlockStyle}"
