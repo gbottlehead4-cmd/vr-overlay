@@ -84,6 +84,9 @@ foreach ($dir in $include) {
   robocopy $src (Join-Path $stage $dir) /E /COPY:DAT /R:1 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null
   # robocopy uses exit codes < 8 for success-with-info
   if ($LASTEXITCODE -ge 8) { throw "robocopy failed for $dir (exit $LASTEXITCODE)" }
+  # ...but it is the last external command run, so the script would otherwise
+  # exit 1 ("files were copied") and look like a failure to whatever ran it.
+  $global:LASTEXITCODE = 0
   $size = (Get-ChildItem (Join-Path $stage $dir) -Recurse -File | Measure-Object -Property Length -Sum).Sum
   Write-Host ("  {0,-10} {1,8:N1} MB" -f $dir, ($size / 1MB))
 }

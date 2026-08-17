@@ -1,0 +1,12 @@
+{
+  "name": "visorvr-site",
+  "private": true,
+  "description": "Landing page for VisorVR, deployed as a Cloudflare Worker with static assets.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
