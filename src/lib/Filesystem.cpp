@@ -175,60 +175,6 @@ std::filesystem::path GetSettingsDirectory() {
   return sPath;
 }
 
-void MigrateSettingsDirectory() {
-  const auto newPath = GetSettingsDirectory();
-  if (!std::filesystem::exists(newPath) || !std::filesystem::is_empty(newPath)) {
-    return;
-  }
-
-  // Import settings from a previous OpenKneeboard install so users keep their
-  // layout. This is deliberately COPY-ONLY: the OpenKneeboard Public License
-  // permits reading settings from locations carrying the original branding,
-  // but does not permit modifying or extending them - so nothing here writes
-  // to, renames, or deletes anything under the old paths. The names below are
-  // therefore deliberately NOT rebranded.
-  const auto localAppData = GetKnownFolderPath<FOLDERID_LocalAppData>();
-  const std::filesystem::path candidates[] {
-    localAppData / "OpenKneeboard" / "Settings",
-    GetKnownFolderPath<FOLDERID_SavedGames>() / "OpenKneeboard",
-  };
-
-  for (auto&& oldPath: candidates) {
-    if (oldPath.empty() || !std::filesystem::exists(oldPath)) {
-      continue;
-    }
-
-    dprint("🚚 importing settings from `{}` to `{}`", oldPath, newPath);
-
-    for (auto&& it: std::filesystem::recursive_directory_iterator(oldPath)) {
-      if (it.is_directory()) {
-        continue;
-      }
-      const auto src = it.path();
-      if (src.extension() != ".json") {
-        continue;
-      }
-
-      auto dest = newPath;
-      for (auto&& part: std::filesystem::relative(src.parent_path(), oldPath)
-             / src.filename()) {
-        if (part == "profiles") {
-          dest /= "Profiles";
-        } else {
-          dest /= part;
-        }
-      }
-
-      std::filesystem::create_directories(dest.parent_path());
-      std::filesystem::copy_file(
-        src, dest, std::filesystem::copy_options::skip_existing);
-    }
-
-    dprint("✅ imported settings from `{}`", oldPath);
-    return;
-  }
-}
-
 std::filesystem::path GetLocalAppDataDirectory() {
   static LazyPath sPath {[]() -> std::filesystem::path {
     const auto base = GetKnownFolderPath<FOLDERID_LocalAppData>();

@@ -46,11 +46,6 @@ auto GetKnownFolderPath() {
 
 void OpenExplorerWithSelectedFile(const std::filesystem::path& path);
 
-/// Copy settings out of an old OpenKneeboard install (`Saved Games\OpenKneeboard`
-/// or `%LOCALAPPDATA%\OpenKneeboard\Settings`) into
-/// `%LOCALAPPDATA%\VisorVR\Settings`. Read-only with respect to the old paths.
-void MigrateSettingsDirectory();
-
 void CleanupTemporaryDirectories();
 
 class ScopedDeleter {

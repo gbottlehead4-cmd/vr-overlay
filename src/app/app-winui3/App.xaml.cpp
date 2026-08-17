@@ -743,14 +743,6 @@ static int AppMain(
   Filesystem::CleanupTemporaryDirectories();
 
   try {
-    Filesystem::MigrateSettingsDirectory();
-  } catch (const std::filesystem::filesystem_error& e) {
-    dprint.Warning(
-      "A filesystem error occurred while migrating settings: {:#010x}, {}",
-      std::bit_cast<uint32_t>(e.code().value()),
-      e.what());
-  }
-  try {
     BackupSettings();
   } catch (const std::filesystem::filesystem_error& e) {
     dprint.Warning(
