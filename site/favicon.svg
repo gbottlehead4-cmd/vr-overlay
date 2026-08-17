@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>VisorVR</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B1F2E"/>
+      <stop offset="1" stop-color="#0F1013"/>
+    </linearGradient>
+    <linearGradient id="visor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8F95FF"/>
+      <stop offset="1" stop-color="#5C64E6"/>
+    </linearGradient>
+    <mask id="notch">
+      <rect x="0" y="0" width="1024" height="1024" fill="black"/>
+      <rect x="152" y="362" width="720" height="300" rx="150" fill="white"/>
+      <ellipse cx="512" cy="700" rx="150" ry="95" fill="black"/>
+    </mask>
+    <clipPath id="visorClip">
+      <rect x="152" y="362" width="720" height="300" rx="150"/>
+    </clipPath>
+  </defs>
+
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <rect x="8" y="8" width="1008" height="1008" rx="216"
+        fill="none" stroke="#2E3346" stroke-width="8"/>
+
+  <rect x="152" y="362" width="720" height="300" rx="150"
+        fill="url(#visor)" mask="url(#notch)"/>
+  <rect x="210" y="405" width="604" height="60" rx="30"
+        fill="#ffffff" fill-opacity="0.27" clip-path="url(#visorClip)"/>
+</svg>

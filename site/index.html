@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="canonical" href="https://visorvr.pages.dev/" />
+<title>VisorVR — Move your VR dashboards with the mouse, inside the headset</title>
+<meta name="description" content="Free, portable VR overlay for sim racing and flight sims. Put web dashboards, PDFs, timing screens and any window inside your headset — and position each panel with your mouse while you are wearing it. No installer, no admin rights." />
+
+<!-- Open Graph / social preview -->
+<meta property="og:title" content="VisorVR — Move your VR dashboards with the mouse, inside the headset" />
+<meta property="og:description" content="Free, portable VR overlay for sim racing and flight sims. Web dashboards, PDFs and any window as floating panels — placed with your mouse, in VR." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://visorvr.pages.dev/" />
+<meta name="twitter:card" content="summary_large_image" />
+<!-- TODO: add og:image once a real screenshot exists, e.g. https://visorvr.pages.dev/img/preview.png -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "VisorVR",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "url": "https://visorvr.pages.dev/",
+  "description": "Free, portable VR overlay for sim racing and flight simulators. Shows web dashboards, PDFs, images and any desktop window as floating panels inside the headset, positioned with the mouse while wearing it.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Gidrux" },
+  "isBasedOn": "https://github.com/OpenKneeboard/OpenKneeboard"
+}
+</script>
+
+<style>
+  :root {
+    --bg: #0F1013;
+    --bg-soft: #15161C;
+    --card: #1B1D24;
+    --border: #272A34;
+    --text: #E9EBF2;
+    --muted: #9AA0B0;
+    --accent: #7C83FF;      /* VisorVR indigo */
+    --accent-2: #46C6E8;    /* link cyan */
+    --good: #2BD576;
+    --warn: #FFCF4D;
+    --radius: 14px;
+    --max: 1040px;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9;
+    --bg-soft: #eceef2;
+    --card: #ffffff;
+    --border: #d8dee7;
+    --text: #1a1f29;
+    --muted: #566275;
+    --accent: #5C64E6;      /* darker indigo for contrast on light */
+    --accent-2: #0a84c4;
+    --good: #1f9d57;
+    --warn: #9a7400;
+  }
+  :root[data-theme="light"] nav { background: rgba(246,247,249,.85); }
+  :root[data-theme="light"] code,
+  :root[data-theme="light"] .mono { background: #eef1f5; }
+  .theme-toggle {
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--muted); font-size: 1.05rem; line-height: 1;
+    margin-left: 22px; padding: 4px 6px; border-radius: 8px;
+  }
+  .theme-toggle:hover { color: var(--text); }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+  h1, h2, h3 { line-height: 1.2; margin: 0 0 .4em; }
+  h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-top: 0; }
+  .muted { color: var(--muted); }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15,16,19,.82);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .brand { font-weight: 700; letter-spacing: .2px; color: var(--text); display: flex; align-items: center; gap: 9px; }
+  .brand span { color: var(--accent); }
+  .brand img { width: 24px; height: 24px; border-radius: 6px; display: block; }
+  .nav-links a { color: var(--muted); margin-left: 22px; font-size: .95rem; }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 720px) { .nav-links a { display: none; } }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 72px 0 60px;
+    background:
+      radial-gradient(1200px 500px at 70% -10%, rgba(124,131,255,.20), transparent 60%),
+      radial-gradient(900px 500px at 10% 10%, rgba(70,198,232,.10), transparent 55%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+  .hero .tag { color: var(--accent); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; font-size: .82rem; }
+  .hero .lead { font-size: clamp(1.05rem, 2.2vw, 1.3rem); color: var(--muted); max-width: 660px; margin: 18px 0 28px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 22px; border-radius: 11px; font-weight: 600; font-size: 1rem;
+    border: 1px solid transparent; cursor: pointer; transition: transform .08s ease, filter .15s ease;
+  }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn-ghost:hover { border-color: var(--muted); }
+  .btn-kofi { background: #29abe0; color: #fff; }
+  .btn-kofi:hover { filter: brightness(1.08); }
+
+  /* Media frame (hero illustration / screenshot) */
+  .media {
+    margin-top: 44px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-soft);
+    overflow: hidden;
+    position: relative;
+  }
+  .media svg { width: 100%; height: auto; display: block; }
+  .media img { width: 100%; display: block; }
+  .media-cap { font-size: .82rem; color: var(--muted); text-align: center; margin-top: 10px; }
+
+  /* Guide steps with screenshots */
+  .guide-step {
+    display: grid; grid-template-columns: 1fr 1.15fr; gap: 26px; align-items: center;
+    padding: 30px 0; border-bottom: 1px solid var(--border);
+  }
+  .guide-step:last-child { border-bottom: 0; }
+  @media (max-width: 760px) { .guide-step { grid-template-columns: 1fr; gap: 16px; } }
+  .gs-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 1rem; margin-bottom: 12px;
+  }
+  .gs-text h3 { font-size: 1.2rem; }
+  .gs-text p { color: var(--muted); margin: 6px 0 0; }
+  .gs-text ul { color: var(--muted); margin: 8px 0 0; padding-left: 18px; }
+  .shot {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); overflow: hidden;
+  }
+  .shot img { width: 100%; display: block; }
+  .shot .ph {
+    aspect-ratio: 16 / 10; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    color: var(--muted); padding: 18px; background: var(--bg-soft);
+  }
+  .shot .ph .big { font-size: 2rem; margin-bottom: 6px; }
+
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section.alt { background: var(--bg-soft); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 860px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+  }
+  .card h3 { font-size: 1.15rem; }
+  .card p { margin-bottom: 0; }
+  .card .ic { font-size: 1.5rem; line-height: 1; display: block; margin-bottom: 10px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .9rem; }
+
+  .games { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .games span {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px; font-size: .92rem; color: var(--text);
+  }
+
+  code, .mono { font-family: "SF Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: #0a0b0e; border: 1px solid var(--border); padding: 2px 7px; border-radius: 6px; font-size: .9em; }
+  kbd {
+    font-family: "SF Mono", ui-monospace, Consolas, monospace; font-size: .85em;
+    background: var(--card); border: 1px solid var(--border); border-bottom-width: 2px;
+    padding: 2px 8px; border-radius: 6px; color: var(--text);
+  }
+
+  .note {
+    display: flex; gap: 14px; background: rgba(255,207,77,.06);
+    border: 1px solid rgba(255,207,77,.3); border-radius: var(--radius);
+    padding: 18px 20px; margin-top: 22px;
+  }
+  .note .ic { font-size: 1.4rem; line-height: 1; }
+  .note h3 { color: var(--warn); margin-bottom: 4px; font-size: 1rem; }
+  .note.info { background: rgba(124,131,255,.07); border-color: rgba(124,131,255,.32); }
+  .note.info h3 { color: var(--accent); }
+
+  details.faq {
+    border-bottom: 1px solid var(--border); padding: 16px 0;
+  }
+  details.faq summary {
+    cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; color: var(--accent); font-weight: 700; }
+  details.faq[open] summary::after { content: "−"; }
+  details.faq p { color: var(--muted); margin: 10px 0 0; }
+
+  .donate-box { text-align: center; max-width: 620px; margin: 0 auto; }
+
+  footer { padding: 40px 0; text-align: center; color: var(--muted); font-size: .9rem; }
+  footer a { color: var(--muted); margin: 0 10px; }
+</style>
+<script>
+  // Set theme before paint (no flash): stored choice, else OS preference.
+  (function () {
+    try {
+      var t = localStorage.getItem('theme');
+      if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><img src="favicon.svg" alt="" width="24" height="24">Visor<span>VR</span></div>
+    <div class="nav-links">
+      <a href="#editing">In-VR editing</a>
+      <a href="#panels">Panels</a>
+      <a href="#content">What to show</a>
+      <a href="#install">Setup</a>
+      <a href="#compat">Compatibility</a>
+      <a href="#faq">FAQ</a>
+      <a href="#donate">Support</a>
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay" target="_blank" rel="noopener">GitHub</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme">☀️</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="tag">Free VR overlay · portable · no installer</div>
+    <h1>Place your VR panels with the mouse, while you're wearing the headset.</h1>
+    <p class="lead">
+      VisorVR puts web dashboards, timing screens, PDFs, checklists — and any window on your
+      desktop — inside your headset as floating panels. Then it lets you <strong>grab one with
+      the mouse and put it exactly where you want it</strong>, in VR, without taking the headset
+      off. Where you put it is where it stays.
+    </p>
+    <div class="cta-row">
+      <!-- DOWNLOAD URL — single source of truth; also in step 1, the footer and functions/api/hits.js -->
+      <a class="btn btn-primary" href="https://github.com/gbottlehead4-cmd/vr-overlay/releases/latest" target="_blank" rel="noopener">
+        ⬇ Download free
+      </a>
+      <a class="btn btn-ghost" href="#editing">See how it works</a>
+      <a class="btn btn-kofi" href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+    </div>
+    <p class="muted" style="margin-top:14px; font-size:.92rem;">
+      📦 Portable — unzip it anywhere and run <span class="mono">VisorVR.exe</span>. No installer,
+      no administrator rights, nothing written outside your own user account.
+    </p>
+    <p class="muted" style="margin-top:8px; font-size:.92rem;">
+      Windows 10/11 · any 64-bit <strong>OpenXR</strong> game · built for sim racing, equally at home in flight sims.
+    </p>
+
+    <div class="media">
+      <svg viewBox="0 0 1600 760" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="Diagram: three floating panels inside a headset view, one being dragged with the mouse pointer">
+        <defs>
+          <linearGradient id="panelFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--card)"/>
+            <stop offset="1" stop-color="var(--bg-soft)"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="50%" cy="30%" r="70%">
+            <stop offset="0" stop-color="var(--accent)" stop-opacity="0.16"/>
+            <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <rect x="0" y="0" width="1600" height="760" fill="var(--bg)"/>
+        <rect x="0" y="0" width="1600" height="760" fill="url(#glow)"/>
+
+        <!-- horizon / cockpit hint -->
+        <path d="M0 600 H1600" stroke="var(--border)" stroke-width="2"/>
+        <path d="M250 760 L620 600 H980 L1350 760" fill="none" stroke="var(--border)" stroke-width="2"/>
+
+        <!-- LEFT panel: notes, angled -->
+        <g transform="translate(120 210) skewY(7)">
+          <rect x="0" y="0" width="330" height="250" rx="14" fill="url(#panelFill)" stroke="var(--border)" stroke-width="2"/>
+          <rect x="0" y="0" width="330" height="34" rx="14" fill="var(--border)" opacity=".5"/>
+          <text x="16" y="23" font-family="Segoe UI, sans-serif" font-size="15" fill="var(--muted)">Setup notes.pdf</text>
+          <g fill="var(--muted)" opacity=".55">
+            <rect x="20" y="60" width="230" height="9" rx="4.5"/>
+            <rect x="20" y="86" width="290" height="9" rx="4.5"/>
+            <rect x="20" y="112" width="180" height="9" rx="4.5"/>
+            <rect x="20" y="150" width="270" height="9" rx="4.5"/>
+            <rect x="20" y="176" width="210" height="9" rx="4.5"/>
+            <rect x="20" y="202" width="250" height="9" rx="4.5"/>
+          </g>
+        </g>
+
+        <!-- RIGHT panel: timing, angled the other way -->
+        <g transform="translate(1150 230) skewY(-7)">
+          <rect x="0" y="0" width="330" height="250" rx="14" fill="url(#panelFill)" stroke="var(--border)" stroke-width="2"/>
+          <rect x="0" y="0" width="330" height="34" rx="14" fill="var(--border)" opacity=".5"/>
+          <text x="16" y="23" font-family="Segoe UI, sans-serif" font-size="15" fill="var(--muted)">Timing</text>
+          <g font-family="Segoe UI, sans-serif" font-size="15" fill="var(--muted)">
+            <text x="20" y="76">P4</text><text x="120" y="76">1:32.4</text>
+            <text x="20" y="112">P5</text><text x="120" y="112">1:32.9</text>
+            <text x="20" y="148" fill="var(--accent)">P6</text><text x="120" y="148" fill="var(--accent)">1:33.1</text>
+            <text x="20" y="184">P7</text><text x="120" y="184">1:33.6</text>
+            <text x="20" y="220">P8</text><text x="120" y="220">1:34.2</text>
+          </g>
+        </g>
+
+        <!-- CENTRE panel: the one being moved -->
+        <g transform="translate(560 150)">
+          <rect x="-10" y="-10" width="500" height="370" rx="20" fill="none"
+                stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="10 8" opacity=".85"/>
+          <rect x="0" y="0" width="480" height="350" rx="14" fill="url(#panelFill)" stroke="var(--accent)" stroke-width="2"/>
+          <rect x="0" y="0" width="480" height="40" rx="14" fill="var(--accent)" opacity=".18"/>
+          <text x="18" y="27" font-family="Segoe UI, sans-serif" font-size="16" fill="var(--text)">Web dashboard</text>
+
+          <!-- fake dash content -->
+          <text x="30" y="140" font-family="Segoe UI, sans-serif" font-size="86" font-weight="700" fill="var(--text)">4</text>
+          <text x="120" y="140" font-family="Segoe UI, sans-serif" font-size="40" fill="var(--muted)">148 km/h</text>
+          <rect x="30" y="175" width="420" height="16" rx="8" fill="var(--border)"/>
+          <rect x="30" y="175" width="300" height="16" rx="8" fill="var(--accent)"/>
+          <g font-family="Segoe UI, sans-serif" font-size="17" fill="var(--muted)">
+            <text x="30" y="240">LAST</text><text x="30" y="268" fill="var(--text)">1:33.142</text>
+            <text x="185" y="240">BEST</text><text x="185" y="268" fill="var(--text)">1:32.508</text>
+            <text x="340" y="240">FUEL</text><text x="340" y="268" fill="var(--text)">21.4 L</text>
+          </g>
+
+          <!-- corner handles -->
+          <g fill="var(--accent)">
+            <circle cx="-10" cy="-10" r="7"/><circle cx="490" cy="-10" r="7"/>
+            <circle cx="-10" cy="360" r="7"/><circle cx="490" cy="360" r="7"/>
+          </g>
+
+          <!-- mouse cursor -->
+          <g transform="translate(330 250)">
+            <path d="M0 0 L0 27 L7 21 L12 32 L18 29 L13 18 L22 17 Z"
+                  fill="#ffffff" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"/>
+          </g>
+        </g>
+
+        <!-- caption chips -->
+        <g font-family="Segoe UI, sans-serif" font-size="19">
+          <rect x="560" y="546" width="212" height="44" rx="22" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="586" y="574" fill="var(--muted)">click to grab</text>
+          <rect x="790" y="546" width="230" height="44" rx="22" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="816" y="574" fill="var(--muted)">scroll to resize</text>
+          <rect x="1038" y="546" width="200" height="44" rx="22" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+          <text x="1064" y="574" fill="var(--muted)">shift to tilt</text>
+        </g>
+      </svg>
+    </div>
+    <p class="media-cap">Illustration of the idea — three panels around the cockpit, the middle one grabbed with the mouse.</p>
+  </div>
+</header>
+
+<section id="why">
+  <div class="wrap">
+    <h2>The problem it solves</h2>
+    <div class="grid-2" style="margin-top:24px;">
+      <div class="card">
+        <h3>In VR you're blind to your desktop</h3>
+        <p class="muted">Your timing screen, your setup notes, your delta dashboard — all of it is on a monitor you can't see with a headset on. So it gets read between sessions, or not at all.</p>
+      </div>
+      <div class="card">
+        <h3>VisorVR brings it inside</h3>
+        <p class="muted">Anything you'd have on a second screen becomes a panel floating in the cockpit, at the distance and angle you choose. Look down at it like a real kneeboard, or park it out on the A-pillar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="editing" class="alt">
+  <div class="wrap">
+    <h2>The part that's different: you position panels <em>in</em> VR</h2>
+    <p class="muted" style="max-width:720px;">
+      Most overlays make you guess. You take the headset off, type coordinates into a settings
+      window, put the headset back on, and find out it's 10&nbsp;cm too low. VisorVR skips all of
+      that — turn on <strong>Edit in VR</strong> and move the panel with the mouse while you're
+      looking at it.
+    </p>
+
+    <div class="grid-2" style="margin-top:26px;">
+      <div class="card">
+        <span class="ic">🖱️</span>
+        <h3>Grab and move</h3>
+        <p class="muted">Click to grab the panel, move the mouse to carry it, click again to drop it. No dragging and holding — you can let go of the mouse mid-adjustment.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🔍</span>
+        <h3>Scroll to resize and push away</h3>
+        <p class="muted">The scroll wheel changes the panel's size and its distance from you, so you can dial in something readable that isn't in the way.</p>
+      </div>
+      <div class="card">
+        <span class="ic">↩️</span>
+        <h3>Hold <kbd>Shift</kbd> to tilt</h3>
+        <p class="muted">Rotate the panel to face you properly — the difference between a legible dashboard and one you're reading at an angle.</p>
+      </div>
+      <div class="card">
+        <span class="ic">💾</span>
+        <h3>It stays put</h3>
+        <p class="muted">Placement is saved per panel and survives restarts, so you set your cockpit up once. There's also a Recenter button for when your seating position moves.</p>
+      </div>
+    </div>
+
+    <div class="note info" style="margin-top:26px;">
+      <div class="ic">💡</div>
+      <div>
+        <h3>On-screen hints while you edit</h3>
+        <p class="muted" style="margin:0;">While Edit in VR is on, the controls are drawn right on the panel you're moving, sized to fit it — so you don't have to remember any of the above.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="panels">
+  <div class="wrap">
+    <h2>What you can put in a panel</h2>
+    <p class="muted" style="max-width:720px;">Each panel is independent — its own content, size, distance, angle, icon and sharpness.</p>
+    <div class="grid-3" style="margin-top:26px;">
+      <div class="card">
+        <span class="ic">🌐</span>
+        <h3>Web dashboards</h3>
+        <p class="muted">Any URL, rendered by the bundled Chromium — SimHub dashboards, timing sites, a Twitch chat, your own HTML.</p>
+      </div>
+      <div class="card">
+        <span class="ic">📄</span>
+        <h3>PDFs, images and notes</h3>
+        <p class="muted">Setup sheets, track maps, checklists, reference cards. Point a panel at a single file or a whole folder and page through it.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🪟</span>
+        <h3>Any desktop window</h3>
+        <p class="muted">Window capture puts a running application in the headset — a spotter tool, a timing app, anything with a window.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🎨</span>
+        <h3>Per-panel sharpness</h3>
+        <p class="muted">Web panels render at up to 2× resolution, so pulling one closer gives you more pixels rather than bigger blurry ones.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🎮</span>
+        <h3>Jump straight to a panel</h3>
+        <p class="muted">Bind a controller button or key to a specific panel, or to show and hide the whole overlay while you drive.</p>
+      </div>
+      <div class="card">
+        <span class="ic">✈️</span>
+        <h3>Flight sim extras</h3>
+        <p class="muted">Inherited from OpenKneeboard: DCS mission briefings, kneeboard pages, radio log and terrain data, all read from the game.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="content" class="alt">
+  <div class="wrap">
+    <h2>What people actually put in them</h2>
+    <p class="muted" style="max-width:720px;">
+      VisorVR is the window — the content is whatever you already use. Here's what works well,
+      to save you the hunt. These are other people's projects: independent, not affiliated with
+      VisorVR, and listed only because they work.
+    </p>
+
+    <div class="note info" style="margin-top:24px;">
+      <div class="ic">📐</div>
+      <div>
+        <h3>SimHub dashboards size themselves</h3>
+        <p class="muted" style="margin:0;">
+          VisorVR detects a SimHub dashboard in a web panel and resizes the panel to the dashboard's
+          own template dimensions — so it arrives at the right shape and aspect ratio instead of
+          letterboxed. It's on by default; there's a switch in the panel's settings if you'd rather
+          size it yourself.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:26px;">
+      <div class="card">
+        <span class="ic">🏁</span>
+        <h3>Sim racing</h3>
+        <ul class="muted" style="margin:0; padding-left:18px;">
+          <li>
+            <a href="https://github.com/fixfactory/bo2-official-overlays" target="_blank" rel="noopener">benofficial2's Official Overlays</a>
+            — a free, well-made set of SimHub overlays for iRacing: multi-class standings, relative,
+            delta bar, inputs, fuel calculator, track map, spotter. Install them in SimHub as normal,
+            then point a VisorVR panel at the one you want.
+          </li>
+          <li style="margin-top:10px;">
+            <a href="https://www.simhubdash.com/" target="_blank" rel="noopener">Any SimHub dashboard</a>
+            — your own, or anything from the community library. In SimHub, open the dashboard in
+            Dash Studio and copy its browser/OBS link, then paste that into a web panel.
+          </li>
+          <li style="margin-top:10px;">Setup sheets and track notes as PDFs, paged through in the headset.</li>
+          <li style="margin-top:10px;">A desktop timing or spotter app, captured as a window panel.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="ic">✈️</span>
+        <h3>Flight sims</h3>
+        <ul class="muted" style="margin:0; padding-left:18px;">
+          <li><a href="https://chartfox.org/" target="_blank" rel="noopener">ChartFox</a> — free approach, SID/STAR and airfield charts (needs a VATSIM account).</li>
+          <li style="margin-top:10px;"><a href="https://charts.navigraph.com/" target="_blank" rel="noopener">Navigraph Charts</a> — the paid option, in a browser panel.</li>
+          <li style="margin-top:10px;"><a href="https://skyvector.com/" target="_blank" rel="noopener">SkyVector</a> — free VFR/IFR charts and flight planning.</li>
+          <li style="margin-top:10px;"><a href="https://www.simbrief.com/" target="_blank" rel="noopener">SimBrief</a> — your OFP and route, open beside you for the whole flight.</li>
+          <li style="margin-top:10px;"><a href="https://vatsim-radar.com/" target="_blank" rel="noopener">VATSIM Radar</a> — live network traffic and who's controlling.</li>
+          <li style="margin-top:10px;">Aircraft PDF guides and checklists, or a moving-map app captured as a window.</li>
+          <li style="margin-top:10px;">For DCS, the built-in briefing, kneeboard, radio log and terrain panels read the mission directly.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:20px; font-size:.86rem;">
+      Got one that deserves to be on this list?
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay/issues" target="_blank" rel="noopener">Tell me about it</a>.
+    </p>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Setup — about two minutes</h2>
+    <p class="muted" style="max-width:720px;">There's no installer and nothing to configure up front. Download, unzip, run.</p>
+
+    <div class="guide-step" style="grid-template-columns:1fr;">
+      <div class="gs-text">
+        <div class="gs-num">1</div>
+        <h3>Download and unzip</h3>
+        <p>Grab the portable zip and unpack it wherever you like — a folder on any drive, or a USB stick. Keep the folder together: <span class="mono">bin\VisorVRApp.exe</span> looks beside its own folder for Chromium and its data, so <span class="mono">bin</span> on its own won't work.</p>
+        <p style="margin-top:12px;">
+          <a class="btn btn-primary" href="https://github.com/gbottlehead4-cmd/vr-overlay/releases/latest" target="_blank" rel="noopener">⬇ Download the portable zip</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="guide-step" style="grid-template-columns:1fr;">
+      <div class="gs-text">
+        <div class="gs-num">2</div>
+        <h3>Run <span class="mono">VisorVR.exe</span></h3>
+        <p>The launcher sits at the top of the unzipped folder. On first launch VisorVR registers its OpenXR layer for your Windows user — that's what lets it draw inside the game — so no administrator rights and no install step. Move the folder later and it re-registers itself next time it starts.</p>
+      </div>
+    </div>
+
+    <div class="guide-step" style="grid-template-columns:1fr;">
+      <div class="gs-text">
+        <div class="gs-num">3</div>
+        <h3>Add your panels</h3>
+        <p>In the main window, add a panel and point it at a dashboard URL, a PDF, a folder or a window. Give it a name and an icon so it's easy to find on the toolbar.</p>
+      </div>
+    </div>
+
+    <div class="guide-step" style="grid-template-columns:1fr;">
+      <div class="gs-text">
+        <div class="gs-num">4</div>
+        <h3>Start the game, then place your panels</h3>
+        <p>Launch your sim as usual — VisorVR draws inside any 64-bit OpenXR game. With the headset on, turn on <strong>Edit in VR</strong> for a panel and put it where you want it. Repeat per panel; it's saved as you go.</p>
+        <ul>
+          <li>Restart the game if you've just installed VisorVR while it was already running.</li>
+          <li>Nothing showing? Check <strong>Settings → Virtual Reality → OpenXR support for 64-bit games</strong> is on.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <div class="ic">⚠️</div>
+      <div>
+        <h3>"Windows protected your PC" — expected, and safe to click through</h3>
+        <p class="muted" style="margin:0;">
+          You'll see this the first time you run it. Click <strong>More info</strong> → <strong>Run anyway</strong>.
+          SmartScreen shows that warning for any program that isn't signed with a code-signing
+          certificate it already trusts. Certificates cost money every year and VisorVR is free and
+          unfunded, so it isn't signed — that's the whole reason for the warning, and there's nothing
+          else behind it. Antivirus software occasionally objects too, because drawing an overlay means
+          loading a layer into the running game, which is a technique malware also uses. It's a false
+          positive; report it to your vendor if you hit one.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="compat" class="alt">
+  <div class="wrap">
+    <h2>What it works with</h2>
+    <p class="muted">Any game that runs on <strong>64-bit OpenXR</strong>, which today is most of them:</p>
+    <div class="games">
+      <span>iRacing</span><span>Assetto Corsa Competizione</span><span>Le Mans Ultimate</span>
+      <span>Automobilista 2</span><span>rFactor 2</span><span>DCS World</span>
+      <span>Microsoft Flight Simulator</span><span>…and other OpenXR titles</span>
+    </div>
+    <p class="muted" style="margin-top:14px; font-size:.9rem;">
+      Tested on the author's own rig in <strong>iRacing</strong>. The rest run the same OpenXR layer,
+      but if you find one that misbehaves, please
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay/issues" target="_blank" rel="noopener">open an issue</a>.
+    </p>
+
+    <div class="grid-2" style="margin-top:30px;">
+      <div class="card">
+        <h3>Requirements</h3>
+        <ul class="muted" style="margin:0; padding-left:18px;">
+          <li>Windows 10 or 11, 64-bit</li>
+          <li>A VR headset with an OpenXR runtime (SteamVR, Oculus, WMR, Varjo…)</li>
+          <li>A 64-bit game that renders through OpenXR</li>
+          <li>A mouse — that's what you position panels with</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Doesn't need</h3>
+        <ul class="muted" style="margin:0; padding-left:18px;">
+          <li>Administrator rights</li>
+          <li>An installer, or anything in Program Files</li>
+          <li>VR controllers — panels are placed with the mouse</li>
+          <li>Any runtime download: Chromium and the UI framework ship in the zip</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <div style="margin-top:18px;">
+      <details class="faq">
+        <summary>How is this different from OpenKneeboard?</summary>
+        <p>VisorVR is a fork of <a href="https://github.com/OpenKneeboard/OpenKneeboard" target="_blank" rel="noopener">OpenKneeboard</a> by Fred Emmott — an excellent piece of software that does the hard part of getting panels into an OpenXR game. The addition is <strong>in-VR positioning with the mouse</strong>, plus a rework of the interface around per-panel settings: name, icon, size, distance, sharpness and placement all in one place. It's an independent project, not an official OpenKneeboard release, and it doesn't read or change your OpenKneeboard settings.</p>
+      </details>
+      <details class="faq">
+        <summary>Can I run it alongside motion compensation?</summary>
+        <p>Yes. VisorVR is an OpenXR API layer, the same as OpenXR-MotionCompensation, and layers stack — a motion rig cancelling head motion doesn't stop the overlay drawing. If you're running a motion rig without VR compensation, see <a href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener">OXRMC Bridge</a>.</p>
+      </details>
+      <details class="faq">
+        <summary>Will it cost me frames?</summary>
+        <p>The overlay is composited into a frame the game is already rendering, and panels only redraw when their content changes — a static PDF costs essentially nothing. A busy web dashboard costs more than a still image, and a higher sharpness setting costs more than a lower one. If you're chasing every frame, keep panel count and sharpness modest.</p>
+      </details>
+      <details class="faq">
+        <summary>Is it really free? What's the catch?</summary>
+        <p>No catch. It's free, and there's no paid version planned. The licence it inherits requires the source to stay available under the same terms, so it can't quietly become paid software later. If it earns its place on your rig, <a href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">a coffee</a> is welcome and entirely optional.</p>
+      </details>
+      <details class="faq">
+        <summary>Where does it store my settings?</summary>
+        <p>In <span class="mono">%LOCALAPPDATA%\VisorVR</span>, under your own user account. To uninstall, turn off <strong>Settings → Virtual Reality → OpenXR support for 64-bit games</strong> (that removes the registry entry it added) and delete the folder. Delete the settings folder too for a clean sweep.</p>
+      </details>
+      <details class="faq">
+        <summary>Does it work with WMV / SteamVR / Oculus / Varjo?</summary>
+        <p>It works with whatever OpenXR runtime your headset uses — the overlay is drawn by the game's OpenXR layer chain, not by a specific headset's software. The one requirement is that the game itself uses OpenXR, 64-bit.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="donate" class="alt">
+  <div class="wrap donate-box">
+    <h2>Free, and staying free</h2>
+    <p class="muted">I built this because I was tired of taking my headset off to nudge a panel five centimetres. It's free for everyone, and it stays that way. If it saved you the faff, a coffee keeps the updates coming — completely optional.</p>
+    <a class="btn btn-kofi" style="margin-top:8px;" href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">☕ Support on Ko-fi</a>
+
+    <div class="card" style="margin-top:40px; text-align:left;">
+      <h3>Also from me: OXRMC Bridge</h3>
+      <p class="muted">On a motion rig? <a href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener">OXRMC Bridge</a> is a free SimHub plugin that feeds your rig's real pose to OpenXR-MotionCompensation, so you don't have to strap a VR controller to the platform. Same author, also free.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>VisorVR — free and open source. © <strong>Gidrux</strong>.</div>
+    <div style="margin-top:10px;">
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay/releases/latest" target="_blank" rel="noopener">Download</a>
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay/issues" target="_blank" rel="noopener">Issues</a>
+      <a href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">Support</a>
+      <a href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener">OXRMC Bridge</a>
+    </div>
+    <div style="margin-top:14px; font-size:.82rem; color:var(--muted); max-width:680px; margin-left:auto; margin-right:auto;">
+      VisorVR is a fork of <a href="https://github.com/OpenKneeboard/OpenKneeboard" target="_blank" rel="noopener">OpenKneeboard</a>,
+      copyright © Fred Emmott, used under the OpenKneeboard Public License v1. This is an independent
+      project and is not affiliated with, endorsed by, or supported by OpenKneeboard or its author.
+      Distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+    </div>
+    <div style="margin-top:12px; font-size:.8rem; color:var(--muted); max-width:680px; margin-left:auto; margin-right:auto;">
+      Game and hardware names are trademarks of their respective owners, used only to describe compatibility.
+    </div>
+    <div id="siteStats" style="margin-top:16px; font-size:.72rem; color:var(--muted); opacity:.55;" hidden></div>
+  </div>
+</footer>
+
+<!-- Cloudflare Web Analytics — TODO: paste this site's own token after the Pages project exists -->
+
+<script>
+  // Theme toggle button: flip theme, persist choice, update icon.
+  (function () {
+    var btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    function isLight() { return document.documentElement.getAttribute('data-theme') === 'light'; }
+    function setIcon() {
+      btn.textContent = isLight() ? '🌙' : '☀️';
+      btn.title = isLight() ? 'Switch to dark' : 'Switch to light';
+    }
+    setIcon();
+    btn.addEventListener('click', function () {
+      var next = isLight() ? 'dark' : 'light';
+      if (next === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      setIcon();
+    });
+  })();
+
+  // Site stats: page-load tally (Cloudflare KV) + live GitHub download total.
+  // Silently stays hidden if the API is unreachable — never breaks the page.
+  (function () {
+    var el = document.getElementById('siteStats');
+    if (!el) return;
+    fetch('/api/hits').then(function (r) { return r.json(); }).then(function (d) {
+      var v = (d.visits || 0).toLocaleString();
+      var n = (d.downloads || 0).toLocaleString();
+      el.textContent = '👁 ' + v + ' visits' + (d.downloads ? ' · ⬇ ' + n + ' downloads' : '');
+      el.hidden = false;
+    }).catch(function () { /* leave hidden */ });
+  })();
+</script>
+
+</body>
+</html>
