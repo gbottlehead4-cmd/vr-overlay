@@ -53,6 +53,14 @@ struct TabsSettingsPage : TabsSettingsPageT<TabsSettingsPage>,
 
   IVector<IInspectable> Tabs() noexcept;
 
+  /** Build the UI data object matching a panel's concrete type.
+   *
+   * Shared with TabPage's inline panel settings: binding to the derived type
+   * is what lets one view show every setting a panel has.
+   */
+  static VisorVRApp::TabUIData CreateTabUIData(
+    const std::shared_ptr<VisorVR::ITab>&);
+
   VisorVR::fire_and_forget RestoreDefaults(
     IInspectable,
     RoutedEventArgs) noexcept;
@@ -90,8 +98,6 @@ struct TabsSettingsPage : TabsSettingsPageT<TabsSettingsPage>,
   winrt::guid GetFilePickerPersistenceGuid();
 
   task<void> AddTabs(const std::vector<std::shared_ptr<VisorVR::ITab>>&);
-  static VisorVRApp::TabUIData CreateTabUIData(
-    const std::shared_ptr<VisorVR::ITab>&);
 
   bool mUIIsChangingTabs = false;
 

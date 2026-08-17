@@ -11,6 +11,7 @@
 // clang-format on
 
 #include "Globals.h"
+#include "TabsSettingsPage.xaml.h"
 
 #include <VisorVR/CreateTabActions.hpp>
 #include <VisorVR/CursorEvent.hpp>
@@ -455,9 +456,10 @@ VisorVR::fire_and_forget TabPage::UpdateToolbar() {
   // VisorVR: the panel header (icon / name / live badge) and the
   // Preview <-> Settings switch live outside the command bar.
   if (const auto tab = mTabView->GetTab().lock()) {
-    winrt::VisorVRApp::TabUIData tabData;
-    tabData.InstanceID(tab->GetRuntimeID().GetTemporaryValue());
-    SettingsContent().Content(tabData);
+    // Build the panel-type-specific UI data, not the base type: that is what
+    // lets the inline settings show every setting for this panel, so there is
+    // no separate settings page to go to.
+    SettingsContent().Content(TabsSettingsPage::CreateTabUIData(tab));
   }
   this->UpdatePanelHeader();
   this->SetSettingsVisible(false);

@@ -11,6 +11,160 @@
   <Page.Resources>
     <local:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <local:MetersValueConverter x:Key="MetersConverter"/>
+    <!--
+      Panel-type-specific settings. These are appended to the common inline
+      settings below, so that everything for a panel is in one place and there
+      is no separate settings page to navigate to.
+    -->
+    <DataTemplate x:Key="GenericPanelExtras" x:DataType="local:TabUIData">
+      <StackPanel/>
+    </DataTemplate>
+    <DataTemplate
+      x:Key="BrowserPanelExtras"
+      x:DataType="local:BrowserTabUIData">
+      <Border
+        Background="#FF1B1D24"
+        BorderBrush="#18FFFFFF"
+        BorderThickness="1"
+        CornerRadius="12"
+        Padding="16">
+        <StackPanel Spacing="12" x:DefaultBindMode="TwoWay">
+          <TextBlock
+            Text="WEB PANEL"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"/>
+          <StackPanel Spacing="6">
+            <TextBlock Text="Sharpness"/>
+            <Slider
+              Minimum="100"
+              Maximum="{x:Bind MaxRenderScalePercent, Mode=OneWay}"
+              StepFrequency="25"
+              TickFrequency="25"
+              TickPlacement="Outside"
+              Value="{x:Bind RenderScalePercent}"/>
+            <TextBlock
+              Text="{x:Bind RenderResolutionDescription, Mode=OneWay}"
+              FontSize="12"
+              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            <TextBlock
+              Text="Higher stays crisp when the panel is close, and costs more GPU. The page layout does not change."
+              FontSize="12"
+              TextWrapping="Wrap"
+              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+          </StackPanel>
+          <ToggleSwitch
+            IsOn="{x:Bind IsBackgroundTransparent}"
+            Header="Transparent background"
+            OffContent="Background is solid"
+            OnContent="Background is transparent"/>
+          <ToggleSwitch
+            IsOn="{x:Bind AreOpenKneeboardAPIsEnabled}"
+            Header="Allow web pages to integrate with VisorVR"/>
+          <ToggleSwitch
+            IsOn="{x:Bind IsSimHubIntegrationEnabled}"
+            IsEnabled="{x:Bind AreOpenKneeboardAPIsEnabled}"
+            Header="SimHub integration"
+            OffContent="Disabled"
+            OnContent="Automatically resize to fit SimHub dashboards"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+    <DataTemplate
+      x:Key="DCSRadioLogPanelExtras"
+      x:DataType="local:DCSRadioLogTabUIData">
+      <Border
+        Background="#FF1B1D24"
+        BorderBrush="#18FFFFFF"
+        BorderThickness="1"
+        CornerRadius="12"
+        Padding="16">
+        <StackPanel Spacing="12" x:DefaultBindMode="TwoWay">
+          <TextBlock
+            Text="RADIO LOG"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"/>
+          <RadioButtons
+            SelectedIndex="{x:Bind MissionStartBehavior}"
+            MaxColumns="2"
+            Header="On mission start">
+            <x:String>Draw a separator</x:String>
+            <x:String>Clear history</x:String>
+          </RadioButtons>
+          <ToggleSwitch
+            IsOn="{x:Bind TimestampsEnabled}"
+            Header="Timestamps"
+            OffContent="No Timestamps"
+            OnContent="Show Timestamps"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+    <DataTemplate
+      x:Key="WindowCapturePanelExtras"
+      x:DataType="local:WindowCaptureTabUIData">
+      <Border
+        Background="#FF1B1D24"
+        BorderBrush="#18FFFFFF"
+        BorderThickness="1"
+        CornerRadius="12"
+        Padding="16">
+        <StackPanel Spacing="12" x:DefaultBindMode="TwoWay">
+          <TextBlock
+            Text="WINDOW CAPTURE"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"/>
+          <TextBox
+            Header="Executable path"
+            Text="{x:Bind ExecutablePathPattern}"
+            PlaceholderText="Executable path pattern"/>
+          <TextBlock
+            FontSize="12"
+            TextWrapping="Wrap"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Text="The full path to the executable; MS-DOS wildcards such as '*' are supported."/>
+          <ToggleSwitch
+            Header="Capture client area"
+            IsOn="{x:Bind CaptureClientArea}"
+            OnContent="Crop classic window borders, title bars, and menu bars"
+            OffContent="The entire window is captured"/>
+          <ComboBox
+            Header="Match window title"
+            SelectedIndex="{x:Bind MatchWindowTitle}">
+            <x:String>Do not match</x:String>
+            <x:String>Match exactly</x:String>
+            <x:String>Match with pattern (use '*' and '?')</x:String>
+          </ComboBox>
+          <TextBox
+            Header="Window title"
+            Text="{x:Bind WindowTitle}"
+            PlaceholderText="Window title"/>
+          <ToggleSwitch
+            Header="Match window class"
+            IsOn="{x:Bind MatchWindowClass}"
+            OnContent="Enabled"
+            OffContent="Disabled"/>
+          <TextBox
+            Header="Window class"
+            Text="{x:Bind WindowClass}"
+            IsEnabled="False"/>
+          <ToggleSwitch
+            Header="Show Windows mouse cursor"
+            IsOn="{x:Bind IsCursorCaptureEnabled}"
+            OnContent="The real mouse cursor is visible in the panel"
+            OffContent="The real mouse cursor is not visible in the panel"/>
+          <ToggleSwitch
+            Header="Use graphics tablet as mouse"
+            IsOn="{x:Bind IsInputEnabled}"
+            OnContent="Enabled"
+            OffContent="Disabled"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+    <local:TabUIDataTemplateSelector
+      x:Name="PanelExtrasTemplateSelector"
+      Generic="{StaticResource GenericPanelExtras}"
+      Browser="{StaticResource BrowserPanelExtras}"
+      DCSRadioLog="{StaticResource DCSRadioLogPanelExtras}"
+      WindowCapture="{StaticResource WindowCapturePanelExtras}"/>
     <DataTemplate
       x:Key="InlineTabSettingsTemplate"
       x:DataType="local:TabUIData">
@@ -190,38 +344,10 @@
             TextWrapping="Wrap"
             Text="Tip: bind Toggle VR edit mode, Recenter and Show/hide to your wheel or HOTAS for hands-free access in VR."/>
         </StackPanel>
-        <Border
-          Visibility="{x:Bind HasRenderScale, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"
-          Background="#FF1B1D24"
-          BorderBrush="#18FFFFFF"
-          BorderThickness="1"
-          CornerRadius="12"
-          Padding="16">
-          <StackPanel Spacing="6">
-            <TextBlock Text="Sharpness"/>
-            <Slider
-              Minimum="100"
-              Maximum="{x:Bind MaxRenderScalePercent, Mode=OneWay}"
-              StepFrequency="25"
-              TickFrequency="25"
-              TickPlacement="Outside"
-              Value="{x:Bind RenderScalePercent, Mode=TwoWay}"/>
-            <TextBlock
-              Text="{x:Bind RenderResolutionDescription, Mode=OneWay}"
-              FontSize="12"
-              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-            <TextBlock
-              Text="Higher stays crisp when the panel is close, and costs more GPU. The page layout does not change."
-              FontSize="12"
-              TextWrapping="Wrap"
-              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-          </StackPanel>
-        </Border>
-        <TextBlock
-          Style="{ThemeResource CaptionTextBlockStyle}"
-          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-          TextWrapping="Wrap"
-          Text="More options for this panel type are in Settings &#x2192; Panels."/>
+        <ContentControl
+          HorizontalContentAlignment="Stretch"
+          Content="{x:Bind Mode=OneTime}"
+          ContentTemplateSelector="{StaticResource PanelExtrasTemplateSelector}"/>
       </StackPanel>
     </DataTemplate>
   </Page.Resources>
