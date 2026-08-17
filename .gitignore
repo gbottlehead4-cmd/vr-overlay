@@ -8,3 +8,50 @@ docs/vendor
 out/
 .idea/
 *~
+
+# In-source CMake/MSBuild pollution.
+# An in-source `cmake` configure scatters these through the tree; the generated
+# headers it leaves behind in source include dirs SHADOW the ones in the build
+# dir, so builds silently use stale identifiers. Keep them ignored, and delete
+# any generated header that turns up inside src/**/include/.
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.dir/
+*.stamp
+*.version.rc
+/x64/
+**/x64/
+**/obj/
+**/RelWithDebInfo/
+**/Debug/
+/stamp32/
+/version.txt
+Generated Files/
+*-prefix/
+
+# Dependency fetch/build trees
+/_deps/
+/_cef/
+/vcpkg_installed/
+third-party/toolchain.cmake
+
+# Logs
+*.log
+
+# Generated into source include dirs by an in-source configure (see above)
+src/lib/include/OpenKneeboard/config.hpp
+src/lib/include/OpenKneeboard/version.hpp
+src/lib/include/VisorVR/config.hpp
+src/lib/include/VisorVR/version.hpp
+src/app/app-winui3/*-build-time-marker.hpp
+data/include/
+data/JSSources.cpp
+data/JSSources.compressed-embed.json
+src/shaders/gen/
+src/injectables/*.intermediate.json
+src/injectables/*64.def
