@@ -1,0 +1,143 @@
+<!doctype html>
+<!--
+  VisorVR
+
+  Copyright (c) 2026 gbottlehead4
+
+  This program is open source; see the LICENSE file in the root of the
+  VisorVR repository.
+
+  Shown as the only panel on a fresh install. Self-contained on purpose: it is
+  loaded from disk with no network, so nothing here may reference an external
+  font, stylesheet, image or script.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to VisorVR</title>
+    <style>
+      :root {
+        --bg: #15161c;
+        --card: #1b1d24;
+        --stroke: #ffffff18;
+        --text: #eceef5;
+        --muted: #a2a7b8;
+        --accent: #7c83ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 40px 44px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 30px;
+        font-weight: 600;
+      }
+      .sub {
+        margin: 0 0 28px;
+        color: var(--muted);
+      }
+      .step {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+        background: var(--card);
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+      }
+      .num {
+        flex: 0 0 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        text-align: center;
+        line-height: 28px;
+      }
+      .step h2 {
+        margin: 2px 0 2px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+      .step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      b {
+        color: var(--text);
+        font-weight: 600;
+      }
+      footer {
+        margin-top: 26px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to VisorVR</h1>
+    <p class="sub">
+      You are looking at a panel. Everything VisorVR shows in your headset is
+      one of these — delete this panel once you have your own.
+    </p>
+
+    <div class="step">
+      <div class="num">1</div>
+      <div>
+        <h2>Add a panel</h2>
+        <p>
+          <b>Add panel</b> in the sidebar. A panel can be a web page (a SimHub
+          dashboard, a timing screen, a chart), a window from your desktop, or a
+          file or folder of documents.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div>
+        <h2>Place it in VR</h2>
+        <p>
+          Select the panel, then <b>Edit in VR</b>. Put your headset on and grab
+          the panel with the mouse to move, tilt and resize it. It stays where
+          you leave it.
+        </p>
+        <p>
+          Can't see it? Press <b>Recenter</b>, next to Edit in VR — a panel
+          keeps its last position, so it may be behind or above you.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div>
+        <h2>Bind a button</h2>
+        <p>
+          In the headset the keyboard is out of reach. Under
+          <b>Settings &rarr; Input</b>, bind three buttons on your wheel, HOTAS
+          or controller: <b>Show/hide</b> to clear the overlay away,
+          <b>Recenter VR</b> to pull panels back in front of you, and
+          <b>Next panel</b> to cycle between them.
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      Flying DCS World? Add the mission, briefing, aircraft kneeboard and radio
+      log panels from <b>Settings &rarr; Panels</b>.
+    </footer>
+  </body>
+</html>

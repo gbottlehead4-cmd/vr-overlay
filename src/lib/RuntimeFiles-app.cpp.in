@@ -1,7 +1,7 @@
 #include <VisorVR/RuntimeFiles.hpp>
 
 namespace VisorVR::RuntimeFiles {
-const std::string_view QUICK_START_PDF("Quick Start.pdf");
+const std::string_view WELCOME_HTML("Welcome.html");
 
 const std::string_view CHROMIUM(
   "$<$<TARGET_EXISTS:VisorVR-Chromium>:libexec/cef/$<TARGET_FILE_NAME:VisorVR-Chromium>>");

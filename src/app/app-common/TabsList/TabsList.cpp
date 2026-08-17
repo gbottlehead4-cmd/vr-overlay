@@ -4,10 +4,7 @@
 //
 // This program is open source; see the LICENSE file in the root of the
 // OpenKneeboard repository.
-#include <VisorVR/DCSAircraftTab.hpp>
-#include <VisorVR/DCSMissionTab.hpp>
-#include <VisorVR/DCSRadioLogTab.hpp>
-#include <VisorVR/DCSTerrainTab.hpp>
+#include <VisorVR/BrowserTab.hpp>
 #include <VisorVR/Filesystem.hpp>
 #include <VisorVR/KneeboardState.hpp>
 #include <VisorVR/PluginTab.hpp>
@@ -180,27 +177,22 @@ task<void> TabsList::LoadSettings(nlohmann::json config) {
 }
 
 task<void> TabsList::LoadDefaultSettings() {
-  // This is a little awkwardly structured because MSVC 2022 17.11 crashes if I
-  // put the `co_await`s in the SetTabs initializer list
-  auto quickStartPending = SingleFileTab::Create(
-    mDXR,
-    mKneeboard,
-    Filesystem::GetRuntimeDirectory() / RuntimeFiles::QUICK_START_PDF);
-  auto radioLogPending = DCSRadioLogTab::Create(mDXR, mKneeboard);
-  auto briefingPending = DCSBriefingTab::Create(mDXR, mKneeboard);
+  // A fresh install gets exactly one panel: a local page explaining how to add
+  // the rest. The DCS panels used to be the defaults, so every new user -
+  // including everyone who came for sim racing - started with five panels for
+  // a game they may not own. They are still one click away in Settings ->
+  // Panels.
+  const auto welcome
+    = Filesystem::GetRuntimeDirectory() / RuntimeFiles::WELCOME_HTML;
 
-  auto quickStart = co_await std::move(quickStartPending);
-  auto radioLog = co_await std::move(radioLogPending);
-  auto briefing = co_await std::move(briefingPending);
+  BrowserTab::Settings settings {};
+  settings.mURI = "file:///" + welcome.generic_string();
+  // The page paints its own background; a transparent one would leave the
+  // text floating over the game.
+  settings.mTransparentBackground = false;
 
-  co_await this->SetTabs({
-    quickStart,
-    radioLog,
-    briefing,
-    std::make_shared<DCSMissionTab>(mDXR, mKneeboard),
-    std::make_shared<DCSAircraftTab>(mDXR, mKneeboard),
-    std::make_shared<DCSTerrainTab>(mDXR, mKneeboard),
-  });
+  co_await this->SetTabs({co_await BrowserTab::Create(
+    mDXR, mKneeboard, random_guid(), "Welcome", settings)});
 }
 
 nlohmann::json TabsList::GetSettings() const {
