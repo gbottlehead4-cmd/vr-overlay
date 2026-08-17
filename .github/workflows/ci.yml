@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - triplet: x64-windows-openkneeboard
+          - triplet: x64-windows-visorvr
             extra: ""
           - triplet: x86-windows-static
             extra: "--x-no-default-features"
