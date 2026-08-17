@@ -26,6 +26,8 @@ constexpr std::string_view SettingsTabs {"Settings/Tabs"};
 }// namespace Paths
 
 std::string_view SettingsInput();
+/// The panel list: adding, deleting and reordering panels.
+std::string_view SettingsTabs();
 
 };// namespace SpecialURIs
 

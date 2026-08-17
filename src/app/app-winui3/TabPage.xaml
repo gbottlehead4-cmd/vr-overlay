@@ -348,6 +348,17 @@
           HorizontalContentAlignment="Stretch"
           Content="{x:Bind Mode=OneTime}"
           ContentTemplateSelector="{StaticResource PanelExtrasTemplateSelector}"/>
+        <StackPanel Spacing="2">
+          <HyperlinkButton
+            Click="GoToPanelsList"
+            Padding="0"
+            Content="Add, delete or reorder panels"/>
+          <TextBlock
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            TextWrapping="Wrap"
+            Text="Opens Settings &#x2192; Panels, where you can add a panel, remove one, or drag them into a different order."/>
+        </StackPanel>
       </StackPanel>
     </DataTemplate>
   </Page.Resources>

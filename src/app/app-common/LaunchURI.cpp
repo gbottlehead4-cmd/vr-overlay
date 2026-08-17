@@ -58,4 +58,9 @@ std::string_view SettingsInput() {
   static auto value = std::format("{}:///{}", Scheme, Paths::SettingsInput);
   return value;
 }
+
+std::string_view SettingsTabs() {
+  static auto value = std::format("{}:///{}", Scheme, Paths::SettingsTabs);
+  return value;
+}
 }// namespace VisorVR::SpecialURIs

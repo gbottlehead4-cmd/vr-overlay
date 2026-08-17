@@ -416,6 +416,12 @@ VisorVR::fire_and_forget TabPage::GoToInputBindings(
   co_await LaunchURI(SpecialURIs::SettingsInput());
 }
 
+VisorVR::fire_and_forget TabPage::GoToPanelsList(
+  const IInspectable&,
+  const RoutedEventArgs&) {
+  co_await LaunchURI(SpecialURIs::SettingsTabs());
+}
+
 VisorVR::fire_and_forget TabPage::UpdateToolbar() {
   co_await mUIThread;
 

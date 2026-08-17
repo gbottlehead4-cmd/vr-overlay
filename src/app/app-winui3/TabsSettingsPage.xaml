@@ -1,4 +1,4 @@
-﻿<Page
+<Page
   x:Class="VisorVRApp.TabsSettingsPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,7 +23,7 @@
         <Button
           Grid.Column="0"
           Tag="{x:Bind InstanceID,Mode=OneTime}"
-          ToolTipService.ToolTip="Tab settings"
+          ToolTipService.ToolTip="Panel settings"
           Margin="0,0,8,0"
           Click="ShowTabSettings">
           <FontIcon Glyph="&#xe713;"/>
@@ -293,7 +293,7 @@
           The class is meant to uniquely identify the 'kind' of window, for
           example it might be "MyApp's Main Window" or "MyApp's About
           Dialog". If this option is on, windows will only be captured if
-          their window class is the same as when the tab was added.
+          their window class is the same as when the panel was added.
         </TextBlock>
         <TextBlock
           Style="{ThemeResource CaptionTextBlockStyle}"
@@ -312,13 +312,13 @@
         <ToggleSwitch
           Header="Show Windows mouse cursor"
           IsOn="{x:Bind IsCursorCaptureEnabled}"
-          OnContent="The real mouse cursor is visible in the tab"
-          OffContent="The real mouse cursor is not visible in the tab"/>
+          OnContent="The real mouse cursor is visible in the panel"
+          OffContent="The real mouse cursor is not visible in the panel"/>
         <TextBlock
           Style="{ThemeResource CaptionTextBlockStyle}"
           Foreground="{ThemeResource TextFillColorSecondary}">
           This controls whether the real Windows mouse cursor is visible
-          in the tab; it does not affect which windows the mouse controls,
+          in the panel; it does not affect which windows the mouse controls,
           and it does not affect VisorVR's cursor.
         </TextBlock>
         <TextBlock
@@ -363,7 +363,7 @@
             <TextBlock
               Margin="4,0,0,0"
               Grid.Column="1">
-              Add a tab
+              Add panel
             </TextBlock>
           </Grid>
         </Button>
@@ -394,7 +394,7 @@
           <TextBlock
             Margin="8,4,4,4"
             Grid.Column="1">
-            Add a tab
+            Add panel
           </TextBlock>
         </Grid>
       </Button>
@@ -411,7 +411,7 @@
           <TextBlock Style="{ThemeResource BodyTextBlockStyle}">
             Web dashboard tabs display a single screen - they are not a
             general-purpose web browser. For a less limited browser, use your
-            normal browser with a Window Capture Tab.
+            normal browser with a Window Capture panel.
           </TextBlock>
           <TextBox
             x:Name="AddBrowserAddress"
@@ -449,7 +449,7 @@
       </ContentDialog>
       <ContentDialog
         x:Name="TabSettingsDialog"
-        Title="Tab Settings"
+        Title="Panel settings"
         CloseButtonText="Close"
         DefaultButton="Close">
         <ScrollViewer VerticalScrollMode="Auto"

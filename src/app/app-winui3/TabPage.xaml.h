@@ -68,6 +68,9 @@ struct TabPage : TabPageT<TabPage>, EventReceiver {
   VisorVR::fire_and_forget GoToInputBindings(
     const IInspectable&,
     const RoutedEventArgs&);
+  VisorVR::fire_and_forget GoToPanelsList(
+    const IInspectable&,
+    const RoutedEventArgs&);
   void ShowPreview(const IInspectable&, const RoutedEventArgs&);
   void ShowPanelSettings(const IInspectable&, const RoutedEventArgs&);
 
