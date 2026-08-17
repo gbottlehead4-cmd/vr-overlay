@@ -46,11 +46,18 @@
           OnContent="Enabled"
           OffContent="Disabled"
           IsOn="{x:Bind SteamVREnabled}"/>
-        <ToggleSwitch
-          Header="OpenXR support for 64-bit games"
-          IsOn="{x:Bind OpenXR64Enabled}"
-          OnContent="Enabled"
-          OffContent="Disabled"/>
+        <StackPanel Spacing="2">
+          <ToggleSwitch
+            Header="OpenXR support for 64-bit games"
+            IsOn="{x:Bind OpenXR64Enabled}"
+            OnContent="Enabled"
+            OffContent="Disabled"/>
+          <TextBlock
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            TextWrapping="Wrap"
+            Text="Registers VisorVR's OpenXR layer for your user account, so it needs no administrator rights. Turn this off before deleting VisorVR to leave nothing behind."/>
+        </StackPanel>
         <ToggleSwitch
           Header="OpenXR support for 32-bit games"
           IsOn="{x:Bind OpenXR32Enabled}"

@@ -94,6 +94,45 @@
           </local:SettingsSubpageData>
         </GridView.Items>
       </GridView>
+      <TextBlock
+        Style="{StaticResource SubtitleTextBlockStyle}"
+        Text="About"
+        Margin="4,24,0,8"/>
+      <StackPanel
+        Spacing="8"
+        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        CornerRadius="12"
+        BorderThickness="1"
+        Padding="16"
+        Margin="4,0,0,0"
+        HorizontalAlignment="Left">
+        <TextBlock
+          TextWrapping="Wrap"
+          MaxWidth="620"
+          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+          Text="VisorVR is free and open source. If it earns its place on your rig, you can chip in towards its development - entirely optional, and everything stays free either way."/>
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <HyperlinkButton
+            NavigateUri="https://ko-fi.com/gidrux"
+            Padding="0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <FontIcon Glyph="&#xEB51;" FontSize="14"/>
+              <TextBlock Text="Donate to support development"/>
+            </StackPanel>
+          </HyperlinkButton>
+          <HyperlinkButton
+            NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay"
+            Padding="0"
+            Content="Source code and issues"/>
+        </StackPanel>
+        <TextBlock
+          Style="{StaticResource CaptionTextBlockStyle}"
+          TextWrapping="Wrap"
+          MaxWidth="620"
+          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+          Text="Built on OpenKneeboard by Fred Emmott, used under the OpenKneeboard Public License v1. Licence texts for VisorVR and the libraries it uses are in the share\doc folder."/>
+      </StackPanel>
     </StackPanel>
   </ScrollViewer>
 </Page>

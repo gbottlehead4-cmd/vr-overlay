@@ -13,6 +13,7 @@
 #include "Globals.h"
 
 #include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/OpenXRLayerRegistry.hpp>
 #include <VisorVR/OpenXRMode.hpp>
 #include <VisorVR/RuntimeFiles.hpp>
 
@@ -109,7 +110,13 @@ bool VRSettingsPage::OpenXR64Enabled() noexcept {
   if (ec) {
     return false;
   }
-  return IsOpenXRAPILayerEnabled(jsonPath.wstring(), RRF_SUBKEY_WOW6464KEY);
+  // Either scope counts: an installed copy registers for all users, a portable
+  // one for the current user only. Qualified because this class inherits an
+  // unrelated Control::IsEnabled().
+  using OpenXRLayers::Bitness;
+  using OpenXRLayers::Scope;
+  return OpenXRLayers::IsEnabled(Scope::AllUsers, Bitness::x64, jsonPath)
+    || OpenXRLayers::IsEnabled(Scope::CurrentUser, Bitness::x64, jsonPath);
 }
 
 bool VRSettingsPage::OpenXR32Enabled() noexcept {
@@ -323,8 +330,27 @@ VisorVR::fire_and_forget VRSettingsPage::OpenXR64Enabled(
     co_return;
   }
 
-  const auto newValue = enabled ? OpenXRMode::AllUsers : OpenXRMode::Disabled;
-  co_await SetOpenXR64ModeWithHelperProcess(newValue);
+  std::error_code ec;
+  const auto jsonPath = std::filesystem::canonical(
+    RuntimeFiles::GetInstallationDirectory() / RuntimeFiles::OPENXR_64BIT_JSON,
+    ec);
+  using OpenXRLayers::Bitness;
+  using OpenXRLayers::Scope;
+  const bool allUsers = !ec
+    && OpenXRLayers::IsEnabled(Scope::AllUsers, Bitness::x64, jsonPath);
+
+  if (enabled) {
+    // Prefer the per-user registration: it needs no elevation, so turning the
+    // overlay back on never puts a UAC prompt in the way.
+    OpenXRLayers::RegisterForCurrentUser();
+  } else {
+    OpenXRLayers::UnregisterForCurrentUser();
+    // An installed copy also has a machine-wide entry, and only an elevated
+    // process can clear that one.
+    if (allUsers) {
+      co_await SetOpenXR64ModeWithHelperProcess(OpenXRMode::Disabled);
+    }
+  }
   mPropertyChangedEvent(*this, PropertyChangedEventArgs(L"OpenXR64Enabled"));
 }
 

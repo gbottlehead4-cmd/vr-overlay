@@ -88,6 +88,19 @@ foreach ($dir in $include) {
   Write-Host ("  {0,-10} {1,8:N1} MB" -f $dir, ($size / 1MB))
 }
 
+# The start button. The app itself cannot live here - it locates libexec and
+# share relative to its own folder - so this launcher sits at the top level
+# and starts bin\VisorVRApp.exe.
+$launcher = Join-Path $outRoot 'launcher\VisorVR.exe'
+if (Test-Path $launcher) {
+  Copy-Item $launcher (Join-Path $stage 'VisorVR.exe')
+  Write-Host "  VisorVR.exe (launcher)"
+} else {
+  Write-Warning "No launcher at $launcher - build the VisorVR-Portable-Launcher target"
+}
+
+$required += 'VisorVR.exe'
+
 $missing = $required | Where-Object { -not (Test-Path (Join-Path $stage $_)) }
 if ($missing) {
   throw "Package is incomplete, missing:`n  $($missing -join "`n  ")"
@@ -97,7 +110,7 @@ Set-Content -Path (Join-Path $stage 'README.txt') -Encoding utf8 -Value @"
 VisorVR $version - portable
 
 To run:
-  Open the bin folder and run VisorVRApp.exe.
+  Double-click VisorVR.exe in this folder.
 
 No installation, and no administrator rights. On launch VisorVR registers its
 OpenXR layer for your user account only, pointing at this folder, so you can

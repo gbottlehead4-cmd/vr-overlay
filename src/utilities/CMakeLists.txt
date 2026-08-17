@@ -23,6 +23,22 @@ endfunction()
 
 include(remote-control.cmake)
 
+# Sits at the top of a portable copy so there is something obvious to run;
+# the real app has to stay in `bin` to find libexec and share beside it.
+ok_add_executable(
+  VisorVR-Portable-Launcher
+  RUNTIME_EXE
+  WIN32
+  portable-launcher.cpp
+  icon.rc
+)
+set_target_properties(
+  VisorVR-Portable-Launcher
+  PROPERTIES
+  OUTPUT_NAME "VisorVR"
+  RUNTIME_OUTPUT_DIRECTORY "${BUILD_OUT_ROOT}/launcher"
+)
+
 add_utility_executable(
   VisorVR-Plugin-Tab-Action
   WIN32
