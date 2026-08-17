@@ -249,6 +249,7 @@
       <a href="#install">Setup</a>
       <a href="#compat">Compatibility</a>
       <a href="#faq">FAQ</a>
+      <a href="#oxrmc">OXRMC Bridge</a>
       <a href="#donate">Support</a>
       <a href="https://github.com/gbottlehead4-cmd/vr-overlay" target="_blank" rel="noopener">GitHub</a>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme">☀️</button>
@@ -673,16 +674,40 @@
   </div>
 </section>
 
+<section id="oxrmc">
+  <div class="wrap">
+    <h2>Also by me: OXRMC Bridge <span style="display:inline-block; vertical-align:middle; margin-left:8px; padding:3px 10px; border-radius:999px; background:rgba(124,131,255,.16); color:var(--accent); font-size:.72rem; font-weight:700; letter-spacing:.4px; text-transform:uppercase;">Free &amp; open source</span></h2>
+    <p class="muted" style="max-width:760px;">Panels in your headset solve one problem. If you drive on a <strong>motion rig</strong>, there's another: every time the platform pitches, your VR view goes with it. Motion compensation fixes that — but it needs to know how the rig is moving. <strong>OXRMC Bridge</strong> is a free SimHub plugin that tells it, without strapping a VR controller to your platform.</p>
+    <div class="grid-2" style="margin-top:24px;">
+      <div class="card">
+        <h3>🎮 Nothing to mount, nothing that sleeps</h3>
+        <p class="muted">The documented way to do motion compensation is to strap a spare VR controller to the rig. It goes to sleep when idle, drops tracking mid-stint, and there's no setting to stop it. The Bridge generates the rig's pose itself and writes it into the shared memory OpenXR-MotionCompensation reads. Set it once and forget it.</p>
+      </div>
+      <div class="card">
+        <h3>📐 A small sensor is the recommended setup</h3>
+        <p class="muted">A WitMotion sensor on the moving part of the rig measures real tilt right where your head sits — exactly what motion compensation needs to cancel. After a lot of testing it was the smoothest option in every scenario, especially on rough tracks. The site walks through wiring, mounting and calibration.</p>
+      </div>
+      <div class="card">
+        <h3>🔌 Or no hardware at all</h3>
+        <p class="muted">Two fallbacks need nothing extra: <strong>Sigma</strong> mode reads a Sigma Integrale rig's commanded motion, and <strong>Telemetry</strong> mode estimates from the game. Neither matches a real sensor, and the site says so plainly rather than pretending otherwise — treat them as backups.</p>
+      </div>
+      <div class="card">
+        <h3>🤝 It stacks with VisorVR</h3>
+        <p class="muted">Both are OpenXR layers, and layers stack — a rig cancelling head motion doesn't stop panels drawing. You need SimHub (the free 9.x is fine, no motion-addon licence) and OpenXR-MotionCompensation; the Bridge installs like any other SimHub plugin, and you're already running SimHub if you use its dashboards in here.</p>
+      </div>
+    </div>
+    <p style="margin-top:26px;">
+      <a class="btn btn-primary" href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener">Take a look at OXRMC Bridge →</a>
+    </p>
+    <p class="muted" style="margin-top:14px; font-size:.85rem;">Free and open source, same as this — a public GitHub release you can read the source of before installing.</p>
+  </div>
+</section>
+
 <section id="donate" class="alt">
   <div class="wrap donate-box">
     <h2>Free, and staying free</h2>
     <p class="muted">I built this because I was tired of taking my headset off to nudge a panel five centimetres. It's free for everyone, and it stays that way. If it saved you the faff, a coffee keeps the updates coming — completely optional.</p>
     <a class="btn btn-kofi" style="margin-top:8px;" href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">☕ Support on Ko-fi</a>
-
-    <div class="card" style="margin-top:40px; text-align:left;">
-      <h3>Also from me: OXRMC Bridge</h3>
-      <p class="muted">On a motion rig? <a href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener">OXRMC Bridge</a> is a free SimHub plugin that feeds your rig's real pose to OpenXR-MotionCompensation, so you don't have to strap a VR controller to the platform. Same author, also free.</p>
-    </div>
   </div>
 </section>
 
@@ -695,6 +720,11 @@
       <a href="https://github.com/gbottlehead4-cmd/vr-overlay/issues" target="_blank" rel="noopener">Issues</a>
       <a href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">Support</a>
       <a href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener">OXRMC Bridge</a>
+    </div>
+    <div style="margin-top:18px; font-size:.9rem;">
+      Also by Gidrux —
+      <a href="https://oxrmc-bridge.pages.dev/" target="_blank" rel="noopener" style="color:var(--accent-2); margin:0 0 0 4px; font-weight:600;">OXRMC Bridge</a>:
+      motion compensation for your rig, without strapping on a VR controller.
     </div>
     <div style="margin-top:14px; font-size:.82rem; color:var(--muted); max-width:680px; margin-left:auto; margin-right:auto;">
       VisorVR is a fork of <a href="https://github.com/OpenKneeboard/OpenKneeboard" target="_blank" rel="noopener">OpenKneeboard</a>,
