@@ -72,6 +72,7 @@ target_link_libraries(
   VisorVR-ChromiumWorker
   VisorVR-DXResources
   VisorVR-GetMainHWND
+  VisorVR-OpenXRLayerRegistry
   VisorVR-RuntimeFiles
   VisorVR-Elevation
   VisorVR-config

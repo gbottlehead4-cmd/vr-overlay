@@ -111,6 +111,7 @@ add_helper_executable(
 target_link_libraries(
   VisorVR-OpenXR-Helper
   PRIVATE
+  VisorVR-OpenXRLayerRegistry
   VisorVR-RuntimeFiles
   VisorVR-dprint
 )

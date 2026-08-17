@@ -20,6 +20,7 @@
 #include <VisorVR/Filesystem.hpp>
 #include <VisorVR/GetMainHWND.hpp>
 #include <VisorVR/KneeboardState.hpp>
+#include <VisorVR/OpenXRLayerRegistry.hpp>
 #include <VisorVR/OpenXRMode.hpp>
 #include <VisorVR/ProcessShutdownBlock.hpp>
 #include <VisorVR/RuntimeFiles.hpp>
@@ -738,6 +739,11 @@ static int AppMain(
   }
   LogInstallationInformation();
   SetRegistryValues();
+
+  // Keep the OpenXR layer pointing at wherever this copy currently lives, so a
+  // folder copied from another machine, or just moved, works on launch. This
+  // is per-user, so it needs no installer and no administrator rights.
+  OpenXRLayers::RegisterForCurrentUser();
 
   dprint("Cleaning up temporary directories...");
   Filesystem::CleanupTemporaryDirectories();

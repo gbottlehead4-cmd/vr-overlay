@@ -11,6 +11,7 @@
  * If done from the main process, the registry write will be app-specific.
  */
 
+#include <VisorVR/OpenXRLayerRegistry.hpp>
 #include <VisorVR/RuntimeFiles.hpp>
 
 #include <VisorVR/dprint.hpp>
@@ -20,118 +21,10 @@
 #include <shellapi.h>
 
 #include <filesystem>
-#include <functional>
 #include <string>
 
 using namespace VisorVR;
-
-enum class RegistryView {
-  WOW64_64,
-  WOW64_32,
-};
-
-static HKEY OpenOrCreateImplicitLayerRegistryKey(RegistryView view, HKEY root) {
-  HKEY openXRKey {0};
-  const auto result = RegCreateKeyExW(
-    root,
-    L"SOFTWARE\\Khronos\\OpenXR\\1\\ApiLayers\\Implicit",
-    0,
-    nullptr,
-    0,
-    KEY_ALL_ACCESS
-      | ((view == RegistryView::WOW64_64) ? KEY_WOW64_64KEY : KEY_WOW64_32KEY),
-    nullptr,
-    &openXRKey,
-    nullptr);
-  if (result != ERROR_SUCCESS) {
-    dprint("Failed to open OpenXR implicit layer key: {}", result);
-  }
-  return openXRKey;
-}
-
-static void DisableOpenXRLayers(
-  RegistryView view,
-  HKEY root,
-  std::function<bool(std::wstring_view)> predicate) {
-  auto openXRKey = OpenOrCreateImplicitLayerRegistryKey(view, root);
-  if (!openXRKey) {
-    return;
-  }
-
-  // https://docs.microsoft.com/en-us/windows/win32/sysinfo/registry-element-size-limits
-  std::wstring valueNameBuffer(16383, L'x');
-  DWORD valueSize = valueNameBuffer.size();
-  DWORD valueIndex {0};
-  DWORD disabled = 1;
-  while (RegEnumValueW(
-           openXRKey,
-           valueIndex++,
-           valueNameBuffer.data(),
-           &valueSize,
-           nullptr,
-           nullptr,
-           nullptr,
-           nullptr)
-         == ERROR_SUCCESS) {
-    std::wstring valueName = valueNameBuffer.substr(0, valueSize);
-    valueSize = valueNameBuffer.size();
-
-    if (predicate(valueName)) {
-      RegSetValueExW(
-        openXRKey,
-        valueName.c_str(),
-        0,
-        REG_DWORD,
-        reinterpret_cast<const BYTE*>(&disabled),
-        sizeof(disabled));
-    }
-  }
-
-  RegCloseKey(openXRKey);
-}
-
-static void DisableOpenXRLayer(
-  RegistryView view,
-  HKEY root,
-  const std::filesystem::path& rawJsonPath) {
-  const auto jsonPath = std::filesystem::canonical(rawJsonPath).wstring();
-
-  DisableOpenXRLayers(view, root, [jsonPath](std::wstring_view layerPath) {
-    return layerPath == jsonPath;
-  });
-}
-
-static void EnableOpenXRLayer(
-  RegistryView view,
-  HKEY root,
-  const std::filesystem::path& rawJsonPath) {
-  auto openXRKey = OpenOrCreateImplicitLayerRegistryKey(view, root);
-  if (!openXRKey) {
-    dprint("Failed to open or create OpenXR key");
-    return;
-  }
-
-  const auto jsonPath = std::filesystem::canonical(rawJsonPath).wstring();
-  const auto jsonFile = rawJsonPath.filename().wstring();
-  DisableOpenXRLayers(
-    view, root, [jsonFile, jsonPath](std::wstring_view layerPath) {
-      return layerPath != jsonPath && layerPath.ends_with(jsonFile);
-    });
-
-  DWORD disabled = 0;
-  const auto success = RegSetValueExW(
-    openXRKey,
-    jsonPath.c_str(),
-    0,
-    REG_DWORD,
-    reinterpret_cast<const BYTE*>(&disabled),
-    sizeof(disabled));
-  if (success != ERROR_SUCCESS) {
-    dprint("Failed to set OpenXR key: {}", success);
-  }
-
-  RegCloseKey(openXRKey);
-}
+using namespace VisorVR::OpenXRLayers;
 
 namespace VisorVR {
 
@@ -168,22 +61,27 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR commandLine, int) {
 
   const auto layer64 = directory / RuntimeFiles::OPENXR_64BIT_JSON;
   if (command == L"disable-HKLM-64") {
-    DisableOpenXRLayer(RegistryView::WOW64_64, HKEY_LOCAL_MACHINE, layer64);
-    return 0;
+    return Disable(Scope::AllUsers, Bitness::x64, layer64) ? 0 : 1;
   }
   if (command == L"enable-HKLM-64") {
-    EnableOpenXRLayer(RegistryView::WOW64_64, HKEY_LOCAL_MACHINE, layer64);
-    return 0;
+    return Enable(Scope::AllUsers, Bitness::x64, layer64) ? 0 : 1;
+  }
+  // Per-user equivalents; these need no elevation, and are what a portable
+  // copy registers itself with. Exposed here too so the same commands work
+  // for scripting and troubleshooting.
+  if (command == L"disable-HKCU-64") {
+    return Disable(Scope::CurrentUser, Bitness::x64, layer64) ? 0 : 1;
+  }
+  if (command == L"enable-HKCU-64") {
+    return Enable(Scope::CurrentUser, Bitness::x64, layer64) ? 0 : 1;
   }
 
   const auto layer32 = directory / RuntimeFiles::OPENXR_32BIT_JSON;
   if (command == L"disable-HKLM-32") {
-    DisableOpenXRLayer(RegistryView::WOW64_32, HKEY_LOCAL_MACHINE, layer32);
-    return 0;
+    return Disable(Scope::AllUsers, Bitness::x86, layer32) ? 0 : 1;
   }
   if (command == L"enable-HKLM-32") {
-    EnableOpenXRLayer(RegistryView::WOW64_32, HKEY_LOCAL_MACHINE, layer32);
-    return 0;
+    return Enable(Scope::AllUsers, Bitness::x86, layer32) ? 0 : 1;
   }
 
   dprint(L"Invalid command: {}", command);

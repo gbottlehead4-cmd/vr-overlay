@@ -222,6 +222,25 @@ if (ENABLE_APP)
 endif ()
 
 ok_add_library(
+  VisorVR-OpenXRLayerRegistry
+  STATIC
+  OpenXRLayerRegistry.cpp
+  HEADERS
+  include/VisorVR/OpenXRLayerRegistry.hpp
+  INCLUDE_DIRECTORIES
+  include
+)
+target_link_libraries(
+  VisorVR-OpenXRLayerRegistry
+  PUBLIC
+  VisorVR-Lib-Headers
+  PRIVATE
+  VisorVR-Filesystem
+  VisorVR-RuntimeFiles
+  VisorVR-dprint
+)
+
+ok_add_library(
   VisorVR-SHM
   STATIC
   SHM.cpp
