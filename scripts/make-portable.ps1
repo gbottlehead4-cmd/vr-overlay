@@ -112,6 +112,16 @@ VisorVR $version - portable
 To run:
   Double-click VisorVR.exe in this folder.
 
+The first time, Windows will say "Windows protected your PC" and that the app is
+unrecognised. Click "More info", then "Run anyway".
+
+That warning appears for any program not signed with a paid certificate.
+VisorVR is free and unfunded, so it is not signed. The full source is public at
+https://github.com/gbottlehead4-cmd/vr-overlay if you would rather build it
+yourself. Some antivirus tools may also object: VisorVR draws overlays by
+loading a layer into the running game, which resembles what malware does. It is
+a false positive.
+
 No installation, and no administrator rights. On launch VisorVR registers its
 OpenXR layer for your user account only, pointing at this folder, so you can
 put it anywhere - move it later and it re-registers itself on the next start.
@@ -123,9 +133,9 @@ will not work.
 Settings are stored separately, in:
   %LOCALAPPDATA%\VisorVR
 
-To remove VisorVR: delete this folder. To also drop the OpenXR registration,
-before deleting run:
-  bin\VisorVR-OpenXR-Helper.exe disable-HKCU-64 "<full path to bin>"
+To remove VisorVR: turn off Settings > Virtual Reality > "OpenXR support for
+64-bit games", then delete this folder. The toggle removes the registry entry;
+without it one is left behind.
 
 VisorVR is a fork of OpenKneeboard by Fred Emmott, used under the OpenKneeboard
 Public License v1. Licence texts are in share\doc.
