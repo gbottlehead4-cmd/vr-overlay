@@ -8,8 +8,30 @@ The thing that makes VisorVR different: **in-VR panel positioning**. Grab a pane
 with the mouse, scroll to resize or push it away, hold Shift to tilt. Where you
 put it is where it stays, across restarts.
 
+**[Download the latest release](https://github.com/gbottlehead4-cmd/vr-overlay/releases/latest)**
+ · [Website](https://visorvr.gidrux.workers.dev)
+ · [Guide](https://visorvr.gidrux.workers.dev/guide)
+ · [Discord](https://discord.gg/DqPkr6vh4N)
+
 VisorVR is a fork of [OpenKneeboard](https://github.com/OpenKneeboard/OpenKneeboard)
 by Fred Emmott.
+
+## What goes in a panel
+
+- **A web page** — a SimHub dashboard, a timing screen, a chart, a checklist, a
+  page of your own. The [guide](https://visorvr.gidrux.workers.dev/guide#simhub)
+  walks through getting a SimHub dashboard's address, which is the one step
+  nobody guesses.
+- **A window from your desktop**, for apps with no web page of their own.
+- **Files or a folder** — PDFs and images, paged through with a bound button.
+- **DCS World panels** — mission, briefing, aircraft kneeboard, radio log and
+  theater, built in.
+
+## Requirements
+
+Windows 10 or 11, and a 64-bit game rendering through **OpenXR** — iRacing, DCS
+World, Microsoft Flight Simulator and most modern VR titles, with any headset
+runtime. VisorVR does not touch flat-screen games.
 
 ## Install
 
@@ -80,6 +102,9 @@ Bugs and feature requests: [Issues](https://github.com/gbottlehead4-cmd/vr-overl
 — they don't scroll away, so that's the better place for anything I need to act on.
 
 Questions and help from other users: [Discord](https://discord.gg/DqPkr6vh4N).
+
+How to actually use it: the [guide](https://visorvr.gidrux.workers.dev/guide), or
+**Help** inside the app — same answers, available offline with the headset on.
 
 ## License
 

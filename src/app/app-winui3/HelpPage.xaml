@@ -337,8 +337,8 @@
         CornerRadius="4"
         BorderThickness="1">
         <HyperlinkButton
-          NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay#readme">
-          Setup and documentation
+          NavigateUri="https://visorvr.gidrux.workers.dev/guide">
+          Full guide, on the web
         </HyperlinkButton>
         <HyperlinkButton
           NavigateUri="https://github.com/gbottlehead4-cmd/vr-overlay/issues">
