@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="canonical" href="https://visorvr.gidrux.workers.dev/guide.html" />
+<title>VisorVR Guide - how to set up and use your panels</title>
+<meta name="description" content="How to use VisorVR: adding panels, getting a SimHub dashboard address, placing panels in VR with the mouse, binding buttons, and fixing an overlay that will not appear." />
+<meta property="og:title" content="VisorVR Guide" />
+<meta property="og:description" content="Adding panels, SimHub dashboards, placing panels in VR, button bindings, and troubleshooting." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://visorvr.gidrux.workers.dev/guide.html" />
+
+<style>
+  :root {
+    --bg: #0F1013;
+    --bg-soft: #15161C;
+    --card: #1B1D24;
+    --border: #272A34;
+    --text: #E9EBF2;
+    --muted: #9AA0B0;
+    --accent: #7C83FF;
+    --accent-2: #46C6E8;
+    --warn: #FFCF4D;
+    --radius: 14px;
+    --max: 1100px;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9;
+    --bg-soft: #eceef2;
+    --card: #ffffff;
+    --border: #d8dee7;
+    --text: #1a1f29;
+    --muted: #566275;
+    --accent: #5C64E6;
+    --accent-2: #0a84c4;
+    --warn: #9a7400;
+  }
+  :root[data-theme="light"] nav { background: rgba(246,247,249,.85); }
+  :root[data-theme="light"] code, :root[data-theme="light"] kbd { background: #eef1f5; }
+  .theme-toggle {
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--muted); font-size: 1.05rem; line-height: 1;
+    margin-left: 22px; padding: 4px 6px; border-radius: 8px;
+  }
+  .theme-toggle:hover { color: var(--text); }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+</style>
+<style>
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(15,16,19,.82); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .brand { font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 9px; }
+  .brand span { color: var(--accent); }
+  .brand img { width: auto; height: 20px; display: block; }
+  .nav-links a { color: var(--muted); margin-left: 22px; font-size: .95rem; }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 860px) { .nav-links a { display: none; } }
+  header.page {
+    padding: 54px 0 30px; border-bottom: 1px solid var(--border);
+    background: radial-gradient(900px 380px at 20% -20%, rgba(124,131,255,.16), transparent 60%);
+  }
+  header.page h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); margin: 0 0 .3em; line-height: 1.15; }
+  header.page p { color: var(--muted); max-width: 640px; margin: 0; }
+  .layout { display: grid; grid-template-columns: 232px 1fr; gap: 44px; padding: 40px 0 70px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 20px; } }
+  .toc { position: sticky; top: 84px; align-self: start; font-size: .93rem; }
+  @media (max-width: 900px) {
+    .toc { position: static; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; background: var(--bg-soft); }
+  }
+  .toc h2 { font-size: .75rem; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin: 0 0 10px; }
+  .toc a { display: block; color: var(--muted); padding: 5px 0 5px 12px; border-left: 2px solid transparent; }
+  .toc a:hover { color: var(--text); text-decoration: none; border-left-color: var(--accent); }
+  section { padding-bottom: 44px; }
+  section > h2 { font-size: 1.55rem; margin: 0 0 6px; scroll-margin-top: 78px; padding-top: 8px; }
+  section > p.lead { color: var(--muted); margin: 0 0 20px; }
+  h3 { font-size: 1.1rem; margin: 26px 0 6px; }
+  p { margin: 0 0 14px; }
+  code, kbd {
+    background: #1e2029; border: 1px solid var(--border); border-radius: 6px;
+    padding: 1px 6px; font-size: .88em;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+  kbd { font-weight: 600; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px; margin: 16px 0;
+  }
+  .card p:last-child { margin-bottom: 0; }
+  .note { border-left: 3px solid var(--accent); background: var(--bg-soft); }
+  .warn { border-left: 3px solid var(--warn); background: var(--bg-soft); }
+  ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 18px 0; }
+  ol.steps > li { counter-increment: step; position: relative; padding: 0 0 16px 46px; margin: 0; }
+  ol.steps > li::before {
+    content: counter(step); position: absolute; left: 0; top: 0;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: .95rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  ol.steps > li strong { display: block; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .95rem; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .82rem; text-transform: uppercase; letter-spacing: .6px; }
+  td:first-child { white-space: nowrap; font-weight: 600; }
+  .tbl-wrap { overflow-x: auto; }
+  ul.plain { padding-left: 20px; margin: 0 0 14px; }
+  ul.plain li { margin-bottom: 7px; }
+  footer { border-top: 1px solid var(--border); padding: 34px 0 44px; color: var(--muted); font-size: .9rem; text-align: center; }
+  footer a { margin: 0 9px; }
+</style>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('theme');
+      if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="/" style="text-decoration:none;"><img src="mark.svg" alt="" width="46" height="20">Visor<span>VR</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="#panels">Panels</a>
+      <a href="#simhub">SimHub</a>
+      <a href="#placing">Placing in VR</a>
+      <a href="#buttons">Buttons</a>
+      <a href="#trouble">Troubleshooting</a>
+      <a href="https://discord.gg/DqPkr6vh4N" target="_blank" rel="noopener">Discord</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme">&#9728;&#65039;</button>
+    </div>
+  </div>
+</nav>
+
+<header class="page">
+  <div class="wrap">
+    <h1>VisorVR guide</h1>
+    <p>Everything from first launch to a cockpit laid out the way you want it. The same answers live in the app under <strong>Help</strong>, so you can reach them with your headset on.</p>
+  </div>
+</header>
+
+<div class="wrap layout">
+
+  <aside class="toc">
+    <h2>On this page</h2>
+    <a href="#start">Getting started</a>
+    <a href="#panels">Adding panels</a>
+    <a href="#simhub">SimHub dashboards</a>
+    <a href="#placing">Placing panels in VR</a>
+    <a href="#sharpness">Making text readable</a>
+    <a href="#buttons">Buttons and bindings</a>
+    <a href="#trouble">Troubleshooting</a>
+    <a href="#files">Files, privacy, uninstalling</a>
+    <a href="#help">Getting help</a>
+  </aside>
+
+  <main>
+
+  <section id="start">
+    <h2>Getting started</h2>
+    <p class="lead">No installer, no administrator rights.</p>
+    <ol class="steps">
+      <li><strong>Unzip it anywhere</strong>
+        Keep the folder together &mdash; <code>bin</code>, <code>libexec</code> and <code>share</code> have to stay side by side.</li>
+      <li><strong>Run <code>VisorVR.exe</code></strong>
+        Windows will warn you the app is unsigned. Choose <strong>More info &rarr; Run anyway</strong>. There is no certificate because they cost money every year and this project has none; the full source is public if you would rather build it yourself.</li>
+      <li><strong>Restart your game</strong>
+        VisorVR registers itself with OpenXR when it starts, and a game only picks that up at launch. If the game was already running, it will not see the overlay until you restart it.</li>
+    </ol>
+    <div class="card note">
+      <p><strong>Keep VisorVR running.</strong> It is not a background service &mdash; the app window is what draws your panels. Minimise it, but leave it open alongside the game.</p>
+    </div>
+  </section>
+
+  <section id="panels">
+    <h2>Adding panels</h2>
+    <p class="lead">A panel is anything you want floating in the cockpit. Click <strong>Add panel</strong> in the sidebar and pick a type.</p>
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Type</th><th>What it is for</th></tr>
+      <tr><td>Web page or dashboard</td><td>Anything with an address: a SimHub dashboard, a timing screen, a chart, a checklist, a page of your own. The most useful type by a distance.</td></tr>
+      <tr><td>Desktop window</td><td>Mirrors a window from your desktop, for apps with no web page of their own. It keeps updating while the game has the screen.</td></tr>
+      <tr><td>Documents</td><td>PDFs and images. Pick several files and each one becomes its own panel.</td></tr>
+      <tr><td>Folder of documents</td><td>Every document in a folder, in one panel. Page through them with a bound button.</td></tr>
+      <tr><td>Endless notebook</td><td>One template page, repeated forever &mdash; turn the page and you get a fresh copy to write on.</td></tr>
+      <tr><td>DCS World</td><td>A submenu of purpose-built panels for DCS: aircraft kneeboard, mission briefing, mission kneeboard, radio log and theater kneeboard.</td></tr>
+    </table>
+    </div>
+    <p>Panels are reordered by dragging them in <strong>Settings &rarr; Panels</strong>, and each one has its own name and icon so the sidebar stays readable once you have a few.</p>
+  </section>
+  <section id="simhub">
+    <h2>SimHub dashboards</h2>
+    <p class="lead">The most common thing people want in here, and the one step that is genuinely hard to guess.</p>
+    <p>A SimHub dashboard goes in a <strong>web panel</strong>, so what you need from SimHub is its <strong>web address</strong> &mdash; not the dashboard name, and not SimHub&rsquo;s own window. SimHub gives you that address in one click, but it lives behind a menu item named for OBS:</p>
+    <ol class="steps">
+      <li><strong>Open Dash Studio</strong>
+        In SimHub, from the left-hand sidebar.</li>
+      <li><strong>Choose the Overlays tab</strong>
+        Along the top of the Dash Studio screen.</li>
+      <li><strong>Click the overlay you want</strong>
+        So that it is selected.</li>
+      <li><strong>Click MORE</strong>
+        On the right-hand side of that overlay &mdash; the button with three lines.</li>
+      <li><strong>Choose &ldquo;Copy OBS browser address to clipboard&rdquo;</strong>
+        At the bottom of the menu. It is named for OBS, but it is simply that overlay&rsquo;s web address and works anywhere.</li>
+      <li><strong>Paste it into VisorVR</strong>
+        Add panel &rarr; Web page or dashboard &rarr; paste &rarr; Add panel.</li>
+    </ol>
+    <div class="card warn">
+      <p><strong>SimHub has to stay running.</strong> The address points at SimHub itself, so when SimHub is closed the panel is blank. Leave it running alongside the game as you normally would.</p>
+    </div>
+    <p>You do not need to set the panel size by hand: a SimHub dashboard tells VisorVR the size it was designed at, and the panel matches it. If the text looks soft once the panel is in front of you, that is <a href="#sharpness">Sharpness</a>, not Size.</p>
+  </section>
+
+  <section id="placing">
+    <h2>Placing panels in VR</h2>
+    <p class="lead">The part other overlays make you do with config files: put the headset on and move the panel with your mouse.</p>
+    <p>Select the panel, then click <strong>Edit in VR</strong>. Put your headset on. The panel draws its controls on itself while you are editing:</p>
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Control</th><th>Does</th></tr>
+      <tr><td>Click</td><td>Grab or drop the panel</td></tr>
+      <tr><td>Move mouse</td><td>Reposition it</td></tr>
+      <tr><td>Scroll</td><td>Resize &mdash; or change distance while it is grabbed</td></tr>
+      <tr><td><kbd>Shift</kbd> + move</td><td>Rotate and tilt</td></tr>
+      <tr><td>Setup button</td><td>Exit and save</td></tr>
+    </table>
+    </div>
+    <p>Placement is saved per panel and survives a restart, so this is a once-per-panel job rather than something you redo each session.</p>
+    <div class="card warn">
+      <p><strong>Cannot see the panel once you are in the headset?</strong> Press <strong>Recenter</strong>, next to Edit in VR. A panel keeps the position you last gave it, so it can easily be behind you, above you, or inside the car &mdash; and there is nothing to grab if you cannot see it. Recenter brings it back in front of wherever you are looking now. It is the first thing to try whenever a panel seems to have vanished.</p>
+    </div>
+    <p>Bind <strong>Recenter VR</strong> to a button as well, so you can fix it mid-session without taking the headset off.</p>
+  </section>
+
+  <section id="sharpness">
+    <h2>Making text readable</h2>
+    <p class="lead">If small numbers look soft, one setting fixes it &mdash; and it is not the obvious one.</p>
+    <p><strong>Size</strong> and <strong>Distance</strong> change how big a panel looks. They do not add any detail: pulling a panel closer just spreads the same pixels over more of your view. <strong>Sharpness</strong> renders the page at a higher resolution, the way a HiDPI monitor does, so the text holds together when you lean in.</p>
+    <p>It runs from 100% to 200%. The ceiling is not arbitrary &mdash; panels share one texture with a hard size limit, and going beyond 200% would cost a great deal of video memory for detail your headset cannot resolve anyway.</p>
+    <p>Sharpness costs GPU time, so raise it on the panel you actually read &mdash; a timing screen or a delta &mdash; rather than on everything.</p>
+  </section>
+  <section id="buttons">
+    <h2>Buttons and bindings</h2>
+    <p class="lead">Once you are strapped in, the keyboard is out of reach. Bind these before your first session.</p>
+    <p>Go to <strong>Settings &rarr; Input</strong>, pick your device, click a binding, and press the button you want. Wheel, HOTAS, button box or controller all work.</p>
+    <h3>Bind these three first</h3>
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Binding</th><th>Why</th></tr>
+      <tr><td>Show/hide</td><td>Takes the whole overlay off your view and brings it back. The one binding worth having even if you set up nothing else.</td></tr>
+      <tr><td>Recenter VR</td><td>Pulls your panels back in front of you when they have ended up somewhere you cannot see, without unbuckling to reach the mouse.</td></tr>
+      <tr><td>Next panel</td><td>Cycles which panel you are looking at, so several panels can share one spot in front of you instead of crowding the cockpit.</td></tr>
+    </table>
+    </div>
+    <h3>Worth binding later</h3>
+    <div class="tbl-wrap">
+    <table>
+      <tr><td>Toggle VR edit mode</td><td>Reposition a panel from inside the headset without going back to the app window.</td></tr>
+      <tr><td>Next page / Previous page</td><td>For panels holding multi-page documents &mdash; charts, plates, a setup sheet.</td></tr>
+      <tr><td>Increase / Decrease brightness</td><td>Night stints, or a panel glaring against a dark track.</td></tr>
+    </table>
+    </div>
+    <p>Any panel&rsquo;s settings also has a <strong>Set up controller buttons</strong> shortcut that takes you straight to the same place.</p>
+  </section>
+
+  <section id="trouble">
+    <h2>Troubleshooting</h2>
+    <h3>The overlay does not appear in my game</h3>
+    <p>Work down this list &mdash; it is ordered by how often each one turns out to be the cause.</p>
+    <ol class="steps">
+      <li><strong>Restart the game</strong>
+        VisorVR hooks in through an OpenXR layer that is only loaded when the game starts. If VisorVR was not running when you launched the game, or was updated since, the game will not see it until you restart.</li>
+      <li><strong>Check the layer is switched on</strong>
+        <strong>Settings &rarr; Virtual Reality &rarr; &ldquo;OpenXR support for 64-bit games&rdquo;</strong>. VisorVR registers the layer for your Windows account each time it starts, so this needs no administrator rights.</li>
+      <li><strong>Check the panel is shown in VR</strong>
+        Select it in the sidebar and confirm <strong>Show this panel in VR</strong> is on. A panel can be visible in the app window and hidden in the headset.</li>
+      <li><strong>Check it is not behind you</strong>
+        Use <strong>Recenter</strong>. This is the usual answer when it worked yesterday and does not today.</li>
+      <li><strong>Check your game actually uses OpenXR</strong>
+        Some titles default to OpenVR/SteamVR or to a vendor runtime. VisorVR draws into 64-bit OpenXR games only.</li>
+    </ol>
+    <h3>A web panel is blank</h3>
+    <p>If it is a SimHub dashboard, SimHub is probably closed &mdash; the address points at SimHub itself. Otherwise check the address in the panel settings by opening it in a normal browser: if it does not load there, it will not load here either.</p>
+    <h3>Text is soft or fuzzy</h3>
+    <p>Raise <a href="#sharpness">Sharpness</a>, not Size.</p>
+    <h3>Reporting something</h3>
+    <p>In the app: <strong>Help &rarr; Debugging Information &rarr; Save as&hellip;</strong>, and attach that file to a <a href="https://github.com/gbottlehead4-cmd/vr-overlay/issues" target="_blank" rel="noopener">GitHub issue</a>. It is far more useful than a description. Say which game, which headset, and what you expected to happen.</p>
+  </section>
+
+  <section id="files">
+    <h2>Files, privacy, uninstalling</h2>
+    <p><strong>Your settings and logs</strong> live in <code>%LOCALAPPDATA%\VisorVR</code>, separate from the folder you unzipped. Upgrading by unzipping a new version over the old one leaves them untouched.</p>
+    <p><strong>Nothing is sent anywhere.</strong> VisorVR has no telemetry, no account and no update service. A panel pointed at a web page reaches the internet exactly as a browser would, and nothing else does.</p>
+    <p><strong>To uninstall:</strong> turn off <strong>Settings &rarr; Virtual Reality &rarr; OpenXR support for 64-bit games</strong>, then delete the folder you unzipped. The toggle removes the registry entry; without it, one is left behind. Delete <code>%LOCALAPPDATA%\VisorVR</code> too if you want your settings gone.</p>
+  </section>
+
+  <section id="help">
+    <h2>Getting help</h2>
+    <p class="lead">VisorVR is free and open source, made by one person in his spare time. There is no support team.</p>
+    <ul class="plain">
+      <li><strong>The app&rsquo;s own Help page</strong> carries these answers offline, which matters when you are wearing a headset and have no second screen.</li>
+      <li><strong><a href="https://discord.gg/DqPkr6vh4N" target="_blank" rel="noopener">Discord</a></strong> &mdash; ask other users. Often faster than waiting for me.</li>
+      <li><strong><a href="https://github.com/gbottlehead4-cmd/vr-overlay/issues" target="_blank" rel="noopener">GitHub issues</a></strong> &mdash; bugs and feature requests. Better than Discord for anything that needs acting on, because issues do not scroll away.</li>
+    </ul>
+  </section>
+
+  </main>
+</div>
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/">Home</a>
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay/releases/latest" target="_blank" rel="noopener">Download</a>
+      <a href="https://discord.gg/DqPkr6vh4N" target="_blank" rel="noopener">Discord</a>
+      <a href="https://github.com/gbottlehead4-cmd/vr-overlay" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://ko-fi.com/gidrux" target="_blank" rel="noopener">Support development</a>
+    </div>
+    <div style="margin-top:16px; font-size:.82rem; max-width:640px; margin-left:auto; margin-right:auto;">
+      VisorVR is a fork of <a href="https://github.com/OpenKneeboard/OpenKneeboard" target="_blank" rel="noopener">OpenKneeboard</a>, copyright &copy; Fred Emmott, used under the OpenKneeboard Public License v1. Independent project, not affiliated with or endorsed by OpenKneeboard or its author.
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    function isLight() { return document.documentElement.getAttribute('data-theme') === 'light'; }
+    function setIcon() {
+      btn.textContent = isLight() ? '\u{1F319}' : '☀️';
+      btn.title = isLight() ? 'Switch to dark' : 'Switch to light';
+    }
+    setIcon();
+    btn.addEventListener('click', function () {
+      var next = isLight() ? 'dark' : 'light';
+      if (next === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      setIcon();
+    });
+  })();
+</script>
+
+<!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "df97657694c047daac1f8349d9cb5e9a"}'></script>
+</body>
+</html>
