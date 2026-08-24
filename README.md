@@ -9,8 +9,8 @@ with the mouse, scroll to resize or push it away, hold Shift to tilt. Where you
 put it is where it stays, across restarts.
 
 **[Download the latest release](https://github.com/gbottlehead4-cmd/vr-overlay/releases/latest)**
- · [Website](https://visorvr.gidrux.workers.dev)
- · [Guide](https://visorvr.gidrux.workers.dev/guide)
+ · [Website](https://visorvr.simapps.workers.dev)
+ · [Guide](https://visorvr.simapps.workers.dev/guide)
  · [Discord](https://discord.gg/DqPkr6vh4N)
 
 VisorVR is a fork of [OpenKneeboard](https://github.com/OpenKneeboard/OpenKneeboard)
@@ -19,7 +19,7 @@ by Fred Emmott.
 ## What goes in a panel
 
 - **A web page** — a SimHub dashboard, a timing screen, a chart, a checklist, a
-  page of your own. The [guide](https://visorvr.gidrux.workers.dev/guide#simhub)
+  page of your own. The [guide](https://visorvr.simapps.workers.dev/guide#simhub)
   walks through getting a SimHub dashboard's address, which is the one step
   nobody guesses.
 - **A window from your desktop**, for apps with no web page of their own.
@@ -103,7 +103,7 @@ Bugs and feature requests: [Issues](https://github.com/gbottlehead4-cmd/vr-overl
 
 Questions and help from other users: [Discord](https://discord.gg/DqPkr6vh4N).
 
-How to actually use it: the [guide](https://visorvr.gidrux.workers.dev/guide), or
+How to actually use it: the [guide](https://visorvr.simapps.workers.dev/guide), or
 **Help** inside the app — same answers, available offline with the headset on.
 
 ## License

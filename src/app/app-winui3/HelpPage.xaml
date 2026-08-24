@@ -337,7 +337,7 @@
         CornerRadius="4"
         BorderThickness="1">
         <HyperlinkButton
-          NavigateUri="https://visorvr.gidrux.workers.dev/guide">
+          NavigateUri="https://visorvr.simapps.workers.dev/guide">
           Full guide, on the web
         </HyperlinkButton>
         <HyperlinkButton
