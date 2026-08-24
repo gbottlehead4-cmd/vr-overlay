@@ -233,6 +233,27 @@ class KneeboardState final
   [[nodiscard]] task<void> SwitchProfile(Direction);
 
   void InitializeViews();
+
+  /** Give every panel its own VR view.
+   *
+   * VisorVR's model is one panel = one VR layer: adding a panel adds the
+   * layer that shows it, and deleting the panel takes the layer with it.
+   * Upstream keeps the two lists independent, so a new panel had no
+   * placement settings and never showed up in VR until the user hand-made
+   * a view for it in Settings -> Virtual Reality.
+   *
+   * Returns true if `mSettings.mViews` changed; the caller is then
+   * responsible for `InitializeViews()` and `SaveSettings()`.
+   */
+  bool SyncViewsWithTabs();
+
+  /** `SyncViewsWithTabs`, plus the view rebuild and save it implies.
+   *
+   * Takes the unique lock, so it must only be run from a context holding
+   * no lock at all - in practice the ordered event queue, which the frame
+   * loop flushes after releasing its own.
+   */
+  [[nodiscard]] task<void> ReconcileViewsWithTabs();
 };
 
 }// namespace VisorVR

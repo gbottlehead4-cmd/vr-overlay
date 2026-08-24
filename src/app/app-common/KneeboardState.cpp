@@ -98,6 +98,15 @@ task<void> KneeboardState::Init() {
     if (mAppWindowView) {
       mAppWindowView->SetTabs(tabs);
     }
+
+    // Giving the new panel its VR layer mutates `mSettings.mViews` and
+    // rebuilds `mViews`, so it needs the unique lock - but this event is
+    // emitted with the *shared* lock held (see TabsSettingsPage::AddTabs),
+    // and `lock()` only tracks re-entrancy for unique holders, so asking
+    // for it here self-deadlocks on the shared_mutex. Defer to the frame
+    // loop, which flushes this queue with no lock held.
+    this->EnqueueOrderedEvent(
+      std::bind_front(&KneeboardState::ReconcileViewsWithTabs, this));
   });
 
   mDirectInput = DirectInputAdapter::Create(mHwnd, mSettings.mDirectInput);
@@ -116,6 +125,9 @@ task<void> KneeboardState::Init() {
     this->evSettingsChangedEvent,
     std::bind_front(&KneeboardState::SetRepaintNeeded, this));
 
+  // Back-fill: settings written before panels and views were one thing can
+  // have panels with no layer, and layers whose panel is long gone.
+  this->SyncViewsWithTabs();
   InitializeViews();
   AcquireExclusiveResources();
 }
@@ -817,6 +829,13 @@ task<void> KneeboardState::SetProfileSettings(
 
   co_await mTabsList->LoadSettings(newSettings.mTabs);
   co_await this->SetViewsSettings(newSettings.mViews);
+  // SetViewsSettings has just replaced whatever the tab-change handler
+  // reconciled, so reconcile the profile we have actually landed on. The
+  // lock taken at the top of this function still covers us.
+  if (this->SyncViewsWithTabs()) {
+    this->InitializeViews();
+    this->SaveSettings();
+  }
 
   co_await this->SetAppSettings(newSettings.mApp);
   co_await this->SetDoodlesSettings(newSettings.mDoodles);
@@ -1036,6 +1055,133 @@ void KneeboardState::lock_shared() { mMutex.lock_shared(); }
 bool KneeboardState::try_lock_shared() { return mMutex.try_lock_shared(); }
 
 void KneeboardState::unlock_shared() { mMutex.unlock_shared(); }
+
+/** Where to put the nth auto-created panel.
+ *
+ * Every view otherwise starts on the same default pose, so a second panel
+ * would land exactly on top of the first and look like nothing had been
+ * added at all. Stagger them over a small grid around that pose instead:
+ * close enough that they are all still in front of the user, far enough
+ * apart that none is completely hidden behind another. Placing them
+ * properly is what "Edit in VR" is for.
+ */
+static VRPose GetPoseForNewView(std::size_t nth) {
+  constexpr std::size_t columns = 4;
+  constexpr float xStep = 0.22f;// metres
+  constexpr float yStep = 0.14f;
+
+  const auto column = static_cast<float>(nth % columns);
+  const auto row = static_cast<float>((nth / columns) % 4);
+
+  VRPose pose {};
+  // Centre the row on the default position rather than growing off to one
+  // side of it.
+  pose.mX += (column - ((columns - 1) / 2.0f)) * xStep;
+  pose.mEyeY += row * yStep;
+  return pose;
+}
+
+task<void> KneeboardState::ReconcileViewsWithTabs() {
+  const EventDelay delay;// lock must be released first
+  const std::unique_lock lock(*this);
+
+  if (this->SyncViewsWithTabs()) {
+    this->InitializeViews();
+    this->SaveSettings();
+    this->SetRepaintNeeded();
+  }
+  co_return;
+}
+
+bool KneeboardState::SyncViewsWithTabs() {
+  if (!mTabsList) {
+    return false;
+  }
+
+  const auto tabs = mTabsList->GetTabs();
+  auto& views = mSettings.mViews.mViews;
+  const auto oldViews = views;
+
+  const auto isIndependent = [](const ViewSettings& view) {
+    return view.mVR.GetType() == ViewVRSettings::Type::Independent;
+  };
+
+  // A view whose panel has been deleted is a dead layer. Unbind it so the
+  // next panel can have the slot back instead of burning one of the 16.
+  for (auto& view: views) {
+    if (!isIndependent(view) || view.mDefaultTabID == winrt::guid {}) {
+      continue;
+    }
+    const auto tab
+      = std::ranges::find(tabs, view.mDefaultTabID, &ITab::GetPersistentID);
+    if (tab == tabs.end()) {
+      dprint(
+        "View '{}' has lost its panel ({}); freeing it up",
+        view.mName,
+        view.mDefaultTabID);
+      view.mDefaultTabID = {};
+    }
+  }
+
+  for (const auto& tab: tabs) {
+    const auto tabID = tab->GetPersistentID();
+    const auto claimed = std::ranges::any_of(views, [&](const auto& view) {
+      return isIndependent(view) && view.mDefaultTabID == tabID;
+    });
+    if (claimed) {
+      continue;
+    }
+
+    // Prefer an unbound view - a fresh install's "Kneeboard 1", or one
+    // freed up above - so a placement the user set up is inherited rather
+    // than thrown away.
+    const auto spare = std::ranges::find_if(views, [&](const auto& view) {
+      return isIndependent(view) && view.mDefaultTabID == winrt::guid {};
+    });
+    if (spare != views.end()) {
+      spare->mDefaultTabID = tabID;
+      // It was showing nothing, so it may well have been switched off;
+      // the point of the panel is to be visible.
+      spare->mVR.mEnabled = true;
+      dprint(
+        "Gave panel '{}' the spare view '{}'",
+        tab->GetTitle(),
+        spare->mName);
+      continue;
+    }
+
+    if (views.size() >= MaxViewCount) {
+      dprint(
+        "Panel '{}' gets no VR view: all {} of them are already in use",
+        tab->GetTitle(),
+        MaxViewCount);
+      continue;
+    }
+
+    IndependentViewVRSettings vr {};
+    vr.mPose = GetPoseForNewView(views.size());
+    views.push_back({
+      .mName = tab->GetTitle(),
+      .mVR = ViewVRSettings::Independent(vr),
+      .mDefaultTabID = tabID,
+    });
+    dprint("Created a VR view for panel '{}'", tab->GetTitle());
+  }
+
+  // The view is the panel now, so keep it labelled like the panel.
+  for (auto& view: views) {
+    if (!isIndependent(view)) {
+      continue;
+    }
+    const auto tab
+      = std::ranges::find(tabs, view.mDefaultTabID, &ITab::GetPersistentID);
+    if (tab != tabs.end()) {
+      view.mName = (*tab)->GetTitle();
+    }
+  }
+
+  return views != oldViews;
+}
 
 void KneeboardState::InitializeViews() {
   const auto oldViews = mViews;
