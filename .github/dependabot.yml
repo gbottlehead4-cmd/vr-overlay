@@ -4,7 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "bundler"
-    directory: "/docs"
-    schedule:
-      interval: "weekly"
+  # No bundler entry: upstream's Jekyll documentation site lived at /docs and
+  # went with the rest of their docs during the rebrand (f7a8d4a7). Dependabot
+  # kept scanning the missing directory and failing every week.
