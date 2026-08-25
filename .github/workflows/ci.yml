@@ -163,20 +163,12 @@ jobs:
         with:
           name: ${{steps.build-installer.outputs.installer-name}}
           path: ${{steps.build-installer.outputs.installer-path}}
-      - name: Generate release notes
-        if: github.ref_type == 'tag' && matrix.config != 'Debug'
-        id: release-notes
-        run: |
-          $out = "${{runner.temp}}/release_notes.md"
-            (Get-Content -Path source/.github/workflows/release_notes.md -raw) `
-            -replace '@TAG@','${{github.ref_name}}' | `
-            Set-Content -Path $out -Encoding UTF8
-          Add-Content $Env:GITHUB_OUTPUT "PATH=$out"
-      - name: Create draft release
-        id: create-release
-        if: github.ref_type == 'tag' && matrix.config != 'Debug'
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
-        with:
-          draft: true
-          body_path: ${{steps.release-notes.outputs.PATH}}
-          prerelease: ${{contains(github.ref_name, '-')}}
+      # No release steps here on purpose. Upstream drafted a release from
+      # `.github/workflows/release_notes.md` on every tag; the Stage 2 rebrand
+      # deleted that template but left the step reading it, so every tag build
+      # has failed since - v1.13.1 and v1.14.0 both - on a missing file, after
+      # the app and the installer had already built fine.
+      #
+      # Releases here are published by hand with `gh release create`, notes
+      # written per release. An auto-drafted release would only collide with
+      # that, so the steps are gone rather than repaired.
