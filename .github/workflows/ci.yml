@@ -117,8 +117,10 @@ jobs:
           $version="$(Get-Content version.txt)"
           Add-Content $Env:GITHUB_OUTPUT "VERSION=${version}"
           echo "::endgroup::"
+      # 422MB. Tags only - it is wanted when debugging a crash report against
+      # a shipped build, not for every push.
       - name: Attach debug symbols
-        if: ${{ matrix.config != 'Debug' && github.repository == 'VisorVR/VisorVR' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.config != 'Debug' && github.repository == 'gbottlehead4-cmd/vr-overlay' && startsWith(github.ref, 'refs/tags/') }}
         uses: actions/upload-artifact@v7
         with:
           name: VisorVR-GHA${{github.run_number}}-DebugSymbols
@@ -131,8 +133,10 @@ jobs:
           dotnet publish `
             --configuration Release `
             --output "${{github.workspace}}/build/out/${{matrix.config}}/installer-generator"
+      # 444MB - the same tree `scripts/make-portable.ps1` packages. Tags only,
+      # for the same reason as the symbols above.
       - name: Attach bundle
-        if: ${{ matrix.config != 'Debug' && github.repository == 'VisorVR/VisorVR' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.config != 'Debug' && github.repository == 'gbottlehead4-cmd/vr-overlay' && startsWith(github.ref, 'refs/tags/') }}
         uses: actions/upload-artifact@v7
         with:
           name: VisorVR-GHA${{github.run_number}}
@@ -157,8 +161,10 @@ jobs:
           $InstallerName = (Get-Item $InstallerPath).Name
           Add-Content $env:GITHUB_OUTPUT "installer-path=${InstallerPath}"
           Add-Content $env:GITHUB_OUTPUT "installer-name=${InstallerName}"
+      # The MSI, and the only small one of the three - so it uploads on
+      # default-branch pushes too, not just tags.
       - name: Upload unsigned installer
-        if: ${{ matrix.config != 'Debug' && github.repository == 'VisorVR/VisorVR' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+        if: ${{ matrix.config != 'Debug' && github.repository == 'gbottlehead4-cmd/vr-overlay' && (github.ref == 'refs/heads/vr-edit-mode' || startsWith(github.ref, 'refs/tags/')) }}
         uses: actions/upload-artifact@v7
         with:
           name: ${{steps.build-installer.outputs.installer-name}}
